@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:receipt_manager/screens/add_update_receipt_screen.dart';
+import 'package:receipt_manager/screens/base_page.dart';
 import 'package:receipt_manager/screens/budget_screen.dart';
 import 'package:receipt_manager/screens/category_screen.dart';
 import 'package:receipt_manager/screens/dashboard_screen.dart';
@@ -50,6 +51,7 @@ class MyApp extends StatelessWidget {
         EmailSentPage.id: (context) => EmailSentPage(
               email: '',
             ),
+        BasePage.id: (context) => BasePage(),
         HomePage.id: (context) => HomePage(),
         ExpenseListPage.id: (context) => ExpenseListPage(),
         ScanScreen.id: (context) => ScanScreen(),
