@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:receipt_manager/constants/app_colors.dart';
 
 import '../components/expense_item.dart';
 
@@ -13,7 +14,7 @@ class ExpenseListPage extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        title: const Text('Transaction', style: TextStyle(color: Colors.black)),
+        title: const Text('Expense', style: TextStyle(color: Colors.black)),
         centerTitle: true,
         actions: [
           IconButton(
@@ -71,16 +72,38 @@ class ExpenseListPage extends StatelessWidget {
   }
 
   Widget _buildFinancialReportButton() {
-    return TextButton(
-      onPressed: () {
-        // Handle financial report navigation
-      },
-      style: TextButton.styleFrom(
-        backgroundColor: Colors.purple.shade100,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
+    return SizedBox(
+      width: double.infinity, // Make the button take full width
+      child: TextButton(
+        onPressed: () {
+          // Handle financial report navigation
+        },
+        style: TextButton.styleFrom(
+          backgroundColor: lightPurpleColor,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8.0), // Rounded corners
+          ),
+          padding: const EdgeInsets.all(14), // Adjusted padding for height
+        ),
+        child: Row(
+          mainAxisAlignment:
+              MainAxisAlignment.spaceBetween, // Space text and icon to edges
+          children: [
+            Text(
+              "See your financial report",
+              style: TextStyle(
+                color: mainPurpleColor,
+                fontSize: 16,
+              ),
+            ),
+            Icon(
+              Icons.arrow_forward_ios, // Thinner right arrow icon
+              color: mainPurpleColor,
+              size: 20,
+            ),
+          ],
+        ),
       ),
-      child: Text("See your financial report",
-          style: TextStyle(color: Colors.purple.shade700)),
     );
   }
 }
