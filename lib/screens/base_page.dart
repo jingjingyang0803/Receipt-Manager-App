@@ -58,7 +58,7 @@ class BasePageState extends State<BasePage> {
         width: 75, // Larger white circle size
         height: 75,
         decoration: BoxDecoration(
-          color: Colors.white, // White background for the circle effect
+          color: Color(0xFFF6F6F6), // Light gray background for the circle
           shape: BoxShape.circle,
           boxShadow: [
             BoxShadow(
