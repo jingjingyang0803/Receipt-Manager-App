@@ -73,7 +73,7 @@ class CustomBottomNavBarState extends State<CustomBottomNavBar> {
                 ),
                 BottomNavigationBarItem(
                   icon: Icon(Icons.receipt),
-                  label: 'Transaction',
+                  label: 'Expense',
                 ),
                 BottomNavigationBarItem(
                   icon: Icon(Icons.savings),
