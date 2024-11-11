@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:receipt_manager/screens/profile_screen.dart';
 
 import '../components/custom_bottom_nav_bar.dart';
+import '../constants/app_colors.dart';
+import 'budget_screen.dart';
 import 'expense_list_page.dart';
 import 'home_page.dart';
 
@@ -32,9 +35,9 @@ class BasePageState extends State<BasePage> {
       case 1:
         return ExpenseListPage();
       case 2:
-      // return BudgetPage();
+        return BudgetScreen();
       case 3:
-      // return ProfilePage();
+        return ProfileScreen();
       default:
         return ExpenseListPage();
     }
@@ -49,6 +52,17 @@ class BasePageState extends State<BasePage> {
         onTabSelected: _onTabSelected,
         onFabPressed: _onFabPressed,
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _onFabPressed,
+        backgroundColor: mainPurpleColor,
+        shape: const CircleBorder(), // Ensures the FAB itself is circular
+        child: const Icon(
+          Icons.add,
+          color: Colors.white,
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation
+          .centerDocked, // Centers the FAB above the BottomAppBar
     );
   }
 }
