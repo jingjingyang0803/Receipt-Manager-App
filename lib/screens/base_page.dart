@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:receipt_manager/constants/app_colors.dart';
 import 'package:receipt_manager/screens/add_update_receipt_screen.dart';
 import 'package:receipt_manager/screens/profile_screen.dart';
 
 import '../components/custom_bottom_nav_bar.dart';
-import '../constants/app_colors.dart';
 import 'budget_screen.dart';
 import 'expense_list_page.dart';
 import 'home_page.dart';
@@ -54,36 +54,40 @@ class BasePageState extends State<BasePage> {
         onTabSelected: _onTabSelected,
         onFabPressed: _onFabPressed,
       ),
-      floatingActionButton: Container(
-        width: 75, // Larger white circle size
-        height: 75,
-        decoration: BoxDecoration(
-          color: Color(0xFFF6F6F6), // Light gray background for the circle
-          shape: BoxShape.circle,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black12,
-              blurRadius: 8,
-              spreadRadius: 2,
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(
+            bottom: 20), // Move the button up by adding bottom padding
+        child: GestureDetector(
+          onTap: _onFabPressed,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            decoration: BoxDecoration(
+              color: mainPurpleColor,
+              borderRadius:
+                  BorderRadius.circular(30), // Rounded rectangle shape
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black12,
+                  blurRadius: 8,
+                  spreadRadius: 2,
+                ),
+              ],
             ),
-          ],
-        ),
-        child: Center(
-          // Center the FAB inside the white circle
-          child: FloatingActionButton(
-            onPressed: _onFabPressed,
-            backgroundColor: mainPurpleColor,
-            shape: const CircleBorder(),
-            elevation: 0,
-            child: const Icon(
-              Icons.add,
-              color: backgroundBaseColor,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: const [
+                Icon(Icons.add, color: backgroundBaseColor), // FAB icon
+                SizedBox(width: 8), // Space between icon and text
+                Text(
+                  "Add new",
+                  style: TextStyle(color: backgroundBaseColor, fontSize: 16),
+                ),
+              ],
             ),
           ),
         ),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation
-          .centerDocked, // Centers the FAB above the BottomAppBar
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
 }
