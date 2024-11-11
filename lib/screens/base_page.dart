@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:receipt_manager/screens/add_update_receipt_screen.dart';
 import 'package:receipt_manager/screens/profile_screen.dart';
 
 import '../components/custom_bottom_nav_bar.dart';
@@ -25,7 +26,8 @@ class BasePageState extends State<BasePage> {
   }
 
   void _onFabPressed() {
-    // Handle action for FAB, e.g., navigate to add new transaction page
+    // Handle action for FAB, navigate to add new expense page
+    Navigator.pushNamed(context, AddOrUpdateReceiptScreen.id);
   }
 
   Widget _getSelectedPage() {
@@ -52,13 +54,32 @@ class BasePageState extends State<BasePage> {
         onTabSelected: _onTabSelected,
         onFabPressed: _onFabPressed,
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _onFabPressed,
-        backgroundColor: mainPurpleColor,
-        shape: const CircleBorder(), // Ensures the FAB itself is circular
-        child: const Icon(
-          Icons.add,
-          color: Colors.white,
+      floatingActionButton: Container(
+        width: 75, // Larger white circle size
+        height: 75,
+        decoration: BoxDecoration(
+          color: Colors.white, // White background for the circle effect
+          shape: BoxShape.circle,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black12,
+              blurRadius: 8,
+              spreadRadius: 2,
+            ),
+          ],
+        ),
+        child: Center(
+          // Center the FAB inside the white circle
+          child: FloatingActionButton(
+            onPressed: _onFabPressed,
+            backgroundColor: mainPurpleColor,
+            shape: const CircleBorder(),
+            elevation: 0,
+            child: const Icon(
+              Icons.add,
+              color: backgroundBaseColor,
+            ),
+          ),
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation
