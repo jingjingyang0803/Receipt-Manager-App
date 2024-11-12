@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:receipt_manager/constants/app_colors.dart';
 import 'package:receipt_manager/screens/add_update_receipt_screen.dart';
-import 'package:receipt_manager/screens/profile_screen.dart';
+import 'package:receipt_manager/screens/profile_page.dart';
 
 import '../components/custom_bottom_nav_bar.dart';
 import 'budget_screen.dart';
@@ -39,7 +39,7 @@ class BasePageState extends State<BasePage> {
       case 2:
         return BudgetScreen();
       case 3:
-        return ProfileScreen();
+        return ProfilePage();
       default:
         return ExpenseListPage();
     }
