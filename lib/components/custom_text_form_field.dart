@@ -27,8 +27,7 @@ class CustomTextFormField extends StatelessWidget {
       obscureText: obscureText,
       decoration: InputDecoration(
         labelText: labelText,
-        labelStyle: TextStyle(
-            color: textSecondaryColor), // Use your color variable here
+        labelStyle: TextStyle(color: light20), // Use your color variable here
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16.0),
           borderSide: BorderSide(color: Colors.grey.shade300),

@@ -74,7 +74,7 @@ class WelcomePageState extends State<WelcomePage> {
                 CustomButton(
                   text: "Sign Up",
                   backgroundColor: purple100,
-                  textColor: backgroundBaseColor,
+                  textColor: light80,
                   onPressed: () {
                     // Navigate to Sign Up page
                     Navigator.pushNamed(context, SignUpPage.id);
@@ -117,7 +117,7 @@ class WelcomePageState extends State<WelcomePage> {
                 fontFamily: 'Inter',
                 fontSize: 32,
                 fontWeight: FontWeight.w700, // Use Bold
-                color: textPrimaryColor),
+                color: dark50),
           ),
           SizedBox(height: 16),
           Text(
@@ -127,7 +127,7 @@ class WelcomePageState extends State<WelcomePage> {
                 fontFamily: 'Inter',
                 fontSize: 18,
                 fontWeight: FontWeight.w500, // Use ExtraLight
-                color: textSecondaryColor),
+                color: light20),
           ),
         ],
       ),

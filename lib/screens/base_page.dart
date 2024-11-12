@@ -76,11 +76,11 @@ class BasePageState extends State<BasePage> {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: const [
-                Icon(Icons.add, color: backgroundBaseColor), // FAB icon
+                Icon(Icons.add, color: light80), // FAB icon
                 SizedBox(width: 8), // Space between icon and text
                 Text(
                   "Add new",
-                  style: TextStyle(color: backgroundBaseColor, fontSize: 16),
+                  style: TextStyle(color: light80, fontSize: 16),
                 ),
               ],
             ),

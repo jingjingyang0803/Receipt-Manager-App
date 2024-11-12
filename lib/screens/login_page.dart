@@ -50,18 +50,18 @@ class LogInPageState extends State<LogInPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: backgroundBaseColor,
+      backgroundColor: light80,
       appBar: AppBar(
-        backgroundColor: backgroundBaseColor,
+        backgroundColor: light80,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: textPrimaryColor),
+          icon: Icon(Icons.arrow_back, color: dark50),
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: Text(
           "Login",
           style: TextStyle(
-            color: textPrimaryColor,
+            color: dark50,
             fontSize: 20,
             fontWeight: FontWeight.bold,
           ),
@@ -101,7 +101,7 @@ class LogInPageState extends State<LogInPage> {
               CustomButton(
                 text: "Login",
                 backgroundColor: purple100,
-                textColor: backgroundBaseColor,
+                textColor: light80,
                 onPressed: () async {
                   setState(() {
                     errorMessage = ''; // Clear the error message
@@ -168,7 +168,7 @@ class LogInPageState extends State<LogInPage> {
                 child: Text.rich(
                   TextSpan(
                     text: "Don’t have an account yet? ",
-                    style: TextStyle(color: textSecondaryColor, fontSize: 16),
+                    style: TextStyle(color: light20, fontSize: 16),
                     children: [
                       underlineTextSpan(
                         text: "Sign Up",
