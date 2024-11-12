@@ -100,7 +100,7 @@ class LogInPageState extends State<LogInPage> {
               SizedBox(height: 24),
               CustomButton(
                 text: "Login",
-                backgroundColor: mainPurpleColor,
+                backgroundColor: purple100,
                 textColor: backgroundBaseColor,
                 onPressed: () async {
                   setState(() {
@@ -157,7 +157,7 @@ class LogInPageState extends State<LogInPage> {
                   child: Text(
                     "Forgot Password?",
                     style: TextStyle(
-                      color: mainPurpleColor,
+                      color: purple100,
                       fontSize: 18,
                     ),
                   ),

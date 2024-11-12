@@ -110,7 +110,7 @@ class ForgotPasswordPageState extends State<ForgotPasswordPage> {
             SizedBox(height: 24),
             CustomButton(
               text: "Continue",
-              backgroundColor: mainPurpleColor,
+              backgroundColor: purple100,
               textColor: backgroundBaseColor,
               onPressed: () {
                 if (email.isEmpty) {

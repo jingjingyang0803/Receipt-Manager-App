@@ -89,7 +89,7 @@ class VerificationLinkPageState extends State<VerificationLinkPage> {
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
-                color: mainPurpleColor,
+                color: purple100,
               ),
             ),
             const SizedBox(height: 8),
@@ -103,7 +103,7 @@ class VerificationLinkPageState extends State<VerificationLinkPage> {
                   TextSpan(text: 'We sent a verification link to your email '),
                   TextSpan(
                     text: getMaskedEmail(widget.user.email ?? ''),
-                    style: TextStyle(color: mainPurpleColor),
+                    style: TextStyle(color: purple100),
                   ),
                   TextSpan(text: '. Please check your inbox.'),
                 ],
@@ -123,7 +123,7 @@ class VerificationLinkPageState extends State<VerificationLinkPage> {
             Spacer(),
             CustomButton(
               text: "Continue",
-              backgroundColor: mainPurpleColor,
+              backgroundColor: purple100,
               textColor: backgroundBaseColor,
               onPressed: () {
                 Navigator.push(

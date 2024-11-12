@@ -81,7 +81,7 @@ class ExpenseListPage extends StatelessWidget {
           Navigator.pushNamed(context, FinancialReportPage.id);
         },
         style: TextButton.styleFrom(
-          backgroundColor: lightPurpleColor,
+          backgroundColor: purple20,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8.0), // Rounded corners
           ),
@@ -94,13 +94,13 @@ class ExpenseListPage extends StatelessWidget {
             Text(
               "See your financial report",
               style: TextStyle(
-                color: mainPurpleColor,
+                color: purple100,
                 fontSize: 16,
               ),
             ),
             Icon(
               Icons.arrow_forward_ios, // Thinner right arrow icon
-              color: mainPurpleColor,
+              color: purple100,
               size: 20,
             ),
           ],

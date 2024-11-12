@@ -71,16 +71,12 @@ class FinancialReportPageState extends State<FinancialReportPage> {
                           padding: const EdgeInsets.symmetric(
                               vertical: 8, horizontal: 12),
                           decoration: BoxDecoration(
-                            color: isPieChart
-                                ? Colors.transparent
-                                : mainPurpleColor,
+                            color: isPieChart ? Colors.transparent : purple100,
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Icon(
                             Icons.bar_chart, // Choose an icon for bar chart
-                            color: isPieChart
-                                ? mainPurpleColor
-                                : backgroundBaseColor,
+                            color: isPieChart ? purple100 : backgroundBaseColor,
                           ),
                         ),
                       ),
@@ -96,16 +92,12 @@ class FinancialReportPageState extends State<FinancialReportPage> {
                           padding: const EdgeInsets.symmetric(
                               vertical: 8, horizontal: 12),
                           decoration: BoxDecoration(
-                            color: isPieChart
-                                ? mainPurpleColor
-                                : Colors.transparent,
+                            color: isPieChart ? purple100 : Colors.transparent,
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Icon(
                             Icons.pie_chart,
-                            color: isPieChart
-                                ? backgroundBaseColor
-                                : mainPurpleColor,
+                            color: isPieChart ? backgroundBaseColor : purple100,
                           ),
                         ),
                       ),
