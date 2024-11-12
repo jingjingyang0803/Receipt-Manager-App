@@ -31,22 +31,41 @@ class FinancialReportPageState extends State<FinancialReportPage> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            // Month Dropdown and Chart Toggle
+            // Month Button and Chart Toggle
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                // Month Dropdown
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade200,
-                    borderRadius: BorderRadius.circular(8),
+                // Month Button
+                TextButton(
+                  onPressed: () {
+                    // Handle dropdown action here
+                  },
+                  style: TextButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(40),
+                      side: BorderSide(
+                          color: light60, width: 1), // Subtle border color
+                    ),
+                    backgroundColor: Colors.white, // Light background color
                   ),
                   child: Row(
-                    children: const [
-                      Text("Month", style: TextStyle(color: Colors.black)),
-                      Icon(Icons.arrow_drop_down, color: Colors.black),
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.expand_more, // Updated icon for dropdown arrow
+                        color: purple100, // Use purple color for the arrow icon
+                        size: 20, // Adjust size if necessary
+                      ),
+                      const SizedBox(width: 4), // Space between icon and text
+                      Text(
+                        "Month",
+                        style: TextStyle(
+                            fontSize: 14,
+                            color: dark50,
+                            fontWeight: FontWeight.w500), // Text style
+                      ),
                     ],
                   ),
                 ),
