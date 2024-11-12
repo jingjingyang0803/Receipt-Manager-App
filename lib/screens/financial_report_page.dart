@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:receipt_manager/constants/app_colors.dart';
 
 class FinancialReportPage extends StatefulWidget {
   static const String id = 'financial_report_page';
@@ -52,29 +53,61 @@ class FinancialReportPageState extends State<FinancialReportPage> {
 
                 // Toggle Button for Bar Chart and Pie Chart
                 Container(
+                  padding: const EdgeInsets.all(4),
                   decoration: BoxDecoration(
-                    color: Colors.purple.shade100,
-                    borderRadius: BorderRadius.circular(8),
+                    color: backgroundBaseColor,
+                    borderRadius: BorderRadius.circular(12),
                   ),
                   child: Row(
                     children: [
-                      IconButton(
-                        icon: Icon(Icons.bar_chart),
-                        color: isPieChart ? Colors.grey : Colors.purple,
-                        onPressed: () {
+                      // Bar Chart Button
+                      GestureDetector(
+                        onTap: () {
                           setState(() {
                             isPieChart = false;
                           });
                         },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 8, horizontal: 12),
+                          decoration: BoxDecoration(
+                            color: isPieChart
+                                ? Colors.transparent
+                                : mainPurpleColor,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Icon(
+                            Icons.bar_chart, // Choose an icon for bar chart
+                            color: isPieChart
+                                ? mainPurpleColor
+                                : backgroundBaseColor,
+                          ),
+                        ),
                       ),
-                      IconButton(
-                        icon: Icon(Icons.pie_chart),
-                        color: isPieChart ? Colors.purple : Colors.grey,
-                        onPressed: () {
+
+                      // Pie Chart Button
+                      GestureDetector(
+                        onTap: () {
                           setState(() {
                             isPieChart = true;
                           });
                         },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 8, horizontal: 12),
+                          decoration: BoxDecoration(
+                            color: isPieChart
+                                ? mainPurpleColor
+                                : Colors.transparent,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Icon(
+                            Icons.pie_chart,
+                            color: isPieChart
+                                ? backgroundBaseColor
+                                : mainPurpleColor,
+                          ),
+                        ),
                       ),
                     ],
                   ),
