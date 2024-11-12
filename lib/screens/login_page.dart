@@ -5,8 +5,8 @@ import 'package:receipt_manager/screens/signup_page.dart';
 import 'package:receipt_manager/services/auth_service.dart';
 
 import '../components/custom_button.dart';
-import '../components/custom_password_form_field.dart';
-import '../components/custom_text_form_field.dart';
+import '../components/custom_input_field.dart';
+import '../components/custom_password_input_field.dart';
 import '../components/underline_text.dart';
 import '../logger.dart';
 import 'base_page.dart';
