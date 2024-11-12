@@ -9,6 +9,7 @@ import 'package:receipt_manager/screens/dashboard_screen.dart';
 import 'package:receipt_manager/screens/email_sent_page.dart';
 import 'package:receipt_manager/screens/expense_chart_screen.dart';
 import 'package:receipt_manager/screens/expense_list_page.dart';
+import 'package:receipt_manager/screens/financial_report_page.dart';
 import 'package:receipt_manager/screens/forgot_password_page.dart';
 import 'package:receipt_manager/screens/home_page.dart';
 import 'package:receipt_manager/screens/login_page.dart';
@@ -54,6 +55,7 @@ class MyApp extends StatelessWidget {
         BasePage.id: (context) => BasePage(),
         HomePage.id: (context) => HomePage(),
         ExpenseListPage.id: (context) => ExpenseListPage(),
+        FinancialReportPage.id: (context) => FinancialReportPage(),
         ScanScreen.id: (context) => ScanScreen(),
         AddOrUpdateReceiptScreen.id: (context) => AddOrUpdateReceiptScreen(),
         ReceiptListScreen.id: (context) => ReceiptListScreen(),

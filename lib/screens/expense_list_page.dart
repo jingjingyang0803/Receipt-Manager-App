@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:receipt_manager/constants/app_colors.dart';
+import 'package:receipt_manager/screens/financial_report_page.dart';
 
 import '../components/expense_item.dart';
 
@@ -28,7 +29,7 @@ class ExpenseListPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildFinancialReportButton(),
+            _buildFinancialReportButton(context),
             const SizedBox(height: 16),
             const Text('Today',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
@@ -71,12 +72,13 @@ class ExpenseListPage extends StatelessWidget {
     );
   }
 
-  Widget _buildFinancialReportButton() {
+  Widget _buildFinancialReportButton(BuildContext context) {
     return SizedBox(
       width: double.infinity, // Make the button take full width
       child: TextButton(
         onPressed: () {
           // Handle financial report navigation
+          Navigator.pushNamed(context, FinancialReportPage.id);
         },
         style: TextButton.styleFrom(
           backgroundColor: lightPurpleColor,
