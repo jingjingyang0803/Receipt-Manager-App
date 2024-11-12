@@ -1,8 +1,9 @@
 name: Demo Test Workflow
-
-# Replace push and pull_request with workflow_dispatch for manual trigger
 on:
-  workflow_dispatch:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
 
 jobs:
   build:
@@ -36,3 +37,4 @@ jobs:
         run: |
           echo "Building application..."
           flutter build apk
+
