@@ -60,7 +60,7 @@ class CustomBottomNavBarState extends State<CustomBottomNavBar> {
               elevation: 0, // Set elevation to 0 to remove shadow
               currentIndex: _currentIndex,
               onTap: _onItemTapped,
-              selectedItemColor: mainPurpleColor,
+              selectedItemColor: purple100,
               unselectedItemColor: const Color(0xFFC6C6C6), // Inactive color
               showSelectedLabels: true,
               showUnselectedLabels: true,

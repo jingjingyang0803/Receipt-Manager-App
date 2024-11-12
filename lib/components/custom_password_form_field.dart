@@ -37,8 +37,8 @@ class CustomPasswordFormFieldState extends State<CustomPasswordFormField> {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16.0),
-          borderSide: BorderSide(
-              color: mainPurpleColor), // Replace with your color variable
+          borderSide:
+              BorderSide(color: purple100), // Replace with your color variable
         ),
         suffixIcon: IconButton(
           icon: Icon(

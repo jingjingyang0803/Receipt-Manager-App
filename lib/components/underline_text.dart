@@ -5,7 +5,7 @@ import 'package:receipt_manager/constants/app_colors.dart';
 TextSpan underlineTextSpan({
   required String text,
   required VoidCallback onTap,
-  Color color = mainPurpleColor, // Default color
+  Color color = purple100, // Default color
   double fontSize = 14, // Default font size
 }) {
   return TextSpan(

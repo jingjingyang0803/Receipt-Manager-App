@@ -161,7 +161,7 @@ class SignUpPageState extends State<SignUpPage> {
                         _isChecked = value ?? false;
                       });
                     },
-                    activeColor: mainPurpleColor,
+                    activeColor: purple100,
                   ),
                   Expanded(
                     child: RichText(
@@ -171,7 +171,7 @@ class SignUpPageState extends State<SignUpPage> {
                         children: [
                           TextSpan(
                             text: "Terms of Service",
-                            style: TextStyle(color: mainPurpleColor),
+                            style: TextStyle(color: purple100),
                           ),
                           TextSpan(
                             text: " and ",
@@ -179,7 +179,7 @@ class SignUpPageState extends State<SignUpPage> {
                           ),
                           TextSpan(
                             text: "Privacy Policy",
-                            style: TextStyle(color: mainPurpleColor),
+                            style: TextStyle(color: purple100),
                           ),
                         ],
                       ),
@@ -198,7 +198,7 @@ class SignUpPageState extends State<SignUpPage> {
               SizedBox(height: 20),
               CustomButton(
                 text: "Sign Up",
-                backgroundColor: _isChecked ? mainPurpleColor : Colors.grey,
+                backgroundColor: _isChecked ? purple100 : Colors.grey,
                 textColor: _isChecked ? backgroundBaseColor : Colors.black54,
                 onPressed: _isChecked
                     ? () async {

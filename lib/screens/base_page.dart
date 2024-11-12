@@ -62,7 +62,7 @@ class BasePageState extends State<BasePage> {
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
             decoration: BoxDecoration(
-              color: mainPurpleColor,
+              color: purple100,
               borderRadius:
                   BorderRadius.circular(30), // Rounded rectangle shape
               boxShadow: [

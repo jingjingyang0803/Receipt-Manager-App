@@ -47,7 +47,7 @@ class EmailSentPage extends StatelessWidget {
               // Back to Login Button
               CustomButton(
                 text: "Back to Login",
-                backgroundColor: mainPurpleColor,
+                backgroundColor: purple100,
                 textColor: backgroundBaseColor,
                 onPressed: () {
                   Navigator.pushNamed(context, LogInPage.id);

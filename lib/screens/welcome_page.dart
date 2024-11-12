@@ -60,8 +60,8 @@ class WelcomePageState extends State<WelcomePage> {
             controller: _pageController,
             count: 3,
             effect: WormEffect(
-              dotColor: lightPurpleColor, // Inactive dot color
-              activeDotColor: mainPurpleColor, // Active dot color
+              dotColor: purple20, // Inactive dot color
+              activeDotColor: purple100, // Active dot color
               dotHeight: 8,
               dotWidth: 8,
             ),
@@ -73,7 +73,7 @@ class WelcomePageState extends State<WelcomePage> {
               children: [
                 CustomButton(
                   text: "Sign Up",
-                  backgroundColor: mainPurpleColor,
+                  backgroundColor: purple100,
                   textColor: backgroundBaseColor,
                   onPressed: () {
                     // Navigate to Sign Up page
@@ -83,8 +83,8 @@ class WelcomePageState extends State<WelcomePage> {
                 SizedBox(height: 12),
                 CustomButton(
                   text: "Login",
-                  backgroundColor: lightPurpleColor,
-                  textColor: mainPurpleColor,
+                  backgroundColor: purple20,
+                  textColor: purple100,
                   onPressed: () {
                     // Navigate to Login page
                     Navigator.pushNamed(context, LogInPage.id);
