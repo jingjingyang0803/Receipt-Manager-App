@@ -4,7 +4,7 @@ import 'package:receipt_manager/constants/app_colors.dart';
 import 'package:receipt_manager/screens/email_sent_page.dart';
 
 import '../components/custom_button.dart';
-import '../components/custom_text_form_field.dart'; // Replace with your color definitions file
+import '../components/custom_input_field.dart'; // Replace with your color definitions file
 
 class ForgotPasswordPage extends StatefulWidget {
   static const String id = 'forgot_password_page';

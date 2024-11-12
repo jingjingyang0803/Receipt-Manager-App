@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:receipt_manager/screens/verification_link_page.dart';
 
 import '../components/custom_button.dart';
-import '../components/custom_password_form_field.dart';
-import '../components/custom_text_form_field.dart';
+import '../components/custom_input_field.dart';
+import '../components/custom_password_input_field.dart';
 import '../components/underline_text.dart';
 import '../constants/app_colors.dart';
 import '../services/auth_service.dart';
