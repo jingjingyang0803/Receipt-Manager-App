@@ -50,60 +50,69 @@ class FinancialReportPageState extends State<FinancialReportPage> {
                     ],
                   ),
                 ),
-
                 // Toggle Button for Bar Chart and Pie Chart
-                Container(
-                  padding: const EdgeInsets.all(4),
-                  decoration: BoxDecoration(
-                    color: light80,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Row(
-                    children: [
-                      // Bar Chart Button
-                      GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            isPieChart = false;
-                          });
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 8, horizontal: 12),
-                          decoration: BoxDecoration(
-                            color: isPieChart ? Colors.transparent : purple100,
-                            borderRadius: BorderRadius.circular(8),
+                Row(
+                  children: [
+                    // Bar Chart Button with rounded left corners
+                    TextButton(
+                      onPressed: () {
+                        setState(() {
+                          isPieChart = false;
+                        });
+                      },
+                      style: TextButton.styleFrom(
+                        backgroundColor: isPieChart ? Colors.white : purple80,
+                        minimumSize: const Size(
+                            10, 50), // Adjust width and height if necessary
+                        shape: RoundedRectangleBorder(
+                          borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(8),
+                            bottomLeft: Radius.circular(8),
                           ),
-                          child: Icon(
-                            Icons.bar_chart, // Choose an icon for bar chart
-                            color: isPieChart ? purple100 : light80,
-                          ),
-                        ),
-                      ),
-
-                      // Pie Chart Button
-                      GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            isPieChart = true;
-                          });
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 8, horizontal: 12),
-                          decoration: BoxDecoration(
-                            color: isPieChart ? purple100 : Colors.transparent,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Icon(
-                            Icons.pie_chart,
-                            color: isPieChart ? light80 : purple100,
+                          side: BorderSide(
+                            color: isPieChart
+                                ? light60
+                                : Colors
+                                    .transparent, // Border only when inactive
+                            width: 1.5,
                           ),
                         ),
                       ),
-                    ],
-                  ),
-                ),
+                      child: Icon(
+                        Icons.bar_chart, // Use preferred icon for bar chart
+                        color: isPieChart ? purple80 : light60,
+                      ),
+                    ),
+                    // Pie Chart Button with rounded right corners
+                    TextButton(
+                      onPressed: () {
+                        setState(() {
+                          isPieChart = true;
+                        });
+                      },
+                      style: TextButton.styleFrom(
+                        backgroundColor: isPieChart ? purple80 : Colors.white,
+                        minimumSize: const Size(10, 50),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: const BorderRadius.only(
+                            topRight: Radius.circular(8),
+                            bottomRight: Radius.circular(8),
+                          ),
+                          side: BorderSide(
+                            color: isPieChart
+                                ? Colors.transparent
+                                : light60, // Border only when inactive
+                            width: 1.5,
+                          ),
+                        ),
+                      ),
+                      child: Icon(
+                        Icons.pie_chart,
+                        color: isPieChart ? light80 : purple100,
+                      ),
+                    ),
+                  ],
+                )
               ],
             ),
 
