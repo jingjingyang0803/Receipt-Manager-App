@@ -61,7 +61,7 @@ class VerificationLinkPageState extends State<VerificationLinkPage> {
         title: Text(
           'Verification',
           style: TextStyle(
-            color: textPrimaryColor,
+            color: dark50,
             fontSize: 20,
             fontWeight: FontWeight.bold,
           ),
@@ -97,7 +97,7 @@ class VerificationLinkPageState extends State<VerificationLinkPage> {
               text: TextSpan(
                 style: TextStyle(
                   fontSize: 14,
-                  color: textPrimaryColor,
+                  color: dark50,
                 ),
                 children: [
                   TextSpan(text: 'We sent a verification link to your email '),
@@ -124,7 +124,7 @@ class VerificationLinkPageState extends State<VerificationLinkPage> {
             CustomButton(
               text: "Continue",
               backgroundColor: purple100,
-              textColor: backgroundBaseColor,
+              textColor: light80,
               onPressed: () {
                 Navigator.push(
                   context,

@@ -55,7 +55,7 @@ class FinancialReportPageState extends State<FinancialReportPage> {
                 Container(
                   padding: const EdgeInsets.all(4),
                   decoration: BoxDecoration(
-                    color: backgroundBaseColor,
+                    color: light80,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Row(
@@ -76,7 +76,7 @@ class FinancialReportPageState extends State<FinancialReportPage> {
                           ),
                           child: Icon(
                             Icons.bar_chart, // Choose an icon for bar chart
-                            color: isPieChart ? purple100 : backgroundBaseColor,
+                            color: isPieChart ? purple100 : light80,
                           ),
                         ),
                       ),
@@ -97,7 +97,7 @@ class FinancialReportPageState extends State<FinancialReportPage> {
                           ),
                           child: Icon(
                             Icons.pie_chart,
-                            color: isPieChart ? backgroundBaseColor : purple100,
+                            color: isPieChart ? light80 : purple100,
                           ),
                         ),
                       ),

@@ -39,7 +39,7 @@ class EmailSentPage extends StatelessWidget {
                 'Check your email $email and follow the instructions to reset your password',
                 style: TextStyle(
                   fontSize: 16,
-                  color: textSubtleColor,
+                  color: dark25,
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -48,7 +48,7 @@ class EmailSentPage extends StatelessWidget {
               CustomButton(
                 text: "Back to Login",
                 backgroundColor: purple100,
-                textColor: backgroundBaseColor,
+                textColor: light80,
                 onPressed: () {
                   Navigator.pushNamed(context, LogInPage.id);
                 },

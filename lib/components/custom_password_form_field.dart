@@ -29,8 +29,8 @@ class CustomPasswordFormFieldState extends State<CustomPasswordFormField> {
       obscureText: !_isPasswordVisible,
       decoration: InputDecoration(
         labelText: widget.labelText,
-        labelStyle: TextStyle(
-            color: textSecondaryColor), // Replace with your color variable
+        labelStyle:
+            TextStyle(color: light20), // Replace with your color variable
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16.0),
           borderSide: BorderSide(color: Colors.grey.shade300),

@@ -106,18 +106,18 @@ class SignUpPageState extends State<SignUpPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: backgroundBaseColor,
+      backgroundColor: light80,
       appBar: AppBar(
-        backgroundColor: backgroundBaseColor,
+        backgroundColor: light80,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: textPrimaryColor),
+          icon: Icon(Icons.arrow_back, color: dark50),
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: Text(
           "Sign Up",
           style: TextStyle(
-            color: textPrimaryColor,
+            color: dark50,
             fontSize: 20,
             fontWeight: FontWeight.bold,
           ),
@@ -199,7 +199,7 @@ class SignUpPageState extends State<SignUpPage> {
               CustomButton(
                 text: "Sign Up",
                 backgroundColor: _isChecked ? purple100 : Colors.grey,
-                textColor: _isChecked ? backgroundBaseColor : Colors.black54,
+                textColor: _isChecked ? light80 : Colors.black54,
                 onPressed: _isChecked
                     ? () async {
                         await _registerUser();
@@ -211,7 +211,7 @@ class SignUpPageState extends State<SignUpPage> {
                 child: Text(
                   "Or with",
                   style: TextStyle(
-                    color: textSecondaryColor,
+                    color: light20,
                     fontWeight: FontWeight.bold,
                     fontSize: 14,
                   ),
@@ -222,7 +222,7 @@ class SignUpPageState extends State<SignUpPage> {
                 child: Text.rich(
                   TextSpan(
                     text: "Already have an account? ",
-                    style: TextStyle(color: textSecondaryColor, fontSize: 16),
+                    style: TextStyle(color: light20, fontSize: 16),
                     children: [
                       underlineTextSpan(
                         text: "Login",

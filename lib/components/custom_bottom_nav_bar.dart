@@ -39,7 +39,7 @@ class CustomBottomNavBarState extends State<CustomBottomNavBar> {
         Container(
           height: 80,
           decoration: const BoxDecoration(
-            color: backgroundBaseColor,
+            color: light80,
             borderRadius: BorderRadius.only(
               topLeft: Radius.circular(12),
               topRight: Radius.circular(12),
@@ -56,7 +56,7 @@ class CustomBottomNavBarState extends State<CustomBottomNavBar> {
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: BottomNavigationBar(
               type: BottomNavigationBarType.fixed,
-              backgroundColor: backgroundBaseColor,
+              backgroundColor: light80,
               elevation: 0, // Set elevation to 0 to remove shadow
               currentIndex: _currentIndex,
               onTap: _onItemTapped,

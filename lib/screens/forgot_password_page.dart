@@ -51,18 +51,18 @@ class ForgotPasswordPageState extends State<ForgotPasswordPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: backgroundBaseColor,
+      backgroundColor: light80,
       appBar: AppBar(
-        backgroundColor: backgroundBaseColor,
+        backgroundColor: light80,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: textPrimaryColor),
+          icon: Icon(Icons.arrow_back, color: dark50),
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: Text(
           "Forgot Password",
           style: TextStyle(
-            color: textPrimaryColor,
+            color: dark50,
             fontSize: 20,
             fontWeight: FontWeight.bold,
           ),
@@ -78,7 +78,7 @@ class ForgotPasswordPageState extends State<ForgotPasswordPage> {
             Text(
               "Don’t worry.",
               style: TextStyle(
-                color: textPrimaryColor,
+                color: dark50,
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
               ),
@@ -87,7 +87,7 @@ class ForgotPasswordPageState extends State<ForgotPasswordPage> {
             Text(
               "Enter your email and we’ll send you a link to reset your password.",
               style: TextStyle(
-                color: textSecondaryColor,
+                color: light20,
                 fontSize: 16,
               ),
             ),
@@ -111,7 +111,7 @@ class ForgotPasswordPageState extends State<ForgotPasswordPage> {
             CustomButton(
               text: "Continue",
               backgroundColor: purple100,
-              textColor: backgroundBaseColor,
+              textColor: light80,
               onPressed: () {
                 if (email.isEmpty) {
                   setState(() {
