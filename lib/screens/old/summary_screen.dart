@@ -8,7 +8,7 @@ import '../../logger.dart';
 import '../../services/auth_service.dart';
 import '../../services/budget_service.dart';
 import '../../services/category_service.dart';
-import '../../services/receipt_service.dart';
+import '../../services/receipt_service_old.dart';
 
 class SummaryScreen extends StatefulWidget {
   static const String id = 'summary_screen';

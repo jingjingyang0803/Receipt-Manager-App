@@ -16,7 +16,7 @@ import '../logger.dart';
 import '../services/auth_service.dart';
 import '../services/category_service.dart';
 import '../services/currency_service.dart';
-import '../services/receipt_service.dart';
+import '../services/receipt_service_old.dart';
 import '../services/storage_service.dart';
 
 class AddOrUpdateReceiptScreen extends StatefulWidget {

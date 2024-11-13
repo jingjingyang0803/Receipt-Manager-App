@@ -9,7 +9,7 @@ import '../components/custom_password_input_field.dart';
 import '../components/underline_text.dart';
 import '../constants/app_colors.dart';
 import '../services/auth_service.dart';
-import '../services/user_service.dart'; // Add UserService import
+import '../services/user_service_old.dart'; // Add UserService import
 import 'login_page.dart';
 
 class SignUpPage extends StatefulWidget {

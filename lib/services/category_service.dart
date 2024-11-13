@@ -18,14 +18,14 @@ class CategoryService {
   ];
 
   // Fetch user categories
-  Future<List<Map<String, dynamic>>> fetchUserCategories(String userId) async {
+  Future<List<Map<String, dynamic>>> fetchUserCategories(String email) async {
     try {
       DocumentSnapshot userDoc =
-          await _firestore.collection('categories').doc(userId).get();
+          await _firestore.collection('categories').doc(email).get();
 
       if (!userDoc.exists || userDoc.data() == null) {
         // If the document does not exist, create it with default categories
-        await _firestore.collection('categories').doc(userId).set({
+        await _firestore.collection('categories').doc(email).set({
           'categorylist': defaultCategories
               .map((category) => {
                     'id': _firestore
@@ -69,11 +69,10 @@ class CategoryService {
   }
 
   // Fetch category name by category ID
-  Future<String?> fetchCategoryNameById(
-      String userId, String categoryId) async {
+  Future<String?> fetchCategoryNameById(String email, String categoryId) async {
     try {
       DocumentSnapshot userDoc =
-          await _firestore.collection('categories').doc(userId).get();
+          await _firestore.collection('categories').doc(email).get();
 
       if (userDoc.exists && userDoc.data() != null) {
         logger.w(
@@ -111,11 +110,10 @@ class CategoryService {
   }
 
   // Fetch category icon by category ID
-  Future<String?> fetchCategoryIconById(
-      String userId, String categoryId) async {
+  Future<String?> fetchCategoryIconById(String email, String categoryId) async {
     try {
       DocumentSnapshot userDoc =
-          await _firestore.collection('categories').doc(userId).get();
+          await _firestore.collection('categories').doc(email).get();
 
       if (userDoc.exists && userDoc.data() != null) {
         logger.w(
@@ -154,14 +152,14 @@ class CategoryService {
 
   // Add a new category with a random key
   Future<void> addCategoryToFirestore(
-      String userId, String name, String icon) async {
+      String email, String categoryName, String categoryIcon) async {
     try {
       // Generate a unique random key for the category
       String categoryId = _firestore.collection('categories').doc().id;
 
       // Reference to the user's document
       DocumentReference userDocRef =
-          _firestore.collection('categories').doc(userId);
+          _firestore.collection('categories').doc(email);
 
       // Fetch the user's document
       DocumentSnapshot userDoc = await userDocRef.get();
@@ -170,14 +168,14 @@ class CategoryService {
         // If the document doesn't exist, create it and initialize categorylist with the new category
         await userDocRef.set({
           'categorylist': [
-            {'id': categoryId, 'name': name, 'icon': icon}
+            {'id': categoryId, 'name': categoryName, 'icon': categoryIcon}
           ],
         });
       } else {
         // If the document exists, add the new category to the existing categorylist
         await userDocRef.update({
           'categorylist': FieldValue.arrayUnion([
-            {'id': categoryId, 'name': name, 'icon': icon}
+            {'id': categoryId, 'name': categoryName, 'icon': categoryIcon}
           ]),
         });
       }
@@ -187,10 +185,10 @@ class CategoryService {
   }
 
   // Delete category by its random key (id)
-  Future<void> deleteCategory(String userId, String categoryId) async {
+  Future<void> deleteCategory(String email, String categoryId) async {
     try {
       DocumentSnapshot userDoc =
-          await _firestore.collection('categories').doc(userId).get();
+          await _firestore.collection('categories').doc(email).get();
 
       if (userDoc.exists && userDoc.data() != null) {
         var data = userDoc.data() as Map<String, dynamic>;
@@ -203,7 +201,7 @@ class CategoryService {
 
         if (categoryToDelete != null) {
           // Remove the category using FieldValue.arrayRemove
-          await _firestore.collection('categories').doc(userId).update({
+          await _firestore.collection('categories').doc(email).update({
             'categorylist': FieldValue.arrayRemove([categoryToDelete])
           });
         }
@@ -214,10 +212,10 @@ class CategoryService {
   }
 
   // Check if a category exists (by name) in the Firestore
-  Future<bool> categoryExists(String userId, String categoryName) async {
+  Future<bool> categoryExists(String email, String categoryName) async {
     try {
       DocumentSnapshot userDoc =
-          await _firestore.collection('categories').doc(userId).get();
+          await _firestore.collection('categories').doc(email).get();
 
       if (userDoc.exists && userDoc.data() != null) {
         var data = userDoc.data() as Map<String, dynamic>;

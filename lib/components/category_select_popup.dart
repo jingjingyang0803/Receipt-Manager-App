@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../logger.dart';
 import '../services/category_service.dart';
-import '../services/receipt_service.dart';
+import '../services/receipt_service_old.dart';
 import 'add_category_widget.dart';
 
 class CategorySelectPopup extends StatefulWidget {

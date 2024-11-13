@@ -6,7 +6,7 @@ import '../components/custom_drawer.dart';
 import '../logger.dart';
 import '../services/auth_service.dart';
 import '../services/category_service.dart';
-import '../services/receipt_service.dart';
+import '../services/receipt_service_old.dart';
 
 class CategoryScreen extends StatefulWidget {
   static const String id = 'category_screen';

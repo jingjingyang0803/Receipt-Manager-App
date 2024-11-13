@@ -5,7 +5,7 @@ import 'package:image_picker/image_picker.dart';
 
 import '../../components/custom_drawer.dart';
 import '../../components/rounded_button.dart'; // Import the RoundedButton widget
-import '../../services/user_service.dart';
+import '../../services/user_service_old.dart';
 
 class ProfileScreen extends StatefulWidget {
   static const String id = 'profile_screen';
