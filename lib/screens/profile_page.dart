@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../components/logout_popup.dart';
 import '../constants/app_colors.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -160,6 +161,7 @@ class ProfilePageState extends State<ProfilePage> {
                         text: "Manage categories",
                         iconBackgroundColor: purple20,
                         iconColor: purple100,
+                        onTap: () {},
                       ),
                       Divider(thickness: 1, color: light90),
                       ProfileMenuItem(
@@ -167,6 +169,7 @@ class ProfilePageState extends State<ProfilePage> {
                         text: "Choose currency",
                         iconBackgroundColor: purple20,
                         iconColor: purple100,
+                        onTap: () {},
                       ),
                       // Divider(thickness: 1, color: light90),
                       // ProfileMenuItem(
@@ -188,6 +191,7 @@ class ProfilePageState extends State<ProfilePage> {
                         text: "Settings",
                         iconBackgroundColor: purple20,
                         iconColor: purple100,
+                        onTap: () {},
                       ),
                       Divider(thickness: 1, color: light90),
                       ProfileMenuItem(
@@ -195,6 +199,7 @@ class ProfilePageState extends State<ProfilePage> {
                         text: "Export Data",
                         iconBackgroundColor: purple20,
                         iconColor: purple100,
+                        onTap: () {},
                       ),
                       Divider(thickness: 1, color: light90),
                       ProfileMenuItem(
@@ -202,6 +207,22 @@ class ProfilePageState extends State<ProfilePage> {
                         text: "Logout",
                         iconBackgroundColor: red20,
                         iconColor: red100,
+                        onTap: () {
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return LogoutPopup(
+                                onConfirm: () {
+                                  // Perform logout action
+                                  Navigator.of(context).pop();
+                                },
+                                onCancel: () {
+                                  Navigator.of(context).pop();
+                                },
+                              );
+                            },
+                          );
+                        },
                       ),
                     ],
                   ),
@@ -221,6 +242,7 @@ class ProfileMenuItem extends StatelessWidget {
   final String text;
   final Color iconBackgroundColor;
   final Color iconColor;
+  final VoidCallback onTap; // Add onTap as a parameter
 
   const ProfileMenuItem({
     super.key,
@@ -228,28 +250,32 @@ class ProfileMenuItem extends StatelessWidget {
     required this.text,
     required this.iconBackgroundColor,
     required this.iconColor,
+    required this.onTap, // Make onTap required
   });
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(8), // Adjust padding for icon size
-            decoration: BoxDecoration(
-              color: iconBackgroundColor,
-              borderRadius: BorderRadius.circular(8.0),
+    return GestureDetector(
+      onTap: onTap, // Trigger onTap when the item is tapped
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8), // Adjust padding for icon size
+              decoration: BoxDecoration(
+                color: iconBackgroundColor,
+                borderRadius: BorderRadius.circular(8.0),
+              ),
+              child: Icon(icon, color: iconColor),
             ),
-            child: Icon(icon, color: iconColor),
-          ),
-          const SizedBox(width: 16),
-          Text(
-            text,
-            style: TextStyle(fontSize: 16, color: Colors.black87),
-          ),
-        ],
+            const SizedBox(width: 16),
+            Text(
+              text,
+              style: TextStyle(fontSize: 16, color: Colors.black87),
+            ),
+          ],
+        ),
       ),
     );
   }
