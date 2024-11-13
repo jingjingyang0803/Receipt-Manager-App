@@ -6,10 +6,10 @@ class BudgetService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   // Fetch all budgets for a user
-  Future<List<Map<String, dynamic>>> fetchUserBudgets(String userId) async {
+  Future<List<Map<String, dynamic>>> fetchUserBudgets(String email) async {
     try {
       DocumentSnapshot userDoc =
-          await _firestore.collection('budgets').doc(userId).get();
+          await _firestore.collection('budgets').doc(email).get();
 
       if (userDoc.exists && userDoc.data() != null) {
         var data = userDoc.data() as Map<String, dynamic>;
@@ -25,7 +25,7 @@ class BudgetService {
         }).toList();
       } else {
         // If the document doesn't exist, create a new one with an empty budget list
-        await _firestore.collection('budgets').doc(userId).set({
+        await _firestore.collection('budgets').doc(email).set({
           'budgetlist': [],
         });
         return []; // Return an empty list since there are no budgets yet
@@ -37,9 +37,9 @@ class BudgetService {
   }
 
   Future<void> updateUserBudgets(
-      String userId, List<Map<String, dynamic>> budgetList) async {
+      String email, List<Map<String, dynamic>> budgetList) async {
     try {
-      await _firestore.collection('budgets').doc(userId).update({
+      await _firestore.collection('budgets').doc(email).update({
         'budgetlist': budgetList,
       });
     } catch (e) {
@@ -50,10 +50,10 @@ class BudgetService {
 
   // Fetch budget by category ID
   Future<Map<String, dynamic>?> fetchBudgetByCategoryId(
-      String userId, String categoryId) async {
+      String email, String categoryId) async {
     try {
       DocumentSnapshot userDoc =
-          await _firestore.collection('budgets').doc(userId).get();
+          await _firestore.collection('budgets').doc(email).get();
 
       if (userDoc.exists && userDoc.data() != null) {
         var data = userDoc.data() as Map<String, dynamic>;

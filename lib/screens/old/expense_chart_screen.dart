@@ -10,7 +10,7 @@ import '../../components/rounded_button.dart';
 import '../../logger.dart';
 import '../../services/auth_service.dart';
 import '../../services/category_service.dart';
-import '../../services/receipt_service.dart';
+import '../../services/receipt_service_old.dart';
 
 class ExpenseChartScreen extends StatefulWidget {
   static const String id = 'expense_chart_screen';

@@ -14,7 +14,7 @@ import '../logger.dart';
 import '../services/auth_service.dart';
 import '../services/category_service.dart'; // Import CategoryService
 import '../services/currency_service.dart';
-import '../services/receipt_service.dart';
+import '../services/receipt_service_old.dart';
 import 'add_update_receipt_screen.dart';
 import 'old/expense_chart_screen.dart';
 
