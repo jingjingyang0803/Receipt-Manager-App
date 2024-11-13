@@ -1,30 +1,12 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:receipt_manager/screens/add_update_receipt_screen.dart';
+import 'package:provider/provider.dart';
+import 'package:receipt_manager/auth_manager.dart';
+import 'package:receipt_manager/routes.dart';
 import 'package:receipt_manager/screens/base_page.dart';
-import 'package:receipt_manager/screens/budget_screen.dart';
-import 'package:receipt_manager/screens/category_screen.dart';
-import 'package:receipt_manager/screens/email_sent_page.dart';
-import 'package:receipt_manager/screens/expense_list_page.dart';
-import 'package:receipt_manager/screens/financial_report_page.dart';
-import 'package:receipt_manager/screens/forgot_password_page.dart';
-import 'package:receipt_manager/screens/home_page.dart';
-import 'package:receipt_manager/screens/login_page.dart';
-import 'package:receipt_manager/screens/old/dashboard_screen.dart';
-import 'package:receipt_manager/screens/old/expense_chart_screen.dart';
-import 'package:receipt_manager/screens/old/profile_screen.dart';
-import 'package:receipt_manager/screens/old/scan_screen.dart';
-import 'package:receipt_manager/screens/old/setting_screen.dart';
-import 'package:receipt_manager/screens/old/summary_screen.dart';
-import 'package:receipt_manager/screens/profile_page.dart';
-import 'package:receipt_manager/screens/receipt_list_screen.dart';
-import 'package:receipt_manager/screens/set_budget_page.dart';
-import 'package:receipt_manager/screens/signup_page.dart';
-import 'package:receipt_manager/screens/verification_link_page.dart';
 import 'package:receipt_manager/screens/welcome_page.dart';
 
-import 'firebase_options.dart';
+import 'firebase_options.dart'; // Updated import
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -37,40 +19,22 @@ void main() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      initialRoute: WelcomePage.id,
-      routes: {
-        WelcomePage.id: (context) => WelcomePage(),
-        SignUpPage.id: (context) => SignUpPage(),
-        VerificationLinkPage.id: (context) => VerificationLinkPage(
-              user: FirebaseAuth.instance.currentUser!,
-            ),
-        LogInPage.id: (context) => LogInPage(),
-        ForgotPasswordPage.id: (context) => ForgotPasswordPage(),
-        EmailSentPage.id: (context) => EmailSentPage(
-              email: '',
-            ),
-        BasePage.id: (context) => BasePage(),
-        HomePage.id: (context) => HomePage(),
-        ExpenseListPage.id: (context) => ExpenseListPage(),
-        ProfilePage.id: (context) => ProfilePage(),
-        FinancialReportPage.id: (context) => FinancialReportPage(),
-        ScanScreen.id: (context) => ScanScreen(),
-        AddOrUpdateReceiptScreen.id: (context) => AddOrUpdateReceiptScreen(),
-        ReceiptListScreen.id: (context) => ReceiptListScreen(),
-        CategoryScreen.id: (context) => CategoryScreen(),
-        BudgetScreen.id: (context) => BudgetScreen(),
-        SummaryScreen.id: (context) => SummaryScreen(),
-        ExpenseChartScreen.id: (context) => ExpenseChartScreen(),
-        DashboardScreen.id: (context) => DashboardScreen(),
-        ProfileScreen.id: (context) => ProfileScreen(),
-        SettingScreen.id: (context) => SettingScreen(),
-        // In development
-        SetBudgetPage.id: (context) => SetBudgetPage(),
-      },
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => AuthManager()), // Updated here
+      ],
+      child: Consumer<AuthManager>(
+        // Updated here
+        builder: (context, authManager, child) {
+          return MaterialApp(
+            initialRoute:
+                authManager.isAuthenticated ? BasePage.id : WelcomePage.id,
+            routes: appRoutes,
+          );
+        },
+      ),
     );
   }
 }

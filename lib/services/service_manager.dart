@@ -1,3 +1,4 @@
+import 'auth_service.dart';
 import 'budget_service.dart';
 import 'category_service.dart';
 import 'receipt_service.dart';
@@ -10,9 +11,10 @@ class ServiceManager {
   factory ServiceManager() => _instance;
 
   // Initialize each service instance
-  final BudgetService budgetService = BudgetService();
+  final AuthService authService = AuthService();
   final UserService userService = UserService();
   final CategoryService categoryService = CategoryService();
+  final BudgetService budgetService = BudgetService();
   final ReceiptService receiptService = ReceiptService();
 
   ServiceManager._internal();
