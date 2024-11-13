@@ -16,7 +16,7 @@ import '../services/category_service.dart'; // Import CategoryService
 import '../services/currency_service.dart';
 import '../services/receipt_service.dart';
 import 'add_update_receipt_screen.dart';
-import 'expense_chart_screen.dart';
+import 'old/expense_chart_screen.dart';
 
 class ReceiptListScreen extends StatefulWidget {
   static const String id = 'receipt_list_screen';
@@ -32,7 +32,7 @@ class ReceiptListScreenState extends State<ReceiptListScreen> {
 
   final ReceiptService receiptService = ReceiptService();
   final CategoryService categoryService =
-  CategoryService(); // Add CategoryService
+      CategoryService(); // Add CategoryService
   CurrencyService currencyService = CurrencyService();
 
   Stream<DocumentSnapshot>? receiptsStream;
@@ -41,7 +41,7 @@ class ReceiptListScreenState extends State<ReceiptListScreen> {
 
   // Set default dates
   DateTime? _startDate =
-  DateTime(DateTime.now().year, 1, 1); // Start date: first day of the year
+      DateTime(DateTime.now().year, 1, 1); // Start date: first day of the year
   DateTime? _endDate = DateTime.now(); // End date: today
 
   String currentSortField = 'date';
@@ -175,7 +175,7 @@ class ReceiptListScreenState extends State<ReceiptListScreen> {
                 padding: const EdgeInsets.all(8.0),
                 child: Text('Sort Options',
                     style:
-                    TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                        TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
               ),
               Expanded(
                 child: CupertinoPicker(
@@ -323,53 +323,53 @@ class ReceiptListScreenState extends State<ReceiptListScreen> {
       ),
       child: imageUrl.isNotEmpty
           ? ClipRRect(
-        borderRadius: BorderRadius.circular(4),
-        child: imageUrl.startsWith('http') // Check if it's a network URL
-            ? Image.network(
-          imageUrl,
-          fit: BoxFit.cover,
-          loadingBuilder: (context, child, loadingProgress) {
-            if (loadingProgress == null) return child;
-            return Center(
-              child: CircularProgressIndicator(
-                value: loadingProgress.expectedTotalBytes != null
-                    ? loadingProgress.cumulativeBytesLoaded /
-                    (loadingProgress.expectedTotalBytes ?? 1)
-                    : null,
-              ),
-            );
-          },
-          errorBuilder: (context, error, stackTrace) {
-            return Center(
-              child: Text(
-                'Image not found',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 10),
-              ),
-            );
-          },
-        )
-            : Image.file(
-          File(imageUrl), // Use Image.file for local files
-          fit: BoxFit.cover,
-          errorBuilder: (context, error, stackTrace) {
-            return Center(
-              child: Text(
-                'Image not found',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 10),
-              ),
-            );
-          },
-        ),
-      )
+              borderRadius: BorderRadius.circular(4),
+              child: imageUrl.startsWith('http') // Check if it's a network URL
+                  ? Image.network(
+                      imageUrl,
+                      fit: BoxFit.cover,
+                      loadingBuilder: (context, child, loadingProgress) {
+                        if (loadingProgress == null) return child;
+                        return Center(
+                          child: CircularProgressIndicator(
+                            value: loadingProgress.expectedTotalBytes != null
+                                ? loadingProgress.cumulativeBytesLoaded /
+                                    (loadingProgress.expectedTotalBytes ?? 1)
+                                : null,
+                          ),
+                        );
+                      },
+                      errorBuilder: (context, error, stackTrace) {
+                        return Center(
+                          child: Text(
+                            'Image not found',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(fontSize: 10),
+                          ),
+                        );
+                      },
+                    )
+                  : Image.file(
+                      File(imageUrl), // Use Image.file for local files
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Center(
+                          child: Text(
+                            'Image not found',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(fontSize: 10),
+                          ),
+                        );
+                      },
+                    ),
+            )
           : Center(
-        child: Text(
-          'No image',
-          textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 10),
-        ),
-      ),
+              child: Text(
+                'No image',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 10),
+              ),
+            ),
     );
   }
 
@@ -441,7 +441,7 @@ class ReceiptListScreenState extends State<ReceiptListScreen> {
     String receiptId = receiptData['id'] ?? '';
 
     var category = userCategories.firstWhere(
-          (cat) => cat['id'] == categoryId,
+      (cat) => cat['id'] == categoryId,
       orElse: () => {'name': 'Uncategorized', 'icon': '❓'},
     );
 
@@ -452,7 +452,7 @@ class ReceiptListScreenState extends State<ReceiptListScreen> {
           MaterialPageRoute(
             builder: (context) => AddOrUpdateReceiptScreen(
               existingReceipt: receiptData, // Pass the receipt data
-              receiptId: receiptId,         // Pass the receipt ID
+              receiptId: receiptId, // Pass the receipt ID
             ),
           ),
         ).then((_) {
@@ -466,13 +466,11 @@ class ReceiptListScreenState extends State<ReceiptListScreen> {
         date,
         category['name'],
         category['icon'],
-        currency,  // Pass `currency` here
-        amount,    // Pass `amount` here
+        currency, // Pass `currency` here
+        amount, // Pass `amount` here
       ),
     );
   }
-
-
 
   StreamBuilder<DocumentSnapshot> _buildReceiptList() {
     return StreamBuilder<DocumentSnapshot>(
@@ -558,48 +556,48 @@ class ReceiptListScreenState extends State<ReceiptListScreen> {
       body: loggedInUser == null
           ? _buildLoadingIndicator()
           : Column(
-        children: [
-          SizedBox(
-            height: 20,
-          ),
-          // Buttons (actions) above the scrolling list
-          Padding(
-            padding: EdgeInsets.symmetric(
-                horizontal: 12), // Apply padding to the Row
-            child: Row(
-              mainAxisSize:
-              MainAxisSize.min, // Minimize the size of the Row
               children: [
-                DateRangeContainer(
-                  startDate: _startDate!,
-                  endDate: _endDate!,
-                  onCalendarPressed:
-                  _showCalendarFilterDialog, // Pass the calendar callback
+                SizedBox(
+                  height: 20,
                 ),
-                SizedBox(width: 8),
-                IconButton(
-                  icon: Icon(Icons.filter_alt_outlined,
-                      color: Colors.lightBlue), // Filter icon
-                  onPressed:
-                  _showCategoryFilterDialog, // Show category filter dialog
+                // Buttons (actions) above the scrolling list
+                Padding(
+                  padding: EdgeInsets.symmetric(
+                      horizontal: 12), // Apply padding to the Row
+                  child: Row(
+                    mainAxisSize:
+                        MainAxisSize.min, // Minimize the size of the Row
+                    children: [
+                      DateRangeContainer(
+                        startDate: _startDate!,
+                        endDate: _endDate!,
+                        onCalendarPressed:
+                            _showCalendarFilterDialog, // Pass the calendar callback
+                      ),
+                      SizedBox(width: 8),
+                      IconButton(
+                        icon: Icon(Icons.filter_alt_outlined,
+                            color: Colors.lightBlue), // Filter icon
+                        onPressed:
+                            _showCategoryFilterDialog, // Show category filter dialog
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.sort,
+                            color: Colors.lightBlue), // Sort button icon
+                        onPressed: () {
+                          _showSortBottomSheet(
+                              context); // Trigger the rolling picker when the button is pressed
+                        },
+                      ),
+                    ],
+                  ),
                 ),
-                IconButton(
-                  icon: Icon(Icons.sort,
-                      color: Colors.lightBlue), // Sort button icon
-                  onPressed: () {
-                    _showSortBottomSheet(
-                        context); // Trigger the rolling picker when the button is pressed
-                  },
+                Expanded(
+                  child:
+                      _buildReceiptList(), // The receipt list that can scroll
                 ),
               ],
             ),
-          ),
-          Expanded(
-            child:
-            _buildReceiptList(), // The receipt list that can scroll
-          ),
-        ],
-      ),
       floatingActionButton: _buildFloatingActionButtons(),
     );
   }

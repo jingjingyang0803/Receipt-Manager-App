@@ -5,9 +5,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:receipt_manager/screens/old/scan_screen.dart';
 //import 'package:receipt_manager/screens/dashboard_screen.dart';
 import 'package:receipt_manager/screens/receipt_list_screen.dart';
-import 'package:receipt_manager/screens/scan_screen.dart';
 
 import '../components//rounded_button.dart';
 import '../components/add_category_widget.dart';

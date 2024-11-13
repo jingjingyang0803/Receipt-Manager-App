@@ -10,8 +10,8 @@ import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:receipt_manager/components/rounded_button.dart';
 
-import '../logger.dart';
-import '../services/auth_service.dart';
+import '../../logger.dart';
+import '../../services/auth_service.dart';
 
 class ScanScreen extends StatefulWidget {
   static const String id = 'scan_screen';
