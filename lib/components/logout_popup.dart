@@ -1,6 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:receipt_manager/constants/app_colors.dart';
 
+import '../screens/welcome_page.dart';
 import 'custom_button.dart';
 
 class LogoutPopup extends StatelessWidget {
@@ -73,7 +75,10 @@ class LogoutPopup extends StatelessWidget {
                     text: "Yes",
                     backgroundColor: purple100,
                     textColor: light80,
-                    onPressed: () {},
+                    onPressed: () {
+                      FirebaseAuth.instance.signOut();
+                      Navigator.pushReplacementNamed(context, WelcomePage.id);
+                    },
                   ),
                 ),
               ),
