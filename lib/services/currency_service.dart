@@ -7,6 +7,8 @@ import '../logger.dart';
 
 class CurrencyService {
   Map<String, double>? conversionRates;
+  DateTime? _lastFetched; // To track when rates were last fetched
+  static const Duration _cacheDuration = Duration(hours: 1); // Cache for 1 hour
 
   // Method to get the API key from Firebase Remote Config
   static Future<String> getApiKey() async {
@@ -26,12 +28,10 @@ class CurrencyService {
       await remoteConfig.fetchAndActivate();
     } catch (e) {
       logger.e('Failed to fetch remote config: $e');
-      // Optionally return a default or error message if needed
     }
 
     // Retrieve the API key from the Remote Config
     String apiKey = remoteConfig.getString('API_KEY');
-    // Ensure we have a valid API key (fallback to default if not set)
     if (apiKey == 'default_api_key' || apiKey.isEmpty) {
       throw Exception('API key is not set in Remote Config');
     }
@@ -60,8 +60,14 @@ class CurrencyService {
 
   // Fetch conversion rates using the API key from Remote Config
   Future<void> fetchConversionRates() async {
-    final String apiKey =
-        await getApiKey(); // Get the API key from Remote Config
+    if (conversionRates != null &&
+        _lastFetched != null &&
+        DateTime.now().difference(_lastFetched!) < _cacheDuration) {
+      logger.i('Using cached conversion rates.');
+      return;
+    }
+
+    final String apiKey = await getApiKey();
     const String apiUrl = 'https://openexchangerates.org/api/latest.json';
 
     try {
@@ -71,7 +77,7 @@ class CurrencyService {
         final Map<String, dynamic> data = json.decode(response.body);
         final Map<String, dynamic> rates = data['rates'];
 
-        // Convert the rates to a Map<String, double>
+        // Convert rates to a Map<String, double>
         conversionRates = rates.map((key, value) {
           if (value is int) {
             return MapEntry(key, value.toDouble());
@@ -81,12 +87,15 @@ class CurrencyService {
             throw Exception("Unexpected type for rate value");
           }
         });
+
+        _lastFetched = DateTime.now();
+        logger.i('Fetched and cached new conversion rates.');
       } else {
         throw Exception('Failed to load conversion rates');
       }
     } catch (e) {
       logger.e('Error fetching conversion rates: $e');
-      conversionRates = {};
+      conversionRates = {}; // Clear cached rates on error
     }
   }
 
@@ -94,9 +103,7 @@ class CurrencyService {
   Future<double> convertToBaseCurrency(
       double amount, String currency, String selectedBaseCurrency) async {
     // Ensure conversion rates are fetched
-    if (conversionRates == null || conversionRates!.isEmpty) {
-      await fetchConversionRates();
-    }
+    await fetchConversionRates();
 
     // If the amount is already in the base currency, return it as is
     if (currency == selectedBaseCurrency) {
