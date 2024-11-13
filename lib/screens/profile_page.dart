@@ -208,8 +208,10 @@ class ProfilePageState extends State<ProfilePage> {
                         iconBackgroundColor: red20,
                         iconColor: red100,
                         onTap: () {
-                          showDialog(
+                          showModalBottomSheet(
                             context: context,
+                            backgroundColor: Colors.transparent,
+                            isScrollControlled: true,
                             builder: (BuildContext context) {
                               return LogoutPopup(
                                 onConfirm: () {
