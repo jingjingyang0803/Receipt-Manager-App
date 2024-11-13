@@ -1,12 +1,12 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:receipt_manager/auth_manager.dart';
+import 'package:receipt_manager/providers/auth_provider.dart';
 import 'package:receipt_manager/routes.dart';
 import 'package:receipt_manager/screens/base_page.dart';
 import 'package:receipt_manager/screens/welcome_page.dart';
 
-import 'firebase_options.dart'; // Updated import
+import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,14 +23,14 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => AuthManager()), // Updated here
+        ChangeNotifierProvider(create: (_) => AuthProvider()), // Updated here
       ],
-      child: Consumer<AuthManager>(
+      child: Consumer<AuthProvider>(
         // Updated here
-        builder: (context, authManager, child) {
+        builder: (context, authProvider, child) {
           return MaterialApp(
             initialRoute:
-                authManager.isAuthenticated ? BasePage.id : WelcomePage.id,
+                authProvider.isAuthenticated ? BasePage.id : WelcomePage.id,
             routes: appRoutes,
           );
         },
