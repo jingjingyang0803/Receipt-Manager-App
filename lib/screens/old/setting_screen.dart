@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:receipt_manager/screens/old/login_screen.dart';
 
-import '../components/custom_drawer.dart';
-import '../components/rounded_button.dart'; // Import the RoundedButton widget
-import '../services/user_service.dart';
+import '../../components/custom_drawer.dart';
+import '../../components/rounded_button.dart'; // Import the RoundedButton widget
+import '../../services/user_service.dart';
 
 class SettingScreen extends StatefulWidget {
   static const String id = 'setting_screen';

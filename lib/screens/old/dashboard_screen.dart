@@ -2,11 +2,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import '../components/custom_drawer.dart';
-import '../logger.dart';
-import '../services/auth_service.dart';
-import '../services/receipt_service.dart';
-import '../services/user_service.dart';
+import '../../components/custom_drawer.dart';
+import '../../logger.dart';
+import '../../services/auth_service.dart';
+import '../../services/receipt_service.dart';
+import '../../services/user_service.dart';
 import 'scan_screen.dart';
 
 class DashboardScreen extends StatefulWidget {

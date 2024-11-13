@@ -12,7 +12,7 @@ class ProfilePage extends StatefulWidget {
 
 class ProfilePageState extends State<ProfilePage> {
   final _picker = ImagePicker();
-  final String _useremail = "jingjing.yang@tuni.fi";
+  final String _userEmail = "jingjing.yang@tuni.fi";
   String _userName = "Iriana Saliha";
   XFile? _profileImage;
 
@@ -68,32 +68,36 @@ class ProfilePageState extends State<ProfilePage> {
             Row(
               children: [
                 // Profile Picture with Border
+                // Profile Picture with Border
                 Stack(
                   alignment: Alignment.bottomRight,
                   children: [
-                    CircleAvatar(
-                      radius: 45,
-                      backgroundImage: _profileImage == null
-                          ? AssetImage(
-                              'assets/images/plan.png') // Default image path
-                          : AssetImage('assets/images/control.png'),
-                      backgroundColor: Colors.transparent,
-                    ),
-                    Positioned(
-                      bottom: 0,
-                      right: 0,
-                      child: GestureDetector(
-                        onTap: _pickImage,
-                        child: Container(
-                          padding: const EdgeInsets.all(6),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                                color: Colors.grey.shade300, width: 2),
+                    GestureDetector(
+                      onTap:
+                          _pickImage, // Add the image picker function if needed
+                      child: Container(
+                        width: 80,
+                        height: 80,
+                        padding: const EdgeInsets.all(3), // Border thickness
+                        decoration: BoxDecoration(
+                          color: Colors
+                              .transparent, // Border color, transparent if needed
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: Colors
+                                .purple, // Set your preferred border color
+                            width: 2.0, // Border width
                           ),
-                          child: const Icon(Icons.edit,
-                              color: Colors.grey, size: 16),
+                        ),
+                        child: CircleAvatar(
+                          backgroundColor: Colors.transparent,
+                          backgroundImage: _profileImage != null
+                              ? AssetImage('assets/images/plan.png')
+                              : null,
+                          radius: 45.0,
+                          child: _profileImage == null
+                              ? Icon(Icons.person, size: 50, color: Colors.grey)
+                              : null,
                         ),
                       ),
                     ),
@@ -109,50 +113,105 @@ class ProfilePageState extends State<ProfilePage> {
                       style:
                           TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     ),
-                    Row(
-                      children: [
-                        Text(
-                          _useremail,
-                          style: TextStyle(color: Colors.grey, fontSize: 16),
-                        ),
-                        const SizedBox(width: 8),
-                        GestureDetector(
-                          onTap: _editUserName,
-                          child: Icon(Icons.edit,
-                              color: Colors.grey.shade600, size: 16),
-                        ),
-                      ],
+                    Text(
+                      _userEmail,
+                      style: TextStyle(color: Colors.grey, fontSize: 16),
                     ),
                   ],
+                ),
+                const SizedBox(width: 66),
+                GestureDetector(
+                  onTap: _editUserName,
+                  child: Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade200, // Background color
+                      borderRadius: BorderRadius.circular(8), // Rounded corners
+                      border: Border.all(
+                        color: Colors.grey.shade400, // Border color
+                        width: 1, // Border width
+                      ),
+                    ),
+                    child: Icon(
+                      Icons.edit_outlined,
+                      color: Colors.grey.shade600,
+                      size: 30, // Icon size
+                    ),
+                  ),
                 ),
               ],
             ),
             const SizedBox(height: 30),
-
-            // Profile Menu Items
-            ProfileMenuItem(
-              icon: Icons.account_balance_wallet_outlined,
-              text: "My Wallet",
-              iconBackgroundColor: Colors.purple.shade100,
-              iconColor: Colors.purple,
-            ),
-            ProfileMenuItem(
-              icon: Icons.settings,
-              text: "Settings",
-              iconBackgroundColor: Colors.purple.shade200,
-              iconColor: Colors.deepPurple,
-            ),
-            ProfileMenuItem(
-              icon: Icons.download,
-              text: "Export Data",
-              iconBackgroundColor: Colors.purple.shade100,
-              iconColor: Colors.purple,
-            ),
-            ProfileMenuItem(
-              icon: Icons.logout,
-              text: "Logout",
-              iconBackgroundColor: Colors.red.shade100,
-              iconColor: Colors.red,
+            Expanded(
+              child: SingleChildScrollView(
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.grey
+                        .shade200, // Background color for the entire container
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Column(
+                    children: [
+                      ProfileMenuItem(
+                        icon: Icons.category,
+                        text: "Manage categories",
+                        iconBackgroundColor: Colors.grey.shade300,
+                        iconColor: Colors.black,
+                      ),
+                      Divider(thickness: 1, color: Colors.grey.shade300),
+                      ProfileMenuItem(
+                        icon: Icons.picture_as_pdf,
+                        text: "Export to PDF",
+                        iconBackgroundColor: Colors.grey.shade300,
+                        iconColor: Colors.black,
+                      ),
+                      Divider(thickness: 1, color: Colors.grey.shade300),
+                      ProfileMenuItem(
+                        icon: Icons.attach_money,
+                        text: "Choose currency",
+                        iconBackgroundColor: Colors.grey.shade300,
+                        iconColor: Colors.black,
+                      ),
+                      Divider(thickness: 1, color: Colors.grey.shade300),
+                      ProfileMenuItem(
+                        icon: Icons.language,
+                        text: "Choose language",
+                        iconBackgroundColor: Colors.grey.shade300,
+                        iconColor: Colors.black,
+                      ),
+                      Divider(thickness: 1, color: Colors.grey.shade300),
+                      ProfileMenuItem(
+                        icon: Icons.help_outline,
+                        text: "Frequently asked questions",
+                        iconBackgroundColor: Colors.grey.shade300,
+                        iconColor: Colors.black,
+                      ),
+                      Divider(thickness: 1, color: Colors.grey.shade300),
+                      ProfileMenuItem(
+                        icon: Icons.settings,
+                        text: "Settings",
+                        iconBackgroundColor: Colors.purple.shade200,
+                        iconColor: Colors.deepPurple,
+                      ),
+                      Divider(thickness: 1, color: Colors.grey.shade300),
+                      ProfileMenuItem(
+                        icon: Icons.download,
+                        text: "Export Data",
+                        iconBackgroundColor: Colors.purple.shade100,
+                        iconColor: Colors.purple,
+                      ),
+                      Divider(thickness: 1, color: Colors.grey.shade300),
+                      ProfileMenuItem(
+                        icon: Icons.logout,
+                        text: "Logout",
+                        iconBackgroundColor: Colors.red.shade100,
+                        iconColor: Colors.red,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             ),
           ],
         ),
@@ -178,24 +237,12 @@ class ProfileMenuItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 8.0),
-      padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 10.0),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12.0),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.2),
-            blurRadius: 6,
-            offset: Offset(0, 3),
-          ),
-        ],
-      ),
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(10),
+            padding: const EdgeInsets.all(8), // Adjust padding for icon size
             decoration: BoxDecoration(
               color: iconBackgroundColor,
               borderRadius: BorderRadius.circular(8.0),
@@ -203,7 +250,10 @@ class ProfileMenuItem extends StatelessWidget {
             child: Icon(icon, color: iconColor),
           ),
           const SizedBox(width: 16),
-          Text(text, style: TextStyle(fontSize: 16)),
+          Text(
+            text,
+            style: TextStyle(fontSize: 16, color: Colors.black87),
+          ),
         ],
       ),
     );

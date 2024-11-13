@@ -3,12 +3,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import '../components/custom_drawer.dart';
-import '../logger.dart';
-import '../services/auth_service.dart';
-import '../services/budget_service.dart';
-import '../services/category_service.dart';
-import '../services/receipt_service.dart';
+import '../../components/custom_drawer.dart';
+import '../../logger.dart';
+import '../../services/auth_service.dart';
+import '../../services/budget_service.dart';
+import '../../services/category_service.dart';
+import '../../services/receipt_service.dart';
 
 class SummaryScreen extends StatefulWidget {
   static const String id = 'summary_screen';

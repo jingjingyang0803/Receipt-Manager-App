@@ -3,15 +3,15 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:receipt_manager/screens/dashboard_screen.dart';
-import 'package:receipt_manager/screens/expense_chart_screen.dart';
-import 'package:receipt_manager/screens/profile_screen.dart';
+import 'package:receipt_manager/screens/old/dashboard_screen.dart';
+import 'package:receipt_manager/screens/old/expense_chart_screen.dart';
+import 'package:receipt_manager/screens/old/profile_screen.dart';
 
 import '../screens/budget_screen.dart';
 import '../screens/category_screen.dart';
+import '../screens/old/setting_screen.dart';
+import '../screens/old/summary_screen.dart';
 import '../screens/receipt_list_screen.dart';
-import '../screens/setting_screen.dart';
-import '../screens/summary_screen.dart';
 import '../screens/welcome_page.dart';
 import '../services/user_service.dart';
 
