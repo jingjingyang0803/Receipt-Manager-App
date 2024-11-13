@@ -1,4 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
+
+import 'currency_service.dart';
 
 final _firestore = FirebaseFirestore.instance;
 
@@ -135,5 +138,144 @@ class ReceiptService {
     }
   }
 
-// Other methods remain the same, except now they use 'email' as a parameter.
+// Group receipts by category with date filtering
+  Future<Map<String, double>> groupReceiptsByCategory(
+    String email,
+    String selectedBaseCurrency,
+    DateTime startDate,
+    DateTime endDate,
+  ) async {
+    DocumentReference userDocRef = _firestore.collection('receipts').doc(email);
+
+    DocumentSnapshot userDoc = await userDocRef.get();
+
+    if (!userDoc.exists) {
+      throw Exception('User document not found');
+    }
+
+    List<dynamic> receiptList = userDoc['receiptlist'] ?? [];
+
+    Map<String, double> groupedExpenses = {};
+    CurrencyService currencyService = CurrencyService();
+
+    for (var receipt in receiptList) {
+      Map<String, dynamic> receiptData = receipt as Map<String, dynamic>;
+      String category = receiptData['categoryId'] ?? 'Uncategorized';
+      String currency = receiptData['currency'];
+      double amount = (receiptData['amount'] as num).toDouble();
+      DateTime receiptDate = (receiptData['date'] as Timestamp).toDate();
+
+      if (receiptDate.isBefore(startDate) || receiptDate.isAfter(endDate)) {
+        continue; // Skip receipts outside the date range
+      }
+
+      double convertedAmount = await currencyService.convertToBaseCurrency(
+          amount, currency, selectedBaseCurrency);
+
+      groupedExpenses[category] =
+          (groupedExpenses[category] ?? 0) + convertedAmount;
+    }
+
+    return groupedExpenses;
+  }
+
+  // Helper method to calculate the week number
+  int getWeekNumber(DateTime date) {
+    final firstDayOfYear = DateTime(date.year, 1, 1);
+    int daysSinceFirstDay = date.difference(firstDayOfYear).inDays + 1;
+    return (daysSinceFirstDay / 7).ceil();
+  }
+
+  // Group receipts by day, week, month, or year
+  Future<Map<String, double>> groupReceiptsByInterval(
+    String email,
+    TimeInterval interval,
+    String selectedBaseCurrency,
+    DateTime startDate,
+    DateTime endDate,
+  ) async {
+    DocumentReference userDocRef = _firestore.collection('receipts').doc(email);
+
+    DocumentSnapshot userDoc = await userDocRef.get();
+
+    if (!userDoc.exists) {
+      throw Exception('User document not found');
+    }
+
+    List<dynamic> receiptList = userDoc['receiptlist'] ?? [];
+    Map<String, double> groupedExpenses = {};
+    CurrencyService currencyService = CurrencyService();
+
+    for (var receipt in receiptList) {
+      Map<String, dynamic> receiptData = receipt as Map<String, dynamic>;
+      String currency = receiptData['currency'];
+      double amount = (receiptData['amount'] as num).toDouble();
+      DateTime receiptDate = (receiptData['date'] as Timestamp).toDate();
+
+      if (receiptDate.isBefore(startDate) || receiptDate.isAfter(endDate)) {
+        continue; // Skip receipts outside the date range
+      }
+
+      String groupKey;
+      switch (interval) {
+        case TimeInterval.day:
+          groupKey = DateFormat('yyyy-MM-dd').format(receiptDate);
+          break;
+        case TimeInterval.week:
+          int weekNumber = getWeekNumber(receiptDate);
+          groupKey = '${receiptDate.year}-W$weekNumber';
+          break;
+        case TimeInterval.month:
+          groupKey = DateFormat('yyyy-MM').format(receiptDate);
+          break;
+        case TimeInterval.year:
+          groupKey = DateFormat('yyyy').format(receiptDate);
+          break;
+      }
+
+      double convertedAmount = await currencyService.convertToBaseCurrency(
+          amount, currency, selectedBaseCurrency);
+
+      groupedExpenses[groupKey] =
+          (groupedExpenses[groupKey] ?? 0) + convertedAmount;
+    }
+
+    return groupedExpenses;
+  }
+
+  // Method to get the oldest and newest receipt dates
+  Future<Map<String, DateTime>> getOldestAndNewestDates(String email) async {
+    DocumentReference userDocRef = _firestore.collection('receipts').doc(email);
+
+    DocumentSnapshot userDoc = await userDocRef.get();
+
+    if (!userDoc.exists) {
+      throw Exception('User document not found');
+    }
+
+    List<dynamic> receiptList = userDoc['receiptlist'] ?? [];
+
+    if (receiptList.isEmpty) {
+      throw Exception('No receipts found');
+    }
+
+    DateTime? oldestDate;
+    DateTime? newestDate;
+
+    for (var receipt in receiptList) {
+      DateTime receiptDate = (receipt['date'] as Timestamp).toDate();
+
+      if (oldestDate == null || receiptDate.isBefore(oldestDate)) {
+        oldestDate = receiptDate;
+      }
+      if (newestDate == null || receiptDate.isAfter(newestDate)) {
+        newestDate = receiptDate;
+      }
+    }
+
+    return {
+      'oldest': oldestDate!,
+      'newest': newestDate!,
+    };
+  }
 }
