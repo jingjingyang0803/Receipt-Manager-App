@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../constants/app_colors.dart';
+
 class ProfilePage extends StatefulWidget {
   static const String id = 'profile_page';
 
@@ -58,7 +60,7 @@ class ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey.shade100,
+      backgroundColor: light90,
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 40.0),
         child: Column(
@@ -84,8 +86,7 @@ class ProfilePageState extends State<ProfilePage> {
                               .transparent, // Border color, transparent if needed
                           shape: BoxShape.circle,
                           border: Border.all(
-                            color: Colors
-                                .purple, // Set your preferred border color
+                            color: purple100, // Set your preferred border color
                             width: 2.0, // Border width
                           ),
                         ),
@@ -110,12 +111,14 @@ class ProfilePageState extends State<ProfilePage> {
                   children: [
                     Text(
                       _userName,
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                          color: dark75,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold),
                     ),
                     Text(
                       _userEmail,
-                      style: TextStyle(color: Colors.grey, fontSize: 16),
+                      style: TextStyle(color: light20, fontSize: 16),
                     ),
                   ],
                 ),
@@ -126,16 +129,16 @@ class ProfilePageState extends State<ProfilePage> {
                     width: 40,
                     height: 40,
                     decoration: BoxDecoration(
-                      color: Colors.grey.shade200, // Background color
+                      color: light80, // Background color
                       borderRadius: BorderRadius.circular(8), // Rounded corners
                       border: Border.all(
-                        color: Colors.grey.shade400, // Border color
+                        color: purple10, // Border color
                         width: 1, // Border width
                       ),
                     ),
                     child: Icon(
                       Icons.edit_outlined,
-                      color: Colors.grey.shade600,
+                      color: dark50,
                       size: 30, // Icon size
                     ),
                   ),
@@ -147,66 +150,58 @@ class ProfilePageState extends State<ProfilePage> {
               child: SingleChildScrollView(
                 child: Container(
                   decoration: BoxDecoration(
-                    color: Colors.grey
-                        .shade200, // Background color for the entire container
-                    borderRadius: BorderRadius.circular(16),
+                    color: light80, // Background color for the entire container
+                    borderRadius: BorderRadius.circular(20),
                   ),
                   child: Column(
                     children: [
                       ProfileMenuItem(
-                        icon: Icons.category,
+                        icon: Icons.category_outlined,
                         text: "Manage categories",
-                        iconBackgroundColor: Colors.grey.shade300,
-                        iconColor: Colors.black,
+                        iconBackgroundColor: purple20,
+                        iconColor: purple100,
                       ),
-                      Divider(thickness: 1, color: Colors.grey.shade300),
-                      ProfileMenuItem(
-                        icon: Icons.picture_as_pdf,
-                        text: "Export to PDF",
-                        iconBackgroundColor: Colors.grey.shade300,
-                        iconColor: Colors.black,
-                      ),
-                      Divider(thickness: 1, color: Colors.grey.shade300),
+                      Divider(thickness: 1, color: light90),
                       ProfileMenuItem(
                         icon: Icons.attach_money,
                         text: "Choose currency",
-                        iconBackgroundColor: Colors.grey.shade300,
-                        iconColor: Colors.black,
+                        iconBackgroundColor: purple20,
+                        iconColor: purple100,
                       ),
-                      Divider(thickness: 1, color: Colors.grey.shade300),
+                      // Divider(thickness: 1, color: light90),
+                      // ProfileMenuItem(
+                      //   icon: Icons.language,
+                      //   text: "Choose language",
+                      //   iconBackgroundColor: purple20,
+                      //   iconColor: purple100,
+                      // ),
+                      // Divider(thickness: 1, color: light90),
+                      // ProfileMenuItem(
+                      //   icon: Icons.help_outline,
+                      //   text: "Frequently asked questions",
+                      //   iconBackgroundColor: purple20,
+                      //   iconColor: purple100,
+                      // ),
+                      Divider(thickness: 1, color: light90),
                       ProfileMenuItem(
-                        icon: Icons.language,
-                        text: "Choose language",
-                        iconBackgroundColor: Colors.grey.shade300,
-                        iconColor: Colors.black,
-                      ),
-                      Divider(thickness: 1, color: Colors.grey.shade300),
-                      ProfileMenuItem(
-                        icon: Icons.help_outline,
-                        text: "Frequently asked questions",
-                        iconBackgroundColor: Colors.grey.shade300,
-                        iconColor: Colors.black,
-                      ),
-                      Divider(thickness: 1, color: Colors.grey.shade300),
-                      ProfileMenuItem(
-                        icon: Icons.settings,
+                        icon: Icons.settings_outlined,
                         text: "Settings",
-                        iconBackgroundColor: Colors.purple.shade200,
-                        iconColor: Colors.deepPurple,
+                        iconBackgroundColor: purple20,
+                        iconColor: purple100,
                       ),
-                      Divider(thickness: 1, color: Colors.grey.shade300),
+                      Divider(thickness: 1, color: light90),
                       ProfileMenuItem(
-                        icon: Icons.download,
+                        icon: Icons.file_download_outlined,
                         text: "Export Data",
-                        iconBackgroundColor: Colors.purple.shade100,
-                        iconColor: Colors.purple,
+                        iconBackgroundColor: purple20,
+                        iconColor: purple100,
                       ),
-                      Divider(thickness: 1, color: Colors.grey.shade300),
+                      Divider(thickness: 1, color: light90),
                       ProfileMenuItem(
                         icon: Icons.logout,
                         text: "Logout",
-                        iconBackgroundColor: Colors.red.shade100,
-                        iconColor: Colors.red,
+                        iconBackgroundColor: red20,
+                        iconColor: red100,
                       ),
                     ],
                   ),
