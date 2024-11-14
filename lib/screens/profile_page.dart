@@ -45,7 +45,7 @@ class ProfilePageState extends State<ProfilePage> {
 
     // Fetch the user profile when the page is initialized
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      userProvider.fetchUserProfile(context);
+      userProvider.fetchUserProfile();
     });
   }
 
@@ -64,7 +64,7 @@ class ProfilePageState extends State<ProfilePage> {
 
       // Update profile image in provider
       userProvider = Provider.of<UserProvider>(context, listen: false);
-      userProvider.updateProfileImage(context, image.path);
+      userProvider.updateProfileImage(image.path);
     }
   }
 
@@ -74,7 +74,7 @@ class ProfilePageState extends State<ProfilePage> {
 
     // Proceed with the update if the new name is different from the current name, even if empty
     if (newName != userProvider.userName) {
-      await userProvider.updateUserProfile(context, userName: newName);
+      await userProvider.updateUserProfile(userName: newName);
     }
   }
 
@@ -94,7 +94,7 @@ class ProfilePageState extends State<ProfilePage> {
             // Proceed with the update if the new name is different from the current name, even if empty
             if (newCurrencyCode != userProvider.currencyCode) {
               logger.i("Updating currency to $newCurrencyCode");
-              await userProvider.updateUserProfile(context,
+              await userProvider.updateUserProfile(
                   currencyCode: newCurrencyCode);
             }
           },

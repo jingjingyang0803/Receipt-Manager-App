@@ -2,17 +2,27 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 import '../services/user_service.dart';
-import 'authentication_provider.dart'; // Ensure this import is correct based on your structure
+import 'authentication_provider.dart';
 
 class UserProvider extends ChangeNotifier {
   final UserService _userService = UserService();
+  AuthenticationProvider? _authProvider; // Reference to AuthenticationProvider
+
   DocumentSnapshot<Map<String, dynamic>>? _userProfile;
   StreamSubscription<DocumentSnapshot<Map<String, dynamic>>>? _profileStream;
 
   DocumentSnapshot<Map<String, dynamic>>? get userProfile => _userProfile;
+
+  // Inject AuthenticationProvider through a setter
+  set authProvider(AuthenticationProvider authProvider) {
+    _authProvider = authProvider;
+    notifyListeners(); // Notify listeners in case of authentication changes
+  }
+
+  // Helper to get user email from AuthenticationProvider
+  String? get _userEmail => _authProvider?.user?.email;
 
   // Getter for userName
   String? get userName => _userProfile?.data()?['userName'];
@@ -22,18 +32,13 @@ class UserProvider extends ChangeNotifier {
   String? get currencyCode => _userProfile?.data()?['currencyCode'];
 
   // Fetch user profile data and listen for updates
-  void fetchUserProfile(BuildContext context) {
-    final authProvider =
-        Provider.of<AuthenticationProvider>(context, listen: false);
-    final email = authProvider.user?.email;
-
-    if (email != null) {
-      // Cancel any existing stream before starting a new one
-      _profileStream?.cancel();
-
-      _profileStream = _userService.fetchUserProfile(email).listen((snapshot) {
-        if (authProvider.isAuthenticated) {
-          // Ensure user is still logged in
+  void fetchUserProfile() {
+    if (_userEmail != null) {
+      _profileStream?.cancel(); // Cancel any existing stream
+      _profileStream =
+          _userService.fetchUserProfile(_userEmail!).listen((snapshot) {
+        if (_authProvider?.isAuthenticated ?? false) {
+          // Ensure user is logged in
           _userProfile = snapshot;
           notifyListeners();
         }
@@ -41,26 +46,23 @@ class UserProvider extends ChangeNotifier {
     }
   }
 
-  // Add a method to cancel the profile stream and clear user data
+  // Clear user profile data and cancel the stream
   void clearUserProfile() {
-    _profileStream?.cancel(); // Cancel any active Firestore listeners
+    _profileStream?.cancel();
     _profileStream = null;
     _userProfile = null;
     notifyListeners();
   }
 
   // Add a new user profile
-  Future<void> addUserProfile(
-    BuildContext context, {
+  Future<void> addUserProfile({
     required String userName,
     String profileImagePath = '',
     String currencyCode = '',
   }) async {
-    final email =
-        Provider.of<AuthenticationProvider>(context, listen: false).user?.email;
-    if (email != null) {
+    if (_userEmail != null) {
       await _userService.addUserProfile(
-        email: email,
+        email: _userEmail!,
         userName: userName,
         profileImagePath: profileImagePath,
         currencyCode: currencyCode,
@@ -70,20 +72,15 @@ class UserProvider extends ChangeNotifier {
   }
 
   // Update user profile data
-  Future<void> updateUserProfile(
-    BuildContext context, {
+  Future<void> updateUserProfile({
     String? userName,
     String? profileImagePath,
     String? currencyCode,
   }) async {
-    final email =
-        Provider.of<AuthenticationProvider>(context, listen: false).user?.email;
-    if (email != null) {
-      // Provide default values for optional fields if they are null
+    if (_userEmail != null) {
       await _userService.updateUserProfile(
-        email: email,
-        userName:
-            userName ?? this.userName ?? '', // Default to '' if both are null
+        email: _userEmail!,
+        userName: userName ?? this.userName ?? '',
         profileImagePath: profileImagePath ?? this.profileImagePath ?? '',
         currencyCode: currencyCode ?? this.currencyCode ?? '',
       );
@@ -92,32 +89,25 @@ class UserProvider extends ChangeNotifier {
   }
 
   // Update profile image only
-  Future<void> updateProfileImage(
-      BuildContext context, String profileImagePath) async {
-    final email =
-        Provider.of<AuthenticationProvider>(context, listen: false).user?.email;
-    if (email != null) {
-      await _userService.updateProfileImage(email, profileImagePath);
+  Future<void> updateProfileImage(String profileImagePath) async {
+    if (_userEmail != null) {
+      await _userService.updateProfileImage(_userEmail!, profileImagePath);
       notifyListeners();
     }
   }
 
   // Clear all user history
-  Future<void> clearAllHistory(BuildContext context) async {
-    final email =
-        Provider.of<AuthenticationProvider>(context, listen: false).user?.email;
-    if (email != null) {
-      await _userService.clearAllHistory(email);
+  Future<void> clearAllHistory() async {
+    if (_userEmail != null) {
+      await _userService.clearAllHistory(_userEmail!);
       notifyListeners();
     }
   }
 
   // Delete user profile and associated data
-  Future<void> deleteUser(BuildContext context) async {
-    final email =
-        Provider.of<AuthenticationProvider>(context, listen: false).user?.email;
-    if (email != null) {
-      await _userService.deleteUser(email);
+  Future<void> deleteUser() async {
+    if (_userEmail != null) {
+      await _userService.deleteUser(_userEmail!);
       _userProfile = null;
       notifyListeners();
     }

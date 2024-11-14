@@ -31,7 +31,7 @@ class CategoryPageState extends State<CategoryPage> {
 
     final userEmail = authProvider.user?.email;
     if (userEmail != null) {
-      categoryProvider.loadUserCategories(userEmail);
+      categoryProvider.loadUserCategories();
     }
   }
 
@@ -52,7 +52,7 @@ class CategoryPageState extends State<CategoryPage> {
               userId: userEmail,
               onCategoryAdded: () {
                 Provider.of<CategoryProvider>(context, listen: false)
-                    .loadUserCategories(userEmail);
+                    .loadUserCategories();
               },
             ),
           );
@@ -116,6 +116,7 @@ class CategoryPageState extends State<CategoryPage> {
                                 onCancel: () {
                                   Navigator.of(context).pop();
                                 },
+                                categoryId: '',
                               );
                             },
                           );

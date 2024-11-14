@@ -21,6 +21,7 @@ class AuthenticationProvider extends ChangeNotifier {
 
   // Get the current user
   User? get user => _user;
+
   // Check if the user is authenticated
   bool get isAuthenticated => _user != null;
 
@@ -52,9 +53,9 @@ class AuthenticationProvider extends ChangeNotifier {
   // Sign out the user
   Future<void> signOut(BuildContext context) async {
     try {
-      final userProvider = Provider.of<UserProvider>(context, listen: false);
       await _auth.signOut();
-      userProvider.clearUserProfile(); // Clear profile data on sign-out
+      // Clear UserProvider data when the user signs out
+      Provider.of<UserProvider>(context, listen: false).clearUserProfile();
       _user = null;
       notifyListeners();
     } catch (e) {
