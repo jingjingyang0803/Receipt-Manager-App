@@ -24,12 +24,13 @@ class ProfilePageState extends State<ProfilePage> {
   final _picker = ImagePicker();
   XFile? _profileImage;
   late TextEditingController _nameController;
+  late UserProvider userProvider;
 
   @override
   void initState() {
     super.initState();
 
-    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    userProvider = Provider.of<UserProvider>(context, listen: false);
 
     // Initialize the controller with the current user name from provider
     _nameController = TextEditingController(text: userProvider.userName);
@@ -61,7 +62,7 @@ class ProfilePageState extends State<ProfilePage> {
       });
 
       // Update profile image in provider
-      final userProvider = Provider.of<UserProvider>(context, listen: false);
+      userProvider = Provider.of<UserProvider>(context, listen: false);
       userProvider.updateProfileImage(context, image.path);
     }
   }
@@ -87,8 +88,7 @@ class ProfilePageState extends State<ProfilePage> {
         return CurrencyPicker(
           selectedCurrency: 'EUR', // Provide a default,
           onCurrencySelected: (String newCurrencyCode) async {
-            final userProvider =
-                Provider.of<UserProvider>(context, listen: false);
+            userProvider = Provider.of<UserProvider>(context, listen: false);
 
             // Proceed with the update if the new name is different from the current name, even if empty
             if (newCurrencyCode != userProvider.currencyCode) {
