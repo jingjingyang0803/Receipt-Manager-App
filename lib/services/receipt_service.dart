@@ -6,8 +6,34 @@ final _firestore = FirebaseFirestore.instance;
 enum TimeInterval { day, week, month, year }
 
 class ReceiptService {
-  Stream<DocumentSnapshot<Map<String, dynamic>>> fetchReceipts(String email) {
-    return _firestore.collection('receipts').doc(email).snapshots();
+  Stream<DocumentSnapshot<Map<String, dynamic>>> fetchReceipts(
+      String email) async* {
+    DocumentReference<Map<String, dynamic>> docRef =
+        _firestore.collection('receipts').doc(email);
+
+    // Check if the document exists
+    DocumentSnapshot<Map<String, dynamic>> docSnapshot = await docRef.get();
+    print("Checking existence of document for email: $email");
+
+    if (!docSnapshot.exists) {
+      // Create the document with an empty receiptlist array if it doesn't exist
+      await docRef.set({
+        'receiptlist': [],
+        'receiptCount': 0,
+      });
+      print(
+          "Document created for email: $email with empty receiptlist and receiptCount initialized.");
+    } else {
+      print("Document already exists for email: $email");
+    }
+
+    // Start listening to snapshots
+    await for (var snapshot in docRef.snapshots()) {
+      print("Received snapshot for email: $email");
+      print("Snapshot data: ${snapshot.data()}");
+
+      yield snapshot;
+    }
   }
 
   Future<int> getReceiptCount(String email) async {
