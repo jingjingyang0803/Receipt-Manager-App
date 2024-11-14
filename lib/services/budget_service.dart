@@ -19,7 +19,6 @@ class BudgetService {
           return {
             'categoryId': budget['categoryId'] ?? '',
             'amount': budget['amount'] ?? 0.0,
-            'currency': budget['currency'] ?? 'USD',
             'period': budget['period'] ?? 'monthly',
           };
         }).toList();
@@ -72,7 +71,6 @@ class BudgetService {
             ? {
                 'categoryId': budget['categoryId'],
                 'amount': budget['amount'],
-                'currency': budget['currency'],
                 'period': budget['period'],
               }
             : null;
