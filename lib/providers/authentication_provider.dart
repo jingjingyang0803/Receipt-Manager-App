@@ -1,5 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:receipt_manager/providers/user_provider.dart';
 
 import '../logger.dart';
 import '../services/auth_service.dart';
@@ -19,7 +21,6 @@ class AuthenticationProvider extends ChangeNotifier {
 
   // Get the current user
   User? get user => _user;
-
   // Check if the user is authenticated
   bool get isAuthenticated => _user != null;
 
@@ -49,11 +50,13 @@ class AuthenticationProvider extends ChangeNotifier {
   }
 
   // Sign out the user
-  Future<void> signOut() async {
+  Future<void> signOut(BuildContext context) async {
     try {
-      await AuthService.signOut();
+      final userProvider = Provider.of<UserProvider>(context, listen: false);
+      await _auth.signOut();
+      userProvider.clearUserProfile(); // Clear profile data on sign-out
       _user = null;
-      notifyListeners(); // Notify listeners to update UI after sign-out
+      notifyListeners();
     } catch (e) {
       logger.e("Sign-out failed: $e");
     }

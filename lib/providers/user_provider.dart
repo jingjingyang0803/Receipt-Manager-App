@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -8,15 +10,14 @@ import 'authentication_provider.dart'; // Ensure this import is correct based on
 class UserProvider extends ChangeNotifier {
   final UserService _userService = UserService();
   DocumentSnapshot<Map<String, dynamic>>? _userProfile;
+  StreamSubscription<DocumentSnapshot<Map<String, dynamic>>>? _profileStream;
 
   DocumentSnapshot<Map<String, dynamic>>? get userProfile => _userProfile;
 
   // Getter for userName
   String? get userName => _userProfile?.data()?['userName'];
-
   // Getter for profileImagePath
   String? get profileImagePath => _userProfile?.data()?['profileImagePath'];
-
   // Getter for currencyCode
   String? get currencyCode => _userProfile?.data()?['currencyCode'];
 
@@ -27,11 +28,25 @@ class UserProvider extends ChangeNotifier {
     final email = authProvider.user?.email;
 
     if (email != null) {
-      _userService.fetchUserProfile(email).listen((snapshot) {
-        _userProfile = snapshot;
-        notifyListeners(); // Notify listeners to update UI
+      // Cancel any existing stream before starting a new one
+      _profileStream?.cancel();
+
+      _profileStream = _userService.fetchUserProfile(email).listen((snapshot) {
+        if (authProvider.isAuthenticated) {
+          // Ensure user is still logged in
+          _userProfile = snapshot;
+          notifyListeners();
+        }
       });
     }
+  }
+
+  // Add a method to cancel the profile stream and clear user data
+  void clearUserProfile() {
+    _profileStream?.cancel(); // Cancel any active Firestore listeners
+    _profileStream = null;
+    _userProfile = null;
+    notifyListeners();
   }
 
   // Add a new user profile
