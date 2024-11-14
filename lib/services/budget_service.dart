@@ -11,26 +11,28 @@ class BudgetService {
       DocumentSnapshot userDoc =
           await _firestore.collection('budgets').doc(email).get();
 
-      if (userDoc.exists && userDoc.data() != null) {
-        var data = userDoc.data() as Map<String, dynamic>;
-        List<dynamic> budgetList = data['budgetlist'] ?? [];
-
-        return budgetList.map((budget) {
-          return {
-            'categoryId': budget['categoryId'] ?? '',
-            'amount': budget['amount'] ?? 0.0,
-            'period': budget['period'] ?? 'monthly',
-          };
-        }).toList();
-      } else {
-        // If the document doesn't exist, create a new one with an empty budget list
+      if (!userDoc.exists) {
+        // Document does not exist, create it with default data
         await _firestore.collection('budgets').doc(email).set({
           'budgetlist': [],
         });
-        return []; // Return an empty list since there are no budgets yet
+        print("Default document created for email: $email");
+        return [];
       }
+
+      // Document exists, return the budget list
+      var data = userDoc.data() as Map<String, dynamic>;
+      List<dynamic> budgetList = data['budgetlist'] ?? [];
+
+      return budgetList.map((budget) {
+        return {
+          'categoryId': budget['categoryId'] ?? '',
+          'amount': budget['amount'] ?? 0.0,
+          'period': budget['period'] ?? 'monthly',
+        };
+      }).toList();
     } catch (e) {
-      logger.e("Error fetching user budgets: $e");
+      print("Error fetching user budgets: $e");
       return [];
     }
   }
@@ -38,11 +40,15 @@ class BudgetService {
   Future<void> updateUserBudgets(
       String email, List<Map<String, dynamic>> budgetList) async {
     try {
-      await _firestore.collection('budgets').doc(email).update({
-        'budgetlist': budgetList,
-      });
+      await _firestore.collection('budgets').doc(email).set(
+          {
+            'budgetlist': budgetList,
+          },
+          SetOptions(
+              merge:
+                  true)); // Use `set` with merge to ensure creation if missing
     } catch (e) {
-      logger.e("Error updating user budgets: $e");
+      print("Error updating user budgets: $e");
       rethrow;
     }
   }

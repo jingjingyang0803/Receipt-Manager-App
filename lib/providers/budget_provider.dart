@@ -45,8 +45,46 @@ class BudgetProvider extends ChangeNotifier {
 
   // Fetch all budgets for the current user
   Future<void> loadUserBudgets() async {
-    if (_userEmail != null) {
-      _budgets = await _budgetService.fetchUserBudgets(_userEmail!);
+    if (_userEmail != null && _categoryProvider != null) {
+      if (_categoryProvider!.categories.isEmpty) {
+        await _categoryProvider!.loadUserCategories();
+      }
+
+      // Fetch existing budgets from Firestore
+      List<Map<String, dynamic>> existingBudgets =
+          await _budgetService.fetchUserBudgets(_userEmail!);
+
+      List<Map<String, dynamic>> categories = _categoryProvider!.categories;
+
+      // If the fetched budget is empty, create a default list in Firestore
+      if (existingBudgets.isEmpty) {
+        existingBudgets = categories.map((category) {
+          return {
+            'categoryId': category['id'],
+            'amount': 0.0,
+            'period': 'monthly',
+          };
+        }).toList();
+
+        // Save the default budget list to Firestore
+        await _budgetService.updateUserBudgets(_userEmail!, existingBudgets);
+      }
+
+      _budgets = categories.map((category) {
+        Map<String, dynamic>? existingBudget = existingBudgets.firstWhere(
+          (budget) => budget['categoryId'] == category['id'],
+          orElse: () => {'amount': 0.0, 'period': 'monthly'},
+        );
+
+        return {
+          'categoryId': category['id'],
+          'categoryName': category['name'],
+          'categoryIcon': category['icon'],
+          'amount': existingBudget['amount'] ?? 0.0,
+          'period': existingBudget['period'] ?? 'monthly',
+        };
+      }).toList();
+
       notifyListeners();
     }
   }
