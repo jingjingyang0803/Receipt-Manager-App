@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 
 import '../services/receipt_service.dart';
 import 'authentication_provider.dart';
+import 'category_provider.dart';
 
 class ReceiptProvider extends ChangeNotifier {
   final ReceiptService _receiptService = ReceiptService();
   AuthenticationProvider? _authProvider;
+  CategoryProvider? _categoryProvider;
 
   DocumentSnapshot<Map<String, dynamic>>? _receiptsSnapshot;
   Map<String, double>? _groupedReceiptsByCategory;
@@ -23,21 +25,51 @@ class ReceiptProvider extends ChangeNotifier {
   Map<String, DateTime>? get oldestAndNewestDates => _oldestAndNewestDates;
   int? get receiptCount => _receiptCount;
 
-  // Inject AuthenticationProvider
+  // Inject AuthenticationProvider and CategoryProvider
   set authProvider(AuthenticationProvider authProvider) {
     _authProvider = authProvider;
-    notifyListeners(); // Notify listeners if authProvider changes
+    notifyListeners();
+  }
+
+  set categoryProvider(CategoryProvider categoryProvider) {
+    _categoryProvider = categoryProvider;
+    notifyListeners();
   }
 
   // Helper to get user email from AuthenticationProvider
   String? get _userEmail => _authProvider?.user?.email;
 
-  // Fetch receipts as a stream
-  Stream<DocumentSnapshot<Map<String, dynamic>>> fetchReceipts() {
-    if (_userEmail != null) {
-      return _receiptService.fetchReceipts(_userEmail!);
+  // Fetch receipts as a stream and map category details
+  Stream<List<Map<String, dynamic>>> fetchReceipts() async* {
+    if (_userEmail != null && _categoryProvider != null) {
+      Stream<DocumentSnapshot<Map<String, dynamic>>> receiptsStream =
+          _receiptService.fetchReceipts(_userEmail!);
+
+      await for (var snapshot in receiptsStream) {
+        List<Map<String, dynamic>> receipts = snapshot.exists
+            ? (snapshot.data()?['receipts'] as List<dynamic>).map((receipt) {
+                final receiptMap = receipt as Map<String,
+                    dynamic>; // Cast each item to Map<String, dynamic>
+
+                // Map each receipt with category details
+                final categoryId = receiptMap['categoryId'];
+                final category = _categoryProvider?.categories.firstWhere(
+                  (cat) => cat['id'] == categoryId,
+                  orElse: () => {'name': 'Unknown', 'icon': '❓'},
+                );
+
+                return {
+                  ...receiptMap, // Use the cast map
+                  'categoryName': category?['name'] ?? 'Unknown',
+                  'categoryIcon': category?['icon'] ?? '❓',
+                };
+              }).toList()
+            : [];
+
+        yield receipts;
+      }
     } else {
-      throw Exception("User email is null");
+      throw Exception("User email or category provider is null");
     }
   }
 
@@ -49,7 +81,7 @@ class ReceiptProvider extends ChangeNotifier {
     }
   }
 
-  // Add a new receipt
+  // Add a new receipt with category details
   Future<void> addReceipt({
     required Map<String, dynamic> receiptData,
     required String paymentMethod,
@@ -97,7 +129,7 @@ class ReceiptProvider extends ChangeNotifier {
     }
   }
 
-  // Group receipts by category within a date range
+  // Group receipts by category within a date range, including category details
   Future<void> groupReceiptsByCategory(
     String selectedBaseCurrency,
     DateTime startDate,
@@ -111,6 +143,20 @@ class ReceiptProvider extends ChangeNotifier {
         startDate,
         endDate,
       );
+
+      // Include category name and icon
+      _groupedReceiptsByCategory =
+          _groupedReceiptsByCategory?.map((key, value) {
+        final category = _categoryProvider?.categories.firstWhere(
+          (cat) => cat['id'] == key,
+          orElse: () => {'name': 'Unknown', 'icon': '❓'},
+        );
+        return MapEntry(
+          '${category?['name']} ${category?['icon']}',
+          value,
+        );
+      });
+
       notifyListeners();
     }
   }
