@@ -8,6 +8,7 @@ class CustomTextFormField extends StatelessWidget {
   final TextEditingController? controller;
   final TextInputType keyboardType;
   final bool obscureText;
+  final FocusNode? focusNode; // Make focusNode optional
 
   const CustomTextFormField({
     super.key,
@@ -16,6 +17,7 @@ class CustomTextFormField extends StatelessWidget {
     this.controller,
     this.keyboardType = TextInputType.text,
     this.obscureText = false,
+    this.focusNode,
   });
 
   @override
@@ -25,6 +27,7 @@ class CustomTextFormField extends StatelessWidget {
       controller: controller,
       keyboardType: keyboardType,
       obscureText: obscureText,
+      focusNode: focusNode, // Use focusNode if provided
       decoration: InputDecoration(
         labelText: labelText,
         labelStyle: TextStyle(color: light20), // Use your color variable here
