@@ -9,7 +9,6 @@ import 'package:intl/intl.dart';
 import '../components/category_filter_dialog.dart';
 import '../components/date_range_container.dart';
 import '../components/date_roller_picker.dart'; // Import the CalendarFilterWidget
-import '../components/old/custom_drawer.dart';
 import '../logger.dart';
 import '../services/auth_service.dart';
 import '../services/category_service.dart'; // Import CategoryService
@@ -552,7 +551,6 @@ class ReceiptListScreenState extends State<ReceiptListScreen> {
         title: Text('Your Receipts'),
         backgroundColor: Colors.lightBlueAccent,
       ),
-      drawer: CustomDrawer(),
       body: loggedInUser == null
           ? _buildLoadingIndicator()
           : Column(
