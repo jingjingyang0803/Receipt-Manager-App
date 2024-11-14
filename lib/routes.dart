@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:receipt_manager/screens/add_update_receipt_page.dart';
 import 'package:receipt_manager/screens/category_page.dart';
 
 import 'screens/add_update_receipt_screen.dart';
@@ -32,6 +33,7 @@ Map<String, WidgetBuilder> appRoutes = {
   BasePage.id: (context) => BasePage(),
   HomePage.id: (context) => HomePage(),
   ReceiptListPage.id: (context) => ReceiptListPage(),
+  AddOrUpdateReceiptPage.id: (context) => AddOrUpdateReceiptPage(),
   ProfilePage.id: (context) => ProfilePage(),
   CategoryPage.id: (context) => CategoryPage(),
   FinancialReportPage.id: (context) => FinancialReportPage(),
