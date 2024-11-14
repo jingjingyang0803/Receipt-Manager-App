@@ -2,22 +2,21 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../components/add_category_widget.dart';
-import '../components/old/custom_drawer.dart';
 import '../logger.dart';
 import '../services/auth_service.dart';
 import '../services/category_service.dart';
 import '../services/receipt_service_old.dart';
 
-class CategoryScreen extends StatefulWidget {
-  static const String id = 'category_screen';
+class CategoryPage extends StatefulWidget {
+  static const String id = 'category_page';
 
-  const CategoryScreen({super.key});
+  const CategoryPage({super.key});
 
   @override
-  CategoryScreenState createState() => CategoryScreenState();
+  CategoryPageState createState() => CategoryPageState();
 }
 
-class CategoryScreenState extends State<CategoryScreen> {
+class CategoryPageState extends State<CategoryPage> {
   User? loggedInUser;
 
   List<Map<String, dynamic>> userCategories = [];
@@ -130,7 +129,6 @@ class CategoryScreenState extends State<CategoryScreen> {
         title: Text('Your Categories'),
         backgroundColor: Colors.lightBlueAccent,
       ),
-      drawer: CustomDrawer(),
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(

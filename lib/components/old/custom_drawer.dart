@@ -6,7 +6,7 @@ import 'package:receipt_manager/screens/old/dashboard_screen.dart';
 import 'package:receipt_manager/screens/old/expense_chart_screen.dart';
 
 import '../../screens/budget_screen.dart';
-import '../../screens/category_screen.dart';
+import '../../screens/old/category_screen.dart';
 import '../../screens/old/setting_screen.dart';
 import '../../screens/old/summary_screen.dart';
 import '../../screens/receipt_list_screen.dart';
