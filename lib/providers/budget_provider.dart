@@ -45,10 +45,18 @@ class BudgetProvider extends ChangeNotifier {
 
   // Fetch all budgets for the current user
   Future<void> loadUserBudgets() async {
+    print("_userEmail: $_userEmail");
+
     if (_userEmail != null && _categoryProvider != null) {
+      print("Starting to load user budgets for: $_userEmail");
+
       if (_categoryProvider!.categories.isEmpty) {
+        print("Categories are empty, loading user categories...");
         await _categoryProvider!.loadUserCategories();
       }
+
+      // Print the loaded categories after loading
+      print("Categories after loading: ${_categoryProvider!.categories}");
 
       // Fetch existing budgets from Firestore
       List<Map<String, dynamic>> existingBudgets =
@@ -56,8 +64,11 @@ class BudgetProvider extends ChangeNotifier {
 
       List<Map<String, dynamic>> categories = _categoryProvider!.categories;
 
+      print('categories: $categories'); // <-- This should now print correctly
+
       // If the fetched budget is empty, create a default list in Firestore
       if (existingBudgets.isEmpty) {
+        print("Existing budgets are empty, creating default budgets...");
         existingBudgets = categories.map((category) {
           return {
             'categoryId': category['id'],
@@ -68,6 +79,7 @@ class BudgetProvider extends ChangeNotifier {
 
         // Save the default budget list to Firestore
         await _budgetService.updateUserBudgets(_userEmail!, existingBudgets);
+        print("Default budgets saved to Firestore");
       }
 
       _budgets = categories.map((category) {
@@ -85,7 +97,10 @@ class BudgetProvider extends ChangeNotifier {
         };
       }).toList();
 
+      print("Final budgets: $_budgets");
       notifyListeners();
+    } else {
+      print("User email or category provider is null.");
     }
   }
 

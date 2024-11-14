@@ -41,6 +41,8 @@ class MyApp extends StatelessWidget {
           create: (_) => BudgetProvider(),
           update: (context, authProvider, budgetProvider) {
             budgetProvider!.authProvider = authProvider;
+            budgetProvider.categoryProvider =
+                Provider.of<CategoryProvider>(context, listen: false);
             return budgetProvider;
           },
         ),
