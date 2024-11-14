@@ -1,15 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 
-import 'currency_service.dart';
-
 final _firestore = FirebaseFirestore.instance;
 
 enum TimeInterval { day, week, month, year }
 
 class ReceiptService {
-  final CurrencyService _currencyService = CurrencyService();
-
   Stream<DocumentSnapshot<Map<String, dynamic>>> fetchReceipts(String email) {
     return _firestore.collection('receipts').doc(email).snapshots();
   }
@@ -100,9 +96,9 @@ class ReceiptService {
     }
   }
 
+  // Group receipts by category within a date range
   Future<Map<String, double>> groupReceiptsByCategory(
     String email,
-    String selectedBaseCurrency,
     DateTime startDate,
     DateTime endDate,
   ) async {
@@ -113,29 +109,20 @@ class ReceiptService {
 
     List<dynamic> receiptList = userDoc['receiptlist'] ?? [];
     Map<String, double> groupedExpenses = {};
-    Map<String, double> conversionCache = {};
 
     for (var receipt in receiptList) {
       Map<String, dynamic> receiptData = receipt as Map<String, dynamic>;
       String category = receiptData['categoryId'] ?? 'Uncategorized';
-      String currency = receiptData['currency'];
       double amount = (receiptData['amount'] as num).toDouble();
       DateTime receiptDate = (receiptData['date'] as Timestamp).toDate();
 
+      // Filter receipts by the specified date range
       if (receiptDate.isBefore(startDate) || receiptDate.isAfter(endDate)) {
         continue;
       }
 
-      // Check cache for conversion rate or fetch if not cached
-      String cacheKey = '${currency}_$selectedBaseCurrency';
-      double conversionRate = conversionCache[cacheKey] ??=
-          await _currencyService.convertToBaseCurrency(
-              1, currency, selectedBaseCurrency);
-
-      // Convert amount using cached rate
-      double convertedAmount = amount * conversionRate;
-      groupedExpenses[category] =
-          (groupedExpenses[category] ?? 0) + convertedAmount;
+      // Aggregate amount by category
+      groupedExpenses[category] = (groupedExpenses[category] ?? 0) + amount;
     }
 
     return groupedExpenses;
@@ -147,10 +134,10 @@ class ReceiptService {
     return (daysSinceFirstDay / 7).ceil();
   }
 
+  // Group receipts by specified time interval within a date range
   Future<Map<String, double>> groupReceiptsByInterval(
     String email,
     TimeInterval interval,
-    String selectedBaseCurrency,
     DateTime startDate,
     DateTime endDate,
   ) async {
@@ -161,18 +148,18 @@ class ReceiptService {
 
     List<dynamic> receiptList = userDoc['receiptlist'] ?? [];
     Map<String, double> groupedExpenses = {};
-    Map<String, double> conversionCache = {};
 
     for (var receipt in receiptList) {
       Map<String, dynamic> receiptData = receipt as Map<String, dynamic>;
-      String currency = receiptData['currency'];
       double amount = (receiptData['amount'] as num).toDouble();
       DateTime receiptDate = (receiptData['date'] as Timestamp).toDate();
 
+      // Filter receipts by the specified date range
       if (receiptDate.isBefore(startDate) || receiptDate.isAfter(endDate)) {
         continue;
       }
 
+      // Generate a grouping key based on the selected interval
       String groupKey;
       switch (interval) {
         case TimeInterval.day:
@@ -189,17 +176,8 @@ class ReceiptService {
           break;
       }
 
-      // Check cache for conversion rate or fetch if not cached
-      String cacheKey = '${currency}_$selectedBaseCurrency';
-      double conversionRate = conversionCache[cacheKey] ??=
-          await _currencyService.convertToBaseCurrency(
-              1, currency, selectedBaseCurrency);
-
-      // Convert amount using cached rate
-      double convertedAmount = amount * conversionRate;
-
-      groupedExpenses[groupKey] =
-          (groupedExpenses[groupKey] ?? 0) + convertedAmount;
+      // Aggregate amount by interval
+      groupedExpenses[groupKey] = (groupedExpenses[groupKey] ?? 0) + amount;
     }
 
     return groupedExpenses;

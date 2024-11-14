@@ -48,10 +48,9 @@ class ReceiptProvider extends ChangeNotifier {
       await for (var snapshot in receiptsStream) {
         List<Map<String, dynamic>> receipts = snapshot.exists
             ? (snapshot.data()?['receipts'] as List<dynamic>).map((receipt) {
-                final receiptMap = receipt as Map<String,
-                    dynamic>; // Cast each item to Map<String, dynamic>
+                final receiptMap = receipt as Map<String, dynamic>;
 
-                // Map each receipt with category details
+                // Map each receipt with category details from CategoryProvider
                 final categoryId = receiptMap['categoryId'];
                 final category = _categoryProvider?.categories.firstWhere(
                   (cat) => cat['id'] == categoryId,
@@ -59,7 +58,7 @@ class ReceiptProvider extends ChangeNotifier {
                 );
 
                 return {
-                  ...receiptMap, // Use the cast map
+                  ...receiptMap,
                   'categoryName': category?['name'] ?? 'Unknown',
                   'categoryIcon': category?['icon'] ?? '❓',
                 };
@@ -131,7 +130,6 @@ class ReceiptProvider extends ChangeNotifier {
 
   // Group receipts by category within a date range, including category details
   Future<void> groupReceiptsByCategory(
-    String selectedBaseCurrency,
     DateTime startDate,
     DateTime endDate,
   ) async {
@@ -139,12 +137,11 @@ class ReceiptProvider extends ChangeNotifier {
       _groupedReceiptsByCategory =
           await _receiptService.groupReceiptsByCategory(
         _userEmail!,
-        selectedBaseCurrency,
         startDate,
         endDate,
       );
 
-      // Include category name and icon
+      // Map category details (name and icon) to the grouped result
       _groupedReceiptsByCategory =
           _groupedReceiptsByCategory?.map((key, value) {
         final category = _categoryProvider?.categories.firstWhere(
@@ -164,7 +161,6 @@ class ReceiptProvider extends ChangeNotifier {
   // Group receipts by interval within a date range
   Future<void> groupReceiptsByInterval(
     TimeInterval interval,
-    String selectedBaseCurrency,
     DateTime startDate,
     DateTime endDate,
   ) async {
@@ -173,7 +169,6 @@ class ReceiptProvider extends ChangeNotifier {
           await _receiptService.groupReceiptsByInterval(
         _userEmail!,
         interval,
-        selectedBaseCurrency,
         startDate,
         endDate,
       );
