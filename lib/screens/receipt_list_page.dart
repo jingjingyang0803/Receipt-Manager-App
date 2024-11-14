@@ -8,6 +8,7 @@ import 'package:receipt_manager/screens/financial_report_page.dart';
 
 import '../components/expense_item_card.dart';
 import '../components/filter_popup.dart';
+import 'add_update_receipt_page.dart';
 
 class ReceiptListPage extends StatelessWidget {
   static const String id = 'receipt_list_page';
@@ -175,21 +176,7 @@ class ReceiptListPage extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          final receiptProvider =
-              Provider.of<ReceiptProvider>(context, listen: false);
-
-          // Dummy data for new receipt
-          final dummyReceipt = {
-            'categoryId': '1f8G7NcXiXAfm4sJ18P5',
-            'merchantName': 'Dummy Store',
-            'amount': 50.0,
-            'date': Timestamp.now(),
-            'paymentMethod': 'Credit Card',
-            'description': '',
-            'imageUrl': ''
-          };
-
-          receiptProvider.addReceipt(receiptData: dummyReceipt);
+          Navigator.pushNamed(context, AddOrUpdateReceiptPage.id);
         },
         backgroundColor: purple100,
         child: const Icon(Icons.add, color: Colors.white),
