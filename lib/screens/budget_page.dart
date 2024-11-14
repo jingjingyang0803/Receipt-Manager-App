@@ -115,7 +115,17 @@ class BudgetPageState extends State<BudgetPage> {
         floatingActionButton: FloatingActionButton(
           onPressed: () async {
             FocusScope.of(context).unfocus(); // Dismiss the keyboard on save
-            await budgetProvider.updateUserBudgets(updatedBudgets);
+
+            // Create a list with only categoryId and amount for saving
+            List<Map<String, dynamic>> budgetsToSave =
+                updatedBudgets.map((budget) {
+              return {
+                'categoryId': budget['categoryId'],
+                'amount': budget['amount'],
+              };
+            }).toList();
+
+            await budgetProvider.updateUserBudgets(budgetsToSave);
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text("Budgets saved successfully")),
             );

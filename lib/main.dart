@@ -37,15 +37,18 @@ class MyApp extends StatelessWidget {
             return categoryProvider;
           },
         ),
-        ChangeNotifierProxyProvider<AuthenticationProvider, BudgetProvider>(
+        ChangeNotifierProxyProvider2<AuthenticationProvider, CategoryProvider,
+            BudgetProvider>(
           create: (_) => BudgetProvider(),
-          update: (context, authProvider, budgetProvider) {
+          update: (context, authProvider, categoryProvider, budgetProvider) {
             budgetProvider!.authProvider = authProvider;
-            budgetProvider.categoryProvider =
-                Provider.of<CategoryProvider>(context, listen: false);
+            budgetProvider.categoryProvider = categoryProvider;
+            budgetProvider
+                .updateCategories(); // Call a method to update categories in BudgetProvider
             return budgetProvider;
           },
         ),
+
         ChangeNotifierProxyProvider<AuthenticationProvider, UserProvider>(
           create: (_) => UserProvider(),
           update: (context, authProvider, userProvider) {
