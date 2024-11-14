@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
+import '../logger.dart';
 import '../services/receipt_service.dart';
 import 'authentication_provider.dart';
 import 'category_provider.dart';
@@ -45,7 +46,7 @@ class ReceiptProvider extends ChangeNotifier {
     'Cash',
     'Other'
   ];
-  String _sortOrder = 'Highest';
+  String _sortOrder = 'Newest';
   List<String> _selectedCategoryIds = [];
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
@@ -62,37 +63,71 @@ class ReceiptProvider extends ChangeNotifier {
   }
 
   Stream<List<Map<String, dynamic>>> fetchReceipts() async* {
-    final userDoc = _firestore.collection('receipts').doc(_userEmail);
-    await for (var snapshot in userDoc.snapshots()) {
-      List<Map<String, dynamic>> allReceipts =
-          (snapshot.data()?['receiptlist'] ?? []).cast<Map<String, dynamic>>();
+    try {
+      logger.i("Fetching receipts for user: $_userEmail");
+      final userDoc = _firestore.collection('receipts').doc(_userEmail);
 
-      // Apply category and payment method filters
-      List<Map<String, dynamic>> filteredReceipts =
-          allReceipts.where((receipt) {
-        bool matchesCategory =
-            _selectedCategoryIds.contains(receipt['categoryId'] ?? 'null');
-        bool matchesPayment = _selectedPaymentMethods.isEmpty ||
-            _selectedPaymentMethods.contains(receipt['paymentMethod']);
-        return matchesCategory && matchesPayment;
-      }).toList();
-
-      // Apply sorting based on amount or date
-      filteredReceipts.sort((a, b) {
-        int result;
-        if (_sortOrder == 'Highest' || _sortOrder == 'Lowest') {
-          result = (b['amount'] as double).compareTo(a['amount'] as double);
-          if (_sortOrder == 'Lowest') result = -result;
-        } else {
-          DateTime dateA = (a['date'] as Timestamp).toDate();
-          DateTime dateB = (b['date'] as Timestamp).toDate();
-          result = dateB.compareTo(dateA);
-          if (_sortOrder == 'Oldest') result = -result;
+      await for (var snapshot in userDoc.snapshots()) {
+        if (snapshot.data() == null) {
+          logger.i("No receipt data found for user: $_userEmail");
+          yield [];
+          continue;
         }
-        return result;
-      });
 
-      yield filteredReceipts;
+        List<Map<String, dynamic>> allReceipts =
+            (snapshot.data()?['receiptlist'] ?? [])
+                .cast<Map<String, dynamic>>();
+        logger.i("Total receipts fetched: ${allReceipts.length}");
+
+        // Apply category and payment method filters with default values
+        List<Map<String, dynamic>> filteredReceipts =
+            allReceipts.where((receipt) {
+          // Set default values for categoryId and paymentMethod if they are missing
+          String categoryId = receipt['categoryId'] ?? 'null';
+          String paymentMethod = receipt['paymentMethod'] ?? '';
+
+          bool matchesCategory = _selectedCategoryIds.contains(categoryId);
+          bool matchesPayment = _selectedPaymentMethods.isEmpty ||
+              _selectedPaymentMethods.contains(paymentMethod);
+
+          // Log the filtering result for debugging
+          if (!matchesCategory) {
+            logger.i("Receipt filtered out by category: $categoryId");
+          }
+          if (!matchesPayment) {
+            logger.i("Receipt filtered out by payment method: $paymentMethod");
+          }
+
+          return matchesCategory && matchesPayment;
+        }).toList();
+
+        logger.i("Receipts after filtering: ${filteredReceipts.length}");
+
+        // Apply sorting based on amount or date
+        try {
+          filteredReceipts.sort((a, b) {
+            int result;
+            if (_sortOrder == 'Highest' || _sortOrder == 'Lowest') {
+              result = (b['amount'] as double).compareTo(a['amount'] as double);
+              if (_sortOrder == 'Lowest') result = -result;
+            } else {
+              DateTime dateA = (a['date'] as Timestamp).toDate();
+              DateTime dateB = (b['date'] as Timestamp).toDate();
+              result = dateB.compareTo(dateA);
+              if (_sortOrder == 'Oldest') result = -result;
+            }
+            return result;
+          });
+        } catch (e) {
+          logger.e("Error while sorting receipts: $e");
+        }
+
+        logger.i("Yielding ${filteredReceipts.length} sorted receipts.");
+        yield filteredReceipts;
+      }
+    } catch (e) {
+      logger.e("Error fetching receipts: $e");
+      yield [];
     }
   }
 
