@@ -2,7 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import '../../components/custom_drawer.dart';
+import '../../components/old/custom_drawer.dart';
 import '../../logger.dart';
 import '../../services/auth_service.dart';
 import '../../services/receipt_service_old.dart';
