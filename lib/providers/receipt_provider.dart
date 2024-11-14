@@ -40,7 +40,6 @@ class ReceiptProvider extends ChangeNotifier {
   String? get _userEmail => _authProvider?.user?.email;
 
   // Fetch receipts as a stream and map category details
-
   Stream<List<Map<String, dynamic>>> fetchReceipts() async* {
     if (_userEmail != null && _categoryProvider != null) {
       print("Starting fetchReceipts for user: $_userEmail");
@@ -50,7 +49,6 @@ class ReceiptProvider extends ChangeNotifier {
           _receiptService.fetchReceipts(_userEmail!);
 
       await for (var snapshot in receiptsStream) {
-        // Check if the snapshot has receiptlist data or is null
         final rawReceipts = snapshot.data()?['receiptlist'] as List<dynamic>?;
 
         if (rawReceipts == null) {
@@ -63,7 +61,6 @@ class ReceiptProvider extends ChangeNotifier {
         print(
             "Firestore snapshot received for user: $_userEmail with ${rawReceipts.length} receipts");
 
-        // Process the receipt list safely
         try {
           List<Map<String, dynamic>> receipts = rawReceipts.map((receipt) {
             final receiptMap = receipt as Map<String, dynamic>;
@@ -154,9 +151,7 @@ class ReceiptProvider extends ChangeNotifier {
 
   // Group receipts by category within a date range, including category details
   Future<void> groupReceiptsByCategory(
-    DateTime startDate,
-    DateTime endDate,
-  ) async {
+      DateTime startDate, DateTime endDate) async {
     if (_userEmail != null) {
       _groupedReceiptsByCategory =
           await _receiptService.groupReceiptsByCategory(

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:receipt_manager/constants/app_colors.dart';
+import 'package:provider/provider.dart';
 
+import '../constants/app_colors.dart';
+import '../providers/category_provider.dart';
 import 'custom_button.dart';
 
 class FilterPopup extends StatefulWidget {
@@ -11,12 +13,17 @@ class FilterPopup extends StatefulWidget {
 }
 
 class FilterPopupState extends State<FilterPopup> {
-  String selectedFilter = 'Expense';
-  String selectedSort = 'Highest';
-  int selectedCategories = 0;
+  String selectedFilter = 'Credit Card';
+  String selectedSort = 'Newest';
+  List<String> selectedCategoryIds = [];
+  bool isCategorySelectionVisible =
+      false; // To toggle category selection visibility
 
   @override
   Widget build(BuildContext context) {
+    final categoryProvider = Provider.of<CategoryProvider>(context);
+    final userCategories = categoryProvider.categories;
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
       decoration: const BoxDecoration(
@@ -43,7 +50,8 @@ class FilterPopupState extends State<FilterPopup> {
           ),
           const SizedBox(height: 8),
           Row(
-            children: ['Income', 'Expense', 'Transfer'].map((filter) {
+            children:
+                ['Credit Card', 'Debit Card', 'Cash', 'Other'].map((filter) {
               return _buildFilterOption(filter, selectedFilter == filter);
             }).toList(),
           ),
@@ -74,24 +82,57 @@ class FilterPopupState extends State<FilterPopup> {
               ),
               GestureDetector(
                 onTap: () {
-                  // Implement category selection dialog here
+                  setState(() {
+                    isCategorySelectionVisible = !isCategorySelectionVisible;
+                  });
                 },
                 child: Row(
                   children: [
                     Text(
-                      '$selectedCategories Selected',
+                      '${selectedCategoryIds.length} Selected',
                       style: const TextStyle(
                         color: Colors.grey,
                         fontSize: 16,
                       ),
                     ),
-                    const Icon(Icons.arrow_forward_ios,
-                        size: 16, color: Colors.grey),
+                    Icon(
+                      isCategorySelectionVisible
+                          ? Icons.keyboard_arrow_up
+                          : Icons.keyboard_arrow_down,
+                      size: 16,
+                      color: Colors.grey,
+                    ),
                   ],
                 ),
               ),
             ],
           ),
+          if (isCategorySelectionVisible)
+            Padding(
+              padding: const EdgeInsets.only(top: 8.0),
+              child: Column(
+                children: userCategories.map((category) {
+                  final categoryId = category['id'] ?? '';
+                  final categoryName = category['name'] ?? 'Unknown';
+                  final isSelected = selectedCategoryIds.contains(categoryId);
+
+                  return CheckboxListTile(
+                    title: Text(categoryName),
+                    value: isSelected,
+                    onChanged: (bool? value) {
+                      setState(() {
+                        if (value == true) {
+                          selectedCategoryIds.add(categoryId);
+                        } else {
+                          selectedCategoryIds.remove(categoryId);
+                        }
+                      });
+                    },
+                    controlAffinity: ListTileControlAffinity.leading,
+                  );
+                }).toList(),
+              ),
+            ),
           const SizedBox(height: 24),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -105,11 +146,11 @@ class FilterPopupState extends State<FilterPopup> {
                     textColor: purple100,
                     onPressed: () {
                       setState(() {
-                        selectedFilter = 'Expense';
-                        selectedSort = 'Highest';
-                        selectedCategories = 0;
+                        selectedFilter = 'Credit Card';
+                        selectedSort = 'Newest';
+                        selectedCategoryIds.clear();
                       });
-                    }, // Close the popup},
+                    },
                   ),
                 ),
               ),
@@ -120,13 +161,15 @@ class FilterPopupState extends State<FilterPopup> {
                     text: "Apply",
                     backgroundColor: purple100,
                     textColor: light80,
-                    onPressed: () {},
+                    onPressed: () {
+                      // Implement apply filter logic
+                    },
                   ),
                 ),
               ),
             ],
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
         ],
       ),
     );
