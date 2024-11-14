@@ -4,8 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
+import '../components/currency_roller_picker.dart';
 import '../components/logout_popup.dart';
 import '../constants/app_colors.dart';
+import '../logger.dart';
 import '../providers/authentication_provider.dart';
 import '../providers/user_provider.dart';
 
@@ -72,6 +74,32 @@ class ProfilePageState extends State<ProfilePage> {
     if (newName != userProvider.userName) {
       await userProvider.updateUserProfile(context, userName: newName);
     }
+  }
+
+  Future<void> _showCurrencyPicker(BuildContext context) async {
+    await showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (BuildContext context) {
+        return CurrencyPicker(
+          selectedCurrency: 'EUR', // Provide a default,
+          onCurrencySelected: (String newCurrencyCode) async {
+            final userProvider =
+                Provider.of<UserProvider>(context, listen: false);
+
+            // Proceed with the update if the new name is different from the current name, even if empty
+            if (newCurrencyCode != userProvider.currencyCode) {
+              logger.i("Updating currency to $newCurrencyCode");
+              await userProvider.updateUserProfile(context,
+                  currencyCode: newCurrencyCode);
+            }
+          },
+        );
+      },
+    );
   }
 
   @override
@@ -182,7 +210,7 @@ class ProfilePageState extends State<ProfilePage> {
                             text: "Choose currency",
                             iconBackgroundColor: purple20,
                             iconColor: purple100,
-                            onTap: () {},
+                            onTap: () => _showCurrencyPicker(context),
                           ),
                           Divider(thickness: 1, color: light90),
                           ProfileMenuItem(
