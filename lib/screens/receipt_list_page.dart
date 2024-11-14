@@ -7,6 +7,7 @@ import 'package:receipt_manager/providers/receipt_provider.dart';
 import 'package:receipt_manager/screens/financial_report_page.dart';
 
 import '../components/expense_item_card.dart';
+import '../components/filter_popup.dart';
 
 class ReceiptListPage extends StatelessWidget {
   static const String id = 'expense_list_page';
@@ -23,8 +24,14 @@ class ReceiptListPage extends StatelessWidget {
         centerTitle: true,
         actions: [
           IconButton(
-            icon: Icon(Icons.menu, color: Colors.black),
-            onPressed: () {},
+            icon: Icon(Icons.filter_list_rounded, color: Colors.black),
+            onPressed: () {
+              showModalBottomSheet(
+                context: context,
+                isScrollControlled: true,
+                builder: (context) => const FilterPopup(),
+              );
+            },
           ),
         ],
       ),
