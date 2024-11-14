@@ -83,6 +83,9 @@ class ReceiptProvider extends ChangeNotifier {
                 .cast<Map<String, dynamic>>();
         logger.i("Total receipts fetched: ${allReceipts.length}");
 
+        // Get categories from CategoryProvider to map category details
+        final categories = _categoryProvider?.categories ?? [];
+
         // Apply category and payment method filters with default values
         List<Map<String, dynamic>> filteredReceipts =
             allReceipts.where((receipt) {
@@ -121,6 +124,18 @@ class ReceiptProvider extends ChangeNotifier {
           }
 
           return matchesCategory && matchesPayment;
+        }).map((receipt) {
+          // Add categoryName and categoryIcon to each receipt based on categoryId
+          final category = categories.firstWhere(
+            (cat) => cat['id'] == receipt['categoryId'],
+            orElse: () => {'name': 'Unknown', 'icon': '❓'},
+          );
+
+          return {
+            ...receipt,
+            'categoryName': category['name'],
+            'categoryIcon': category['icon'],
+          };
         }).toList();
 
         logger.i("Receipts after filtering: ${filteredReceipts.length}");
