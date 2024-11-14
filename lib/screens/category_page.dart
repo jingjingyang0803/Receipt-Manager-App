@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../components/add_category_widget.dart';
+import '../constants/app_colors.dart';
 import '../logger.dart';
 import '../providers/authentication_provider.dart';
 import '../providers/category_provider.dart';
@@ -34,7 +35,6 @@ class CategoryPageState extends State<CategoryPage> {
     }
   }
 
-  // Function to show the AddCategoryWidget dialog
   void _showAddCategoryDialog() {
     final authProvider =
         Provider.of<AuthenticationProvider>(context, listen: false);
@@ -51,7 +51,6 @@ class CategoryPageState extends State<CategoryPage> {
             child: AddCategoryWidget(
               userId: userEmail,
               onCategoryAdded: () {
-                // Refresh categories when a new category is added
                 Provider.of<CategoryProvider>(context, listen: false)
                     .loadUserCategories(userEmail);
               },
@@ -76,22 +75,22 @@ class CategoryPageState extends State<CategoryPage> {
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: Text('Delete Category'),
+              title: Text('Delete Category',
+                  style: TextStyle(color: Colors.black)),
               content: Text(
                   'If you delete this category, the receipts belonging to it will have a null category value. Are you sure you want to delete this category?'),
               actions: [
                 TextButton(
                   onPressed: () {
-                    Navigator.of(context).pop(false); // Cancel the deletion
+                    Navigator.of(context).pop(false);
                   },
-                  child: Text('Cancel'),
+                  child: Text('Cancel', style: TextStyle(color: purple100)),
                 ),
                 TextButton(
                   onPressed: () {
-                    Navigator.of(context).pop(true); // Confirm deletion
+                    Navigator.of(context).pop(true);
                   },
-                  child:
-                      Text('Delete', style: TextStyle(color: Colors.redAccent)),
+                  child: Text('Delete', style: TextStyle(color: red100)),
                 ),
               ],
             );
@@ -111,50 +110,64 @@ class CategoryPageState extends State<CategoryPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Your Categories'),
-        backgroundColor: Colors.lightBlueAccent,
+        title: Text('Manage Categories', style: TextStyle(color: Colors.black)),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        iconTheme: IconThemeData(color: Colors.black),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Consumer<CategoryProvider>(
-          builder: (context, categoryProvider, _) {
-            final categories = categoryProvider.categories;
+      body: Column(children: [
+        // Thin, subtle divider line under the AppBar
+        Divider(
+          color: Colors.grey.shade300,
+          thickness: 1,
+          height: 1,
+        ),
+        Expanded(
+          child: Container(
+            color: Colors.white,
+            padding: const EdgeInsets.all(20),
+            child: Consumer<CategoryProvider>(
+              builder: (context, categoryProvider, _) {
+                final categories = categoryProvider.categories;
 
-            return ListView.builder(
-              itemCount: categories.length,
-              itemBuilder: (context, index) {
-                String categoryId = categories[index]['id'] ?? '';
-                String categoryName = categories[index]['name']?.trim() ?? '';
+                return ListView.builder(
+                  itemCount: categories.length,
+                  itemBuilder: (context, index) {
+                    String categoryId = categories[index]['id'] ?? '';
+                    String categoryName =
+                        categories[index]['name']?.trim() ?? '';
 
-                return ListTile(
-                  leading: Text(
-                    categories[index]['icon'] ?? '',
-                    style: TextStyle(fontSize: 26),
-                  ),
-                  title: Text(
-                    categoryName,
-                    style: TextStyle(fontSize: 16),
-                  ),
-                  trailing: IconButton(
-                    icon: Icon(Icons.delete_outline, color: Colors.red),
-                    onPressed: () {
-                      deleteCategory(categoryId);
-                    },
-                  ),
-                  onTap: () {
-                    Navigator.pop(context);
+                    return ListTile(
+                      leading: Text(
+                        categories[index]['icon'] ?? '',
+                        style: TextStyle(fontSize: 24),
+                      ),
+                      title: Text(
+                        categoryName,
+                        style: TextStyle(fontSize: 16, color: Colors.black),
+                      ),
+                      trailing: IconButton(
+                        icon: Icon(Icons.delete_outline, color: purple100),
+                        onPressed: () {
+                          deleteCategory(categoryId);
+                        },
+                      ),
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
+                    );
                   },
                 );
               },
-            );
-          },
-        ),
-      ),
+            ),
+          ),
+        )
+      ]),
       floatingActionButton: FloatingActionButton(
         onPressed: _showAddCategoryDialog,
-        backgroundColor: Colors.lightBlueAccent,
+        backgroundColor: purple100,
         elevation: 6,
-        child: Icon(Icons.add),
+        child: Icon(Icons.add, color: Colors.white),
       ),
     );
   }
