@@ -111,6 +111,11 @@ class ProfilePageState extends State<ProfilePage> {
 
     return Scaffold(
       backgroundColor: light90,
+      appBar: AppBar(
+        backgroundColor: light90,
+        elevation: 0,
+        iconTheme: IconThemeData(color: Colors.black),
+      ),
       body: Consumer<UserProvider>(
         builder: (context, userProvider, _) {
           final profileImagePath = userProvider.profileImagePath;
