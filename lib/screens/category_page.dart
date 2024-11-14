@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:receipt_manager/components/category_delete_popup.dart';
 
 import '../components/add_category_widget.dart';
 import '../constants/app_colors.dart';
-import '../logger.dart';
 import '../providers/authentication_provider.dart';
 import '../providers/category_provider.dart';
 
@@ -61,51 +61,6 @@ class CategoryPageState extends State<CategoryPage> {
     }
   }
 
-  Future<void> deleteCategory(String categoryId) async {
-    final authProvider =
-        Provider.of<AuthenticationProvider>(context, listen: false);
-    final userEmail = authProvider.user?.email;
-
-    if (userEmail != null) {
-      try {
-        final categoryProvider =
-            Provider.of<CategoryProvider>(context, listen: false);
-
-        bool? confirmDelete = await showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: Text('Delete Category',
-                  style: TextStyle(color: Colors.black)),
-              content: Text(
-                  'If you delete this category, the receipts belonging to it will have a null category value. Are you sure you want to delete this category?'),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop(false);
-                  },
-                  child: Text('Cancel', style: TextStyle(color: purple100)),
-                ),
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop(true);
-                  },
-                  child: Text('Delete', style: TextStyle(color: red100)),
-                ),
-              ],
-            );
-          },
-        );
-
-        if (confirmDelete == true) {
-          await categoryProvider.deleteCategory(userEmail, categoryId);
-        }
-      } catch (e) {
-        logger.e("Error deleting category: $e");
-      }
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -149,7 +104,21 @@ class CategoryPageState extends State<CategoryPage> {
                       trailing: IconButton(
                         icon: Icon(Icons.delete_outline, color: purple100),
                         onPressed: () {
-                          deleteCategory(categoryId);
+                          showModalBottomSheet(
+                            context: context,
+                            backgroundColor: Colors.transparent,
+                            isScrollControlled: true,
+                            builder: (BuildContext context) {
+                              return CategoryDeletePopup(
+                                onConfirm: () {
+                                  Navigator.of(context).pop();
+                                },
+                                onCancel: () {
+                                  Navigator.of(context).pop();
+                                },
+                              );
+                            },
+                          );
                         },
                       ),
                       onTap: () {
