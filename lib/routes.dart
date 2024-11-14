@@ -1,16 +1,17 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:receipt_manager/screens/category_page.dart';
 
 import 'screens/add_update_receipt_screen.dart';
 import 'screens/base_page.dart';
 import 'screens/budget_screen.dart';
-import 'screens/category_screen.dart';
 import 'screens/email_sent_page.dart';
 import 'screens/expense_list_page.dart';
 import 'screens/financial_report_page.dart';
 import 'screens/forgot_password_page.dart';
 import 'screens/home_page.dart';
 import 'screens/login_page.dart';
+import 'screens/old/category_screen.dart';
 import 'screens/old/dashboard_screen.dart';
 import 'screens/old/expense_chart_screen.dart';
 import 'screens/old/scan_screen.dart';
@@ -36,7 +37,10 @@ Map<String, WidgetBuilder> appRoutes = {
   HomePage.id: (context) => HomePage(),
   ExpenseListPage.id: (context) => ExpenseListPage(),
   ProfilePage.id: (context) => ProfilePage(),
+  CategoryPage.id: (context) => CategoryPage(),
   FinancialReportPage.id: (context) => FinancialReportPage(),
+
+  ////
   ScanScreen.id: (context) => ScanScreen(),
   AddOrUpdateReceiptScreen.id: (context) => AddOrUpdateReceiptScreen(),
   ReceiptListScreen.id: (context) => ReceiptListScreen(),

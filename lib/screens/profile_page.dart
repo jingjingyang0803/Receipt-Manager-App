@@ -10,6 +10,7 @@ import '../constants/app_colors.dart';
 import '../logger.dart';
 import '../providers/authentication_provider.dart';
 import '../providers/user_provider.dart';
+import 'category_page.dart';
 
 class ProfilePage extends StatefulWidget {
   static const String id = 'profile_page';
@@ -202,7 +203,9 @@ class ProfilePageState extends State<ProfilePage> {
                             text: "Manage categories",
                             iconBackgroundColor: purple20,
                             iconColor: purple100,
-                            onTap: () {},
+                            onTap: () {
+                              Navigator.pushNamed(context, CategoryPage.id);
+                            },
                           ),
                           Divider(thickness: 1, color: light90),
                           ProfileMenuItem(
