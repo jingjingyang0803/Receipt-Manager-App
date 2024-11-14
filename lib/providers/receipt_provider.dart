@@ -40,34 +40,64 @@ class ReceiptProvider extends ChangeNotifier {
   String? get _userEmail => _authProvider?.user?.email;
 
   // Fetch receipts as a stream and map category details
+
   Stream<List<Map<String, dynamic>>> fetchReceipts() async* {
     if (_userEmail != null && _categoryProvider != null) {
+      print("Starting fetchReceipts for user: $_userEmail");
+
+      // Fetching receipts stream from Firestore
       Stream<DocumentSnapshot<Map<String, dynamic>>> receiptsStream =
           _receiptService.fetchReceipts(_userEmail!);
 
       await for (var snapshot in receiptsStream) {
-        List<Map<String, dynamic>> receipts = snapshot.exists
-            ? (snapshot.data()?['receipts'] as List<dynamic>).map((receipt) {
-                final receiptMap = receipt as Map<String, dynamic>;
+        // Check if the snapshot has receiptlist data or is null
+        final rawReceipts = snapshot.data()?['receiptlist'] as List<dynamic>?;
 
-                // Map each receipt with category details from CategoryProvider
-                final categoryId = receiptMap['categoryId'];
-                final category = _categoryProvider?.categories.firstWhere(
-                  (cat) => cat['id'] == categoryId,
-                  orElse: () => {'name': 'Unknown', 'icon': '❓'},
-                );
+        if (rawReceipts == null) {
+          print(
+              "No receipts found or 'receiptlist' field is null in Firestore for user: $_userEmail");
+          yield [];
+          continue;
+        }
 
-                return {
-                  ...receiptMap,
-                  'categoryName': category?['name'] ?? 'Unknown',
-                  'categoryIcon': category?['icon'] ?? '❓',
-                };
-              }).toList()
-            : [];
+        print(
+            "Firestore snapshot received for user: $_userEmail with ${rawReceipts.length} receipts");
 
-        yield receipts;
+        // Process the receipt list safely
+        try {
+          List<Map<String, dynamic>> receipts = rawReceipts.map((receipt) {
+            final receiptMap = receipt as Map<String, dynamic>;
+
+            // Logging individual receipt data
+            print("Processing receipt: $receiptMap");
+
+            // Map each receipt with category details from CategoryProvider
+            final categoryId = receiptMap['categoryId'];
+            final category = _categoryProvider?.categories.firstWhere(
+              (cat) => cat['id'] == categoryId,
+              orElse: () => {'name': 'Unknown', 'icon': '❓'},
+            );
+
+            print(
+                "Mapped category for receipt: ID = $categoryId, Name = ${category?['name']}, Icon = ${category?['icon']}");
+
+            return {
+              ...receiptMap,
+              'categoryName': category?['name'] ?? 'Unknown',
+              'categoryIcon': category?['icon'] ?? '❓',
+            };
+          }).toList();
+
+          print("Total receipts processed: ${receipts.length}");
+
+          yield receipts;
+        } catch (e) {
+          print("Error processing receipts: $e");
+          yield []; // Yield an empty list if there was an error
+        }
       }
     } else {
+      print("User email or category provider is null");
       throw Exception("User email or category provider is null");
     }
   }
