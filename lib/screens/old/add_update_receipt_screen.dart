@@ -5,18 +5,18 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:receipt_manager/screens/old/receipt_list_screen.dart';
 import 'package:receipt_manager/screens/old/scan_screen.dart';
-import 'package:receipt_manager/screens/receipt_list_screen.dart';
 
-import '../components//rounded_button.dart';
-import '../components/add_category_widget.dart';
-import '../components/currency_roller_picker.dart';
-import '../logger.dart';
-import '../services/auth_service.dart';
-import '../services/category_service.dart';
-import '../services/currency_service.dart';
-import '../services/receipt_service_old.dart';
-import '../services/storage_service.dart';
+import '../../components/add_category_widget.dart';
+import '../../components/currency_roller_picker.dart';
+import '../../components/old/rounded_button.dart';
+import '../../logger.dart';
+import '../../services/auth_service.dart';
+import '../../services/category_service.dart';
+import '../../services/currency_service.dart';
+import '../../services/receipt_service_old.dart';
+import '../../services/storage_service.dart';
 
 class AddOrUpdateReceiptScreen extends StatefulWidget {
   static const String id = 'add_receipt_screen';

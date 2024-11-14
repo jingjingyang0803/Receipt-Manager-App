@@ -8,7 +8,7 @@ import 'package:image/image.dart' as img;
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:receipt_manager/components/rounded_button.dart';
+import 'package:receipt_manager/components/old/rounded_button.dart';
 
 import '../../logger.dart';
 import '../../services/auth_service.dart';
