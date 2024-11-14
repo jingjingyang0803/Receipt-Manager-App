@@ -10,7 +10,7 @@ import '../components/expense_item_card.dart';
 import '../components/filter_popup.dart';
 
 class ReceiptListPage extends StatelessWidget {
-  static const String id = 'expense_list_page';
+  static const String id = 'receipt_list_page';
 
   const ReceiptListPage({super.key});
 
@@ -64,25 +64,29 @@ class ReceiptListPage extends StatelessWidget {
 
                       if (!snapshot.hasData || snapshot.data!.isEmpty) {
                         return const Center(
-                          child: Text('No expenses found.'),
+                          child: Text('No entries found.'),
                         );
                       }
 
                       List<Map<String, dynamic>> receipts = snapshot.data!;
                       List<Map<String, dynamic>> todayReceipts = receipts
-                          .where((receipt) =>
-                              _isToday((receipt['date'] as Timestamp).toDate()))
+                          .where((receipt) => _isToday(
+                              (receipt['date'] as Timestamp?)?.toDate() ??
+                                  DateTime.now()))
                           .toList();
                       List<Map<String, dynamic>> yesterdayReceipts = receipts
                           .where((receipt) => _isYesterday(
-                              (receipt['date'] as Timestamp).toDate()))
+                              (receipt['date'] as Timestamp?)?.toDate() ??
+                                  DateTime.now()))
                           .toList();
                       List<Map<String, dynamic>> otherReceipts = receipts
                           .where((receipt) =>
                               !_isToday(
-                                  (receipt['date'] as Timestamp).toDate()) &&
+                                  (receipt['date'] as Timestamp?)?.toDate() ??
+                                      DateTime.now()) &&
                               !_isYesterday(
-                                  (receipt['date'] as Timestamp).toDate()))
+                                  (receipt['date'] as Timestamp?)?.toDate() ??
+                                      DateTime.now()))
                           .toList();
 
                       return SingleChildScrollView(
@@ -97,12 +101,17 @@ class ReceiptListPage extends StatelessWidget {
                               ),
                               for (var receipt in todayReceipts)
                                 ExpenseItem(
-                                  categoryIcon: receipt['categoryIcon'],
-                                  categoryName: receipt['categoryName'],
-                                  merchantName: receipt['merchantName'],
+                                  categoryIcon: receipt['categoryIcon'] ??
+                                      Icons
+                                          .category, // Use default icon if null
+                                  categoryName: receipt['categoryName'] ??
+                                      'Unknown Category',
+                                  merchantName: receipt['merchantName'] ??
+                                      'Unknown Merchant',
                                   amount:
-                                      '${receipt['amount'] >= 0 ? '+' : '-'} \$${receipt['amount'].abs().toStringAsFixed(2)}',
-                                  paymentMethod: receipt['paymentMethod'],
+                                      '${(receipt['amount'] ?? 0) >= 0 ? '+' : '-'} \$${(receipt['amount'] ?? 0).abs().toStringAsFixed(2)}',
+                                  paymentMethod: receipt['paymentMethod'] ??
+                                      'Unknown Payment Method',
                                 ),
                               const SizedBox(height: 16),
                             ],
@@ -114,12 +123,16 @@ class ReceiptListPage extends StatelessWidget {
                               ),
                               for (var receipt in yesterdayReceipts)
                                 ExpenseItem(
-                                  categoryIcon: receipt['categoryIcon'],
-                                  categoryName: receipt['categoryName'],
-                                  merchantName: receipt['merchantName'],
+                                  categoryIcon:
+                                      receipt['categoryIcon'] ?? Icons.category,
+                                  categoryName: receipt['categoryName'] ??
+                                      'Unknown Category',
+                                  merchantName: receipt['merchantName'] ??
+                                      'Unknown Merchant',
                                   amount:
-                                      '${receipt['amount'] >= 0 ? '+' : '-'} \$${receipt['amount'].abs().toStringAsFixed(2)}',
-                                  paymentMethod: receipt['paymentMethod'],
+                                      '${(receipt['amount'] ?? 0) >= 0 ? '+' : '-'} \$${(receipt['amount'] ?? 0).abs().toStringAsFixed(2)}',
+                                  paymentMethod: receipt['paymentMethod'] ??
+                                      'Unknown Payment Method',
                                 ),
                               const SizedBox(height: 16),
                             ],
@@ -135,12 +148,16 @@ class ReceiptListPage extends StatelessWidget {
                                 ),
                                 for (var entry in receipt.value)
                                   ExpenseItem(
-                                    categoryIcon: entry['categoryIcon'],
-                                    categoryName: entry['categoryName'],
-                                    merchantName: entry['merchantName'],
+                                    categoryIcon:
+                                        entry['categoryIcon'] ?? Icons.category,
+                                    categoryName: entry['categoryName'] ??
+                                        'Unknown Category',
+                                    merchantName: entry['merchantName'] ??
+                                        'Unknown Merchant',
                                     amount:
-                                        '${entry['amount'] >= 0 ? '+' : '-'} \$${entry['amount'].abs().toStringAsFixed(2)}',
-                                    paymentMethod: entry['paymentMethod'],
+                                        '${(entry['amount'] ?? 0) >= 0 ? '+' : '-'} \$${(entry['amount'] ?? 0).abs().toStringAsFixed(2)}',
+                                    paymentMethod: entry['paymentMethod'] ??
+                                        'Unknown Payment Method',
                                   ),
                                 const SizedBox(height: 16),
                               ]
@@ -165,9 +182,11 @@ class ReceiptListPage extends StatelessWidget {
           final dummyReceipt = {
             'categoryId': '1f8G7NcXiXAfm4sJ18P5',
             'merchantName': 'Dummy Store',
-            'amount': -50.0,
+            'amount': 50.0,
             'date': Timestamp.now(),
             'paymentMethod': 'Credit Card',
+            'description': '',
+            'imageUrl': ''
           };
 
           receiptProvider.addReceipt(receiptData: dummyReceipt);
@@ -233,7 +252,8 @@ class ReceiptListPage extends StatelessWidget {
     Map<String, List<Map<String, dynamic>>> groupedReceipts = {};
 
     for (var receipt in receipts) {
-      DateTime date = (receipt['date'] as Timestamp).toDate();
+      DateTime date =
+          (receipt['date'] as Timestamp?)?.toDate() ?? DateTime.now();
       String formattedDate = DateFormat('MMMM dd, yyyy').format(date);
 
       if (groupedReceipts.containsKey(formattedDate)) {
