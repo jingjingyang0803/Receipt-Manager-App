@@ -7,9 +7,9 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:receipt_manager/providers/category_provider.dart';
 import 'package:receipt_manager/providers/receipt_provider.dart';
-import 'package:receipt_manager/screens/receipt_list_screen.dart';
+import 'package:receipt_manager/screens/old/receipt_list_screen.dart';
 
-import '../components/rounded_button.dart';
+import '../components/old/rounded_button.dart';
 import '../services/storage_service.dart';
 
 class AddOrUpdateReceiptPage extends StatefulWidget {
