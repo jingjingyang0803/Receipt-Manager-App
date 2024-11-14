@@ -17,6 +17,9 @@ class UserProvider extends ChangeNotifier {
   // Getter for profileImagePath
   String? get profileImagePath => _userProfile?.data()?['profileImagePath'];
 
+  // Getter for currencyCode
+  String? get currencyCode => _userProfile?.data()?['currencyCode'];
+
   // Fetch user profile data and listen for updates
   void fetchUserProfile(BuildContext context) {
     final authProvider =
@@ -61,11 +64,13 @@ class UserProvider extends ChangeNotifier {
     final email =
         Provider.of<AuthenticationProvider>(context, listen: false).user?.email;
     if (email != null) {
+      // Provide default values for optional fields if they are null
       await _userService.updateUserProfile(
         email: email,
-        userName: userName ?? '',
-        profileImagePath: profileImagePath ?? '',
-        currencyCode: currencyCode ?? '',
+        userName:
+            userName ?? this.userName ?? '', // Default to '' if both are null
+        profileImagePath: profileImagePath ?? this.profileImagePath ?? '',
+        currencyCode: currencyCode ?? this.currencyCode ?? '',
       );
       notifyListeners();
     }
