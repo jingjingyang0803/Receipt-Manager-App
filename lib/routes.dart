@@ -6,7 +6,6 @@ import 'screens/add_update_receipt_screen.dart';
 import 'screens/base_page.dart';
 import 'screens/budget_screen.dart';
 import 'screens/email_sent_page.dart';
-import 'screens/expense_list_page.dart';
 import 'screens/financial_report_page.dart';
 import 'screens/forgot_password_page.dart';
 import 'screens/home_page.dart';
@@ -18,6 +17,7 @@ import 'screens/old/scan_screen.dart';
 import 'screens/old/setting_screen.dart';
 import 'screens/old/summary_screen.dart';
 import 'screens/profile_page.dart';
+import 'screens/receipt_list_page.dart';
 import 'screens/receipt_list_screen.dart';
 import 'screens/set_budget_page.dart';
 import 'screens/signup_page.dart';
@@ -35,7 +35,7 @@ Map<String, WidgetBuilder> appRoutes = {
   EmailSentPage.id: (context) => EmailSentPage(email: ''),
   BasePage.id: (context) => BasePage(),
   HomePage.id: (context) => HomePage(),
-  ExpenseListPage.id: (context) => ExpenseListPage(),
+  ReceiptListPage.id: (context) => ReceiptListPage(),
   ProfilePage.id: (context) => ProfilePage(),
   CategoryPage.id: (context) => CategoryPage(),
   FinancialReportPage.id: (context) => FinancialReportPage(),
