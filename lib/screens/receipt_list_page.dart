@@ -14,6 +14,22 @@ class ReceiptListPage extends StatelessWidget {
 
   const ReceiptListPage({super.key});
 
+  void _openFilterPopup(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) => FilterPopup(
+        onApply: (paymentMethods, sortOrder, categoryIds) {
+          Provider.of<ReceiptProvider>(context, listen: false).updateFilters(
+            paymentMethods: paymentMethods,
+            sortOrder: sortOrder,
+            categoryIds: categoryIds,
+          );
+        },
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,13 +41,7 @@ class ReceiptListPage extends StatelessWidget {
         actions: [
           IconButton(
             icon: Icon(Icons.filter_list_rounded, color: Colors.black),
-            onPressed: () {
-              showModalBottomSheet(
-                context: context,
-                isScrollControlled: true,
-                builder: (context) => const FilterPopup(),
-              );
-            },
+            onPressed: () => _openFilterPopup(context),
           ),
         ],
       ),

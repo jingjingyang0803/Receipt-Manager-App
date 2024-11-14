@@ -39,63 +39,60 @@ class ReceiptProvider extends ChangeNotifier {
   // Helper to get user email from AuthenticationProvider
   String? get _userEmail => _authProvider?.user?.email;
 
-  // Fetch receipts as a stream and map category details
+  List<String> _selectedPaymentMethods = [
+    'Credit Card',
+    'Debit Card',
+    'Cash',
+    'Other'
+  ];
+  String _sortOrder = 'Highest';
+  List<String> _selectedCategoryIds = [];
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  // Method to update filters
+  void updateFilters({
+    required List<String> paymentMethods,
+    required String sortOrder,
+    required List<String> categoryIds,
+  }) {
+    _selectedPaymentMethods = paymentMethods;
+    _sortOrder = sortOrder;
+    _selectedCategoryIds = categoryIds;
+    notifyListeners(); // Notify to rebuild with updated filters
+  }
+
   Stream<List<Map<String, dynamic>>> fetchReceipts() async* {
-    if (_userEmail != null && _categoryProvider != null) {
-      print("Starting fetchReceipts for user: $_userEmail");
+    final userDoc = _firestore.collection('receipts').doc(_userEmail);
+    await for (var snapshot in userDoc.snapshots()) {
+      List<Map<String, dynamic>> allReceipts =
+          (snapshot.data()?['receiptlist'] ?? []).cast<Map<String, dynamic>>();
 
-      // Fetching receipts stream from Firestore
-      Stream<DocumentSnapshot<Map<String, dynamic>>> receiptsStream =
-          _receiptService.fetchReceipts(_userEmail!);
+      // Apply category and payment method filters
+      List<Map<String, dynamic>> filteredReceipts =
+          allReceipts.where((receipt) {
+        bool matchesCategory =
+            _selectedCategoryIds.contains(receipt['categoryId'] ?? 'null');
+        bool matchesPayment = _selectedPaymentMethods.isEmpty ||
+            _selectedPaymentMethods.contains(receipt['paymentMethod']);
+        return matchesCategory && matchesPayment;
+      }).toList();
 
-      await for (var snapshot in receiptsStream) {
-        final rawReceipts = snapshot.data()?['receiptlist'] as List<dynamic>?;
-
-        if (rawReceipts == null) {
-          print(
-              "No receipts found or 'receiptlist' field is null in Firestore for user: $_userEmail");
-          yield [];
-          continue;
+      // Apply sorting based on amount or date
+      filteredReceipts.sort((a, b) {
+        int result;
+        if (_sortOrder == 'Highest' || _sortOrder == 'Lowest') {
+          result = (b['amount'] as double).compareTo(a['amount'] as double);
+          if (_sortOrder == 'Lowest') result = -result;
+        } else {
+          DateTime dateA = (a['date'] as Timestamp).toDate();
+          DateTime dateB = (b['date'] as Timestamp).toDate();
+          result = dateB.compareTo(dateA);
+          if (_sortOrder == 'Oldest') result = -result;
         }
+        return result;
+      });
 
-        print(
-            "Firestore snapshot received for user: $_userEmail with ${rawReceipts.length} receipts");
-
-        try {
-          List<Map<String, dynamic>> receipts = rawReceipts.map((receipt) {
-            final receiptMap = receipt as Map<String, dynamic>;
-
-            // Logging individual receipt data
-            print("Processing receipt: $receiptMap");
-
-            // Map each receipt with category details from CategoryProvider
-            final categoryId = receiptMap['categoryId'];
-            final category = _categoryProvider?.categories.firstWhere(
-              (cat) => cat['id'] == categoryId,
-              orElse: () => {'name': 'Unknown', 'icon': '❓'},
-            );
-
-            print(
-                "Mapped category for receipt: ID = $categoryId, Name = ${category?['name']}, Icon = ${category?['icon']}");
-
-            return {
-              ...receiptMap,
-              'categoryName': category?['name'] ?? 'Unknown',
-              'categoryIcon': category?['icon'] ?? '❓',
-            };
-          }).toList();
-
-          print("Total receipts processed: ${receipts.length}");
-
-          yield receipts;
-        } catch (e) {
-          print("Error processing receipts: $e");
-          yield []; // Yield an empty list if there was an error
-        }
-      }
-    } else {
-      print("User email or category provider is null");
-      throw Exception("User email or category provider is null");
+      yield filteredReceipts;
     }
   }
 

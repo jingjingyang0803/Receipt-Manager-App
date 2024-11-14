@@ -39,8 +39,9 @@ class FilterPopupState extends State<FilterPopup> {
         .map<String>((category) =>
             category['id'] ?? 'null') // Include "null" for Uncategorized
         .toList();
-    if (!selectedCategoryIds.contains('null'))
+    if (!selectedCategoryIds.contains('null')) {
       selectedCategoryIds.add('null'); // Add 'Uncategorized' if missing
+    }
   }
 
   @override
