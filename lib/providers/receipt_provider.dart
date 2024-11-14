@@ -200,6 +200,13 @@ class ReceiptProvider extends ChangeNotifier {
     }
   }
 
+  Future<void> fetchDailyGroupedReceipts(
+      DateTime startDate, DateTime endDate) async {
+    if (_userEmail != null) {
+      await groupReceiptsByInterval(TimeInterval.day, startDate, endDate);
+    }
+  }
+
   // Get oldest and newest dates of receipts
   Future<void> loadOldestAndNewestDates() async {
     if (_userEmail != null) {
