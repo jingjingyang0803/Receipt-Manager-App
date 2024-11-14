@@ -15,19 +15,15 @@ class BudgetPage extends StatefulWidget {
 
 class BudgetPageState extends State<BudgetPage> {
   late BudgetProvider budgetProvider;
+  List<Map<String, dynamic>> updatedBudgets = []; // Local list to store changes
 
-  @override
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      // Load budgets once the widget is added to the tree
-      Provider.of<BudgetProvider>(context, listen: false).loadUserBudgets();
+      budgetProvider = Provider.of<BudgetProvider>(context, listen: false);
+      budgetProvider.loadUserBudgets(); // Load budgets when the page is opened
     });
-  }
-
-  void loadUserBudgets() {
-    budgetProvider.loadUserBudgets();
   }
 
   @override
@@ -41,11 +37,7 @@ class BudgetPageState extends State<BudgetPage> {
       ),
       body: Column(
         children: [
-          Divider(
-            color: Colors.grey.shade300,
-            thickness: 1,
-            height: 1,
-          ),
+          Divider(color: Colors.grey.shade300, thickness: 1, height: 1),
           Expanded(
             child: Container(
               color: Colors.white,
@@ -53,31 +45,31 @@ class BudgetPageState extends State<BudgetPage> {
               child: Consumer<BudgetProvider>(
                 builder: (context, budgetProvider, _) {
                   final budgets = budgetProvider.budgets;
-                  print('budgets: $budgets');
+
+                  // Initialize updatedBudgets when budgets are loaded
+                  if (updatedBudgets.isEmpty) {
+                    updatedBudgets =
+                        budgets.map((budget) => {...budget}).toList();
+                  }
 
                   return ListView.builder(
-                    itemCount: budgets.length,
+                    itemCount: updatedBudgets.length,
                     itemBuilder: (context, index) {
-                      // Extract category info from budgets
                       String categoryName =
-                          budgets[index]['categoryName'] ?? '';
+                          updatedBudgets[index]['categoryName'] ?? '';
                       String categoryIcon =
-                          budgets[index]['categoryIcon'] ?? '';
-
-                      // Controller for budget input
+                          updatedBudgets[index]['categoryIcon'] ?? '';
                       TextEditingController controller = TextEditingController(
-                        text: budgets[index]['amount'].toStringAsFixed(2),
+                        text:
+                            updatedBudgets[index]['amount'].toStringAsFixed(2),
                       );
 
                       return ListTile(
-                        leading: Text(
-                          categoryIcon,
-                          style: TextStyle(fontSize: 24),
-                        ),
-                        title: Text(
-                          categoryName,
-                          style: TextStyle(fontSize: 16, color: Colors.black),
-                        ),
+                        leading:
+                            Text(categoryIcon, style: TextStyle(fontSize: 24)),
+                        title: Text(categoryName,
+                            style:
+                                TextStyle(fontSize: 16, color: Colors.black)),
                         trailing: SizedBox(
                           width: 80,
                           child: TextFormField(
@@ -99,8 +91,7 @@ class BudgetPageState extends State<BudgetPage> {
                                   horizontal: 8, vertical: 4),
                             ),
                             onChanged: (value) {
-                              // Update the amount in the budgets list
-                              budgets[index]['amount'] =
+                              updatedBudgets[index]['amount'] =
                                   double.tryParse(value) ?? 0.0;
                             },
                           ),
@@ -116,8 +107,7 @@ class BudgetPageState extends State<BudgetPage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          // Save updated budgets via the provider
-          await budgetProvider.updateUserBudgets(budgetProvider.budgets);
+          await budgetProvider.updateUserBudgets(updatedBudgets);
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text("Budgets saved successfully")),
           );
