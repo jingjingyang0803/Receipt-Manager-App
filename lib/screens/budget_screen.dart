@@ -49,8 +49,8 @@ class BudgetScreenState extends State<BudgetScreen> {
       ),
       builder: (BuildContext context) {
         return CurrencyPicker(
-          selectedCurrency: selectedCurrency,
-          onCurrencySelected: (String newCurrency) {
+          selectedCurrencyCode: selectedCurrency,
+          onCurrencyCodeSelected: (String newCurrency) {
             setState(() {
               selectedCurrency = newCurrency;
             });

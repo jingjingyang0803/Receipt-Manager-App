@@ -127,8 +127,8 @@ class ExpenseChartScreenState extends State<ExpenseChartScreen> {
       ),
       builder: (BuildContext context) {
         return CurrencyPicker(
-          selectedCurrency: selectedBaseCurrency,
-          onCurrencySelected: (String newCurrency) {
+          selectedCurrencyCode: selectedBaseCurrency,
+          onCurrencyCodeSelected: (String newCurrency) {
             setState(() {
               selectedBaseCurrency = newCurrency;
             });
