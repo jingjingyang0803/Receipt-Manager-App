@@ -31,6 +31,50 @@ class ReceiptListPage extends StatelessWidget {
     );
   }
 
+  Widget _buildReceiptSection(
+    BuildContext context, {
+    required String sectionTitle,
+    required List<Map<String, dynamic>> receipts,
+  }) {
+    return receipts.isNotEmpty
+        ? Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                sectionTitle,
+                style:
+                    const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 8),
+              ...receipts.map((receipt) => ExpenseItem(
+                    categoryIcon: receipt['categoryIcon'] ?? Icons.category,
+                    categoryName: receipt['categoryName'] ?? 'Unknown Category',
+                    merchantName: receipt['merchantName'] ?? 'Unknown Merchant',
+                    amount:
+                        '${(receipt['amount'] ?? 0) >= 0 ? '+' : '-'} \$${(receipt['amount'] ?? 0).abs().toStringAsFixed(2)}',
+                    paymentMethod:
+                        receipt['paymentMethod'] ?? 'Unknown Payment Method',
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => AddOrUpdateReceiptPage(
+                            existingReceipt: receipt,
+                            receiptId: receipt['id'],
+                          ),
+                        ),
+                      ).then((_) {
+                        Provider.of<ReceiptProvider>(context, listen: false)
+                            .fetchReceipts();
+                      });
+                    },
+                  )),
+              const SizedBox(height: 16),
+            ],
+          )
+        : const SizedBox.shrink();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -94,75 +138,16 @@ class ReceiptListPage extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            if (todayReceipts.isNotEmpty) ...[
-                              const Text(
-                                'Today',
-                                style: TextStyle(
-                                    fontSize: 18, fontWeight: FontWeight.bold),
-                              ),
-                              for (var receipt in todayReceipts)
-                                ExpenseItem(
-                                  categoryIcon: receipt['categoryIcon'] ??
-                                      Icons
-                                          .category, // Use default icon if null
-                                  categoryName: receipt['categoryName'] ??
-                                      'Unknown Category',
-                                  merchantName: receipt['merchantName'] ??
-                                      'Unknown Merchant',
-                                  amount:
-                                      '${(receipt['amount'] ?? 0) >= 0 ? '+' : '-'} \$${(receipt['amount'] ?? 0).abs().toStringAsFixed(2)}',
-                                  paymentMethod: receipt['paymentMethod'] ??
-                                      'Unknown Payment Method',
-                                ),
-                              const SizedBox(height: 16),
-                            ],
-                            if (yesterdayReceipts.isNotEmpty) ...[
-                              const Text(
-                                'Yesterday',
-                                style: TextStyle(
-                                    fontSize: 18, fontWeight: FontWeight.bold),
-                              ),
-                              for (var receipt in yesterdayReceipts)
-                                ExpenseItem(
-                                  categoryIcon:
-                                      receipt['categoryIcon'] ?? Icons.category,
-                                  categoryName: receipt['categoryName'] ??
-                                      'Unknown Category',
-                                  merchantName: receipt['merchantName'] ??
-                                      'Unknown Merchant',
-                                  amount:
-                                      '${(receipt['amount'] ?? 0) >= 0 ? '+' : '-'} \$${(receipt['amount'] ?? 0).abs().toStringAsFixed(2)}',
-                                  paymentMethod: receipt['paymentMethod'] ??
-                                      'Unknown Payment Method',
-                                ),
-                              const SizedBox(height: 16),
-                            ],
-                            if (otherReceipts.isNotEmpty) ...[
-                              for (var receipt
-                                  in _groupReceiptsByDate(otherReceipts)
-                                      .entries) ...[
-                                Text(
-                                  receipt.key, // Date as section header
-                                  style: const TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                                for (var entry in receipt.value)
-                                  ExpenseItem(
-                                    categoryIcon:
-                                        entry['categoryIcon'] ?? Icons.category,
-                                    categoryName: entry['categoryName'] ??
-                                        'Unknown Category',
-                                    merchantName: entry['merchantName'] ??
-                                        'Unknown Merchant',
-                                    amount:
-                                        '${(entry['amount'] ?? 0) >= 0 ? '+' : '-'} \$${(entry['amount'] ?? 0).abs().toStringAsFixed(2)}',
-                                    paymentMethod: entry['paymentMethod'] ??
-                                        'Unknown Payment Method',
-                                  ),
-                                const SizedBox(height: 16),
-                              ]
-                            ],
+                            _buildReceiptSection(context,
+                                sectionTitle: 'Today', receipts: todayReceipts),
+                            _buildReceiptSection(context,
+                                sectionTitle: 'Yesterday',
+                                receipts: yesterdayReceipts),
+                            for (var entry
+                                in _groupReceiptsByDate(otherReceipts).entries)
+                              _buildReceiptSection(context,
+                                  sectionTitle: entry.key,
+                                  receipts: entry.value),
                           ],
                         ),
                       );
