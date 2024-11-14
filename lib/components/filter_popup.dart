@@ -21,12 +21,18 @@ class FilterPopupState extends State<FilterPopup> {
   @override
   void initState() {
     super.initState();
-    // Initialize all categories as selected
+    // Initialize all categories as selected, including "Uncategorized"
+    _selectAllCategories(); // Ensure all categories are selected by default
+  }
+
+  void _selectAllCategories() {
     final categoryProvider =
         Provider.of<CategoryProvider>(context, listen: false);
+    // Add all category IDs and 'uncategorized' for null IDs to selectedCategoryIds
     selectedCategoryIds = categoryProvider.categories
-        .map<String>((category) => category['id'])
+        .map<String>((category) => category['id'] ?? 'invalid')
         .toList();
+    selectedCategoryIds.add('null');
   }
 
   @override
@@ -119,14 +125,25 @@ class FilterPopupState extends State<FilterPopup> {
             Wrap(
               spacing: 8,
               runSpacing: 8,
-              children: userCategories.map((category) {
-                final isSelected = selectedCategoryIds.contains(category['id']);
-                return _buildCategoryButton(
-                  category['name'],
-                  category['id'],
-                  isSelected,
-                );
-              }).toList(),
+              children: [
+                ...userCategories.map((category) {
+                  final categoryId = category['id'] ?? 'invalid';
+                  final categoryName = category['name'] ?? 'unknown';
+                  final isSelected = selectedCategoryIds.contains(categoryId);
+                  return _buildCategoryButton(
+                    categoryName,
+                    categoryId,
+                    isSelected,
+                  );
+                }),
+                // Add "Uncategorized" option if not already in the list
+                if (!userCategories.any((category) => category['id'] == null))
+                  _buildCategoryButton(
+                    'Uncategorized',
+                    'null',
+                    selectedCategoryIds.contains('null'),
+                  ),
+              ],
             ),
           const SizedBox(height: 24),
           Row(
@@ -143,13 +160,8 @@ class FilterPopupState extends State<FilterPopup> {
                       setState(() {
                         selectedFilter = 'Credit Card';
                         selectedSort = 'Highest';
-                        // Reset selectedCategoryIds to include all categories
-                        final categoryProvider = Provider.of<CategoryProvider>(
-                            context,
-                            listen: false);
-                        selectedCategoryIds = categoryProvider.categories
-                            .map<String>((category) => category['id'])
-                            .toList();
+                        // Reset selectedCategoryIds to include all categories and "Uncategorized"
+                        _selectAllCategories(); // Ensure all categories are re-selected on reset
                       });
                     },
                   ),
