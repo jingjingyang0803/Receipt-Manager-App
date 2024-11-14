@@ -13,7 +13,6 @@ import 'screens/home_page.dart';
 import 'screens/login_page.dart';
 import 'screens/old/dashboard_screen.dart';
 import 'screens/old/expense_chart_screen.dart';
-import 'screens/old/profile_screen.dart';
 import 'screens/old/scan_screen.dart';
 import 'screens/old/setting_screen.dart';
 import 'screens/old/summary_screen.dart';
@@ -46,7 +45,6 @@ Map<String, WidgetBuilder> appRoutes = {
   SummaryScreen.id: (context) => SummaryScreen(),
   ExpenseChartScreen.id: (context) => ExpenseChartScreen(),
   DashboardScreen.id: (context) => DashboardScreen(),
-  ProfileScreen.id: (context) => ProfileScreen(),
   SettingScreen.id: (context) => SettingScreen(),
   SetBudgetPage.id: (context) => SetBudgetPage(),
 };
