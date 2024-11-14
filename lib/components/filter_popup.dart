@@ -6,7 +6,10 @@ import '../providers/category_provider.dart';
 import 'custom_button.dart';
 
 class FilterPopup extends StatefulWidget {
-  const FilterPopup({super.key});
+  final Function(List<String> paymentMethods, String sortOrder,
+      List<String> categoryIds) onApply;
+
+  const FilterPopup({super.key, required this.onApply});
 
   @override
   FilterPopupState createState() => FilterPopupState();
@@ -203,7 +206,9 @@ class FilterPopupState extends State<FilterPopup> {
                     backgroundColor: purple100,
                     textColor: light80,
                     onPressed: () {
-                      // Implement filter application logic here
+                      widget.onApply(selectedPaymentMethods, selectedSort,
+                          selectedCategoryIds);
+                      Navigator.pop(context);
                     },
                   ),
                 ),
