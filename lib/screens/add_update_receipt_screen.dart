@@ -360,8 +360,8 @@ class AddOrUpdateReceiptScreenState extends State<AddOrUpdateReceiptScreen> {
       ),
       builder: (BuildContext context) {
         return CurrencyPicker(
-          selectedCurrency: 'EUR', // Provide a default,
-          onCurrencySelected: (String newCurrency) {
+          selectedCurrencyCode: 'EUR', // Provide a default,
+          onCurrencyCodeSelected: (String newCurrency) {
             setState(() {
               selectedCurrency = newCurrency;
             });

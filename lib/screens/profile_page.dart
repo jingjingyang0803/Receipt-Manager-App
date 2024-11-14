@@ -86,8 +86,8 @@ class ProfilePageState extends State<ProfilePage> {
       ),
       builder: (BuildContext context) {
         return CurrencyPicker(
-          selectedCurrency: 'EUR', // Provide a default,
-          onCurrencySelected: (String newCurrencyCode) async {
+          selectedCurrencyCode: 'EUR', // Provide a default,
+          onCurrencyCodeSelected: (String newCurrencyCode) async {
             userProvider = Provider.of<UserProvider>(context, listen: false);
 
             // Proceed with the update if the new name is different from the current name, even if empty
