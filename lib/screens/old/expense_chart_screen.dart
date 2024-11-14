@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import '../../components/currency_roller_picker.dart';
 import '../../components/date_range_container.dart';
 import '../../components/date_roller_picker.dart';
-import '../../components/old/custom_drawer.dart';
 import '../../components/rounded_button.dart';
 import '../../logger.dart';
 import '../../services/auth_service.dart';
@@ -504,7 +503,6 @@ class ExpenseChartScreenState extends State<ExpenseChartScreen> {
         title: Text('Your Graphs'),
         backgroundColor: Colors.lightBlueAccent,
       ),
-      drawer: CustomDrawer(),
       body: isLoading
           ? Center(child: CircularProgressIndicator())
           : Padding(

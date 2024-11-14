@@ -9,7 +9,7 @@ import '../components/custom_password_input_field.dart';
 import '../components/underline_text.dart';
 import '../constants/app_colors.dart';
 import '../services/auth_service.dart';
-import '../services/user_service_old.dart'; // Add UserService import
+import '../services/user_service.dart';
 import 'login_page.dart';
 
 class SignUpPage extends StatefulWidget {
@@ -72,7 +72,7 @@ class SignUpPageState extends State<SignUpPage> {
 
         // Save username to the profile using UserService
         await _userService.addUserProfile(
-          userEmail: email,
+          email: email,
           userName: userName,
         );
 
