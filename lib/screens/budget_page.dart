@@ -28,93 +28,102 @@ class BudgetPageState extends State<BudgetPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Manage Budgets', style: TextStyle(color: Colors.black)),
-        backgroundColor: Colors.white,
-        elevation: 0,
-        iconTheme: IconThemeData(color: Colors.black),
-      ),
-      body: Column(
-        children: [
-          Divider(color: Colors.grey.shade300, thickness: 1, height: 1),
-          Expanded(
-            child: Container(
-              color: Colors.white,
-              padding: const EdgeInsets.all(20),
-              child: Consumer<BudgetProvider>(
-                builder: (context, budgetProvider, _) {
-                  final budgets = budgetProvider.budgets;
+    return GestureDetector(
+      onTap: () {
+        // Dismiss the keyboard when tapping outside input fields
+        FocusScope.of(context).unfocus();
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text('Manage Budgets', style: TextStyle(color: Colors.black)),
+          backgroundColor: Colors.white,
+          elevation: 0,
+          iconTheme: IconThemeData(color: Colors.black),
+        ),
+        body: Column(
+          children: [
+            Divider(color: Colors.grey.shade300, thickness: 1, height: 1),
+            Expanded(
+              child: Container(
+                color: Colors.white,
+                padding: const EdgeInsets.all(20),
+                child: Consumer<BudgetProvider>(
+                  builder: (context, budgetProvider, _) {
+                    final budgets = budgetProvider.budgets;
 
-                  // Initialize updatedBudgets when budgets are loaded
-                  if (updatedBudgets.isEmpty) {
-                    updatedBudgets =
-                        budgets.map((budget) => {...budget}).toList();
-                  }
+                    // Initialize updatedBudgets when budgets are loaded
+                    if (updatedBudgets.isEmpty) {
+                      updatedBudgets =
+                          budgets.map((budget) => {...budget}).toList();
+                    }
 
-                  return ListView.builder(
-                    itemCount: updatedBudgets.length,
-                    itemBuilder: (context, index) {
-                      String categoryName =
-                          updatedBudgets[index]['categoryName'] ?? '';
-                      String categoryIcon =
-                          updatedBudgets[index]['categoryIcon'] ?? '';
-                      TextEditingController controller = TextEditingController(
-                        text:
-                            updatedBudgets[index]['amount'].toStringAsFixed(2),
-                      );
+                    return ListView.builder(
+                      itemCount: updatedBudgets.length,
+                      itemBuilder: (context, index) {
+                        String categoryName =
+                            updatedBudgets[index]['categoryName'] ?? '';
+                        String categoryIcon =
+                            updatedBudgets[index]['categoryIcon'] ?? '';
+                        TextEditingController controller =
+                            TextEditingController(
+                          text: updatedBudgets[index]['amount']
+                              .toStringAsFixed(2),
+                        );
 
-                      return ListTile(
-                        leading:
-                            Text(categoryIcon, style: TextStyle(fontSize: 24)),
-                        title: Text(categoryName,
-                            style:
-                                TextStyle(fontSize: 16, color: Colors.black)),
-                        trailing: SizedBox(
-                          width: 80,
-                          child: TextFormField(
-                            controller: controller,
-                            keyboardType:
-                                TextInputType.numberWithOptions(decimal: true),
-                            decoration: InputDecoration(
-                              hintText: "0.00",
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8),
-                                borderSide:
-                                    BorderSide(color: Colors.grey.shade300),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8),
-                                borderSide: BorderSide(color: purple100),
-                              ),
-                              contentPadding: EdgeInsets.symmetric(
-                                  horizontal: 8, vertical: 4),
-                            ),
-                            onChanged: (value) {
-                              updatedBudgets[index]['amount'] =
-                                  double.tryParse(value) ?? 0.0;
-                            },
+                        return ListTile(
+                          leading: Text(categoryIcon,
+                              style: TextStyle(fontSize: 24)),
+                          title: Text(
+                            categoryName,
+                            style: TextStyle(fontSize: 16, color: Colors.black),
                           ),
-                        ),
-                      );
-                    },
-                  );
-                },
+                          trailing: SizedBox(
+                            width: 80,
+                            child: TextFormField(
+                              controller: controller,
+                              keyboardType: TextInputType.numberWithOptions(
+                                  decimal: true),
+                              decoration: InputDecoration(
+                                hintText: "0.00",
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide:
+                                      BorderSide(color: Colors.grey.shade300),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: BorderSide(color: purple100),
+                                ),
+                                contentPadding: EdgeInsets.symmetric(
+                                    horizontal: 8, vertical: 4),
+                              ),
+                              onChanged: (value) {
+                                updatedBudgets[index]['amount'] =
+                                    double.tryParse(value) ?? 0.0;
+                              },
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                ),
               ),
             ),
-          ),
-        ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          await budgetProvider.updateUserBudgets(updatedBudgets);
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("Budgets saved successfully")),
-          );
-        },
-        backgroundColor: purple100,
-        elevation: 6,
-        child: Icon(Icons.save, color: Colors.white),
+          ],
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () async {
+            FocusScope.of(context).unfocus(); // Dismiss the keyboard on save
+            await budgetProvider.updateUserBudgets(updatedBudgets);
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text("Budgets saved successfully")),
+            );
+          },
+          backgroundColor: purple100,
+          elevation: 6,
+          child: Icon(Icons.save, color: Colors.white),
+        ),
       ),
     );
   }
