@@ -11,12 +11,10 @@ class ReceiptService {
     DocumentReference<Map<String, dynamic>> docRef =
         _firestore.collection('receipts').doc(email);
 
-    // Check if the document exists
     DocumentSnapshot<Map<String, dynamic>> docSnapshot = await docRef.get();
     print("Checking existence of document for email: $email");
 
     if (!docSnapshot.exists) {
-      // Create the document with an empty receiptlist array if it doesn't exist
       await docRef.set({
         'receiptlist': [],
         'receiptCount': 0,
@@ -27,11 +25,9 @@ class ReceiptService {
       print("Document already exists for email: $email");
     }
 
-    // Start listening to snapshots
     await for (var snapshot in docRef.snapshots()) {
       print("Received snapshot for email: $email");
       print("Snapshot data: ${snapshot.data()}");
-
       yield snapshot;
     }
   }
@@ -119,12 +115,8 @@ class ReceiptService {
     }
   }
 
-  // Group receipts by category within a date range
   Future<Map<String, double>> groupReceiptsByCategory(
-    String email,
-    DateTime startDate,
-    DateTime endDate,
-  ) async {
+      String email, DateTime startDate, DateTime endDate) async {
     DocumentReference userDocRef = _firestore.collection('receipts').doc(email);
     DocumentSnapshot userDoc = await userDocRef.get();
 
@@ -139,12 +131,10 @@ class ReceiptService {
       double amount = (receiptData['amount'] as num).toDouble();
       DateTime receiptDate = (receiptData['date'] as Timestamp).toDate();
 
-      // Filter receipts by the specified date range
       if (receiptDate.isBefore(startDate) || receiptDate.isAfter(endDate)) {
         continue;
       }
 
-      // Aggregate amount by category
       groupedExpenses[category] = (groupedExpenses[category] ?? 0) + amount;
     }
 
@@ -157,7 +147,6 @@ class ReceiptService {
     return (daysSinceFirstDay / 7).ceil();
   }
 
-  // Group receipts by specified time interval within a date range
   Future<Map<String, double>> groupReceiptsByInterval(
     String email,
     TimeInterval interval,
@@ -177,12 +166,10 @@ class ReceiptService {
       double amount = (receiptData['amount'] as num).toDouble();
       DateTime receiptDate = (receiptData['date'] as Timestamp).toDate();
 
-      // Filter receipts by the specified date range
       if (receiptDate.isBefore(startDate) || receiptDate.isAfter(endDate)) {
         continue;
       }
 
-      // Generate a grouping key based on the selected interval
       String groupKey;
       switch (interval) {
         case TimeInterval.day:
@@ -199,7 +186,6 @@ class ReceiptService {
           break;
       }
 
-      // Aggregate amount by interval
       groupedExpenses[groupKey] = (groupedExpenses[groupKey] ?? 0) + amount;
     }
 
