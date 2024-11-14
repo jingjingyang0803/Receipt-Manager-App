@@ -38,6 +38,7 @@ class ReceiptProvider extends ChangeNotifier {
     _selectedCategoryIds = _categoryProvider!.categories
         .map((cat) => cat['id'] as String)
         .toList();
+    _selectedCategoryIds.add('null');
     notifyListeners();
   }
 
