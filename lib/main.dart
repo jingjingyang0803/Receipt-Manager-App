@@ -1,7 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:receipt_manager/providers/auth_provider.dart';
+import 'package:receipt_manager/providers/authentication_provider.dart';
 import 'package:receipt_manager/providers/user_provider.dart';
 import 'package:receipt_manager/routes.dart';
 import 'package:receipt_manager/screens/base_page.dart';
@@ -32,9 +32,10 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => AuthProvider()), // Updated here
+        ChangeNotifierProvider(
+            create: (_) => AuthenticationProvider()), // Updated here
       ],
-      child: Consumer<AuthProvider>(
+      child: Consumer<AuthenticationProvider>(
         // Updated here
         builder: (context, authProvider, child) {
           return MaterialApp(
