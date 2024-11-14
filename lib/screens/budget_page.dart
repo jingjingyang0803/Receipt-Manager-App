@@ -17,12 +17,12 @@ class BudgetPageState extends State<BudgetPage> {
   late BudgetProvider budgetProvider;
 
   @override
+  @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      // Load budgets after the widget is added to the tree
-      budgetProvider = Provider.of<BudgetProvider>(context, listen: false);
-      loadUserBudgets();
+      // Load budgets once the widget is added to the tree
+      Provider.of<BudgetProvider>(context, listen: false).loadUserBudgets();
     });
   }
 
@@ -53,12 +53,12 @@ class BudgetPageState extends State<BudgetPage> {
               child: Consumer<BudgetProvider>(
                 builder: (context, budgetProvider, _) {
                   final budgets = budgetProvider.budgets;
+                  print('budgets: $budgets');
 
                   return ListView.builder(
                     itemCount: budgets.length,
                     itemBuilder: (context, index) {
                       // Extract category info from budgets
-                      String categoryId = budgets[index]['categoryId'] ?? '';
                       String categoryName =
                           budgets[index]['categoryName'] ?? '';
                       String categoryIcon =
