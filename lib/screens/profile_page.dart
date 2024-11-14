@@ -68,7 +68,8 @@ class ProfilePageState extends State<ProfilePage> {
     final userProvider = Provider.of<UserProvider>(context, listen: false);
     final newName = _nameController.text.trim();
 
-    if (newName.isNotEmpty && newName != userProvider.userName) {
+    // Proceed with the update if the new name is different from the current name, even if empty
+    if (newName != userProvider.userName) {
       await userProvider.updateUserProfile(context, userName: newName);
     }
   }
