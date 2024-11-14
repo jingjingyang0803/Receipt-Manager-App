@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:receipt_manager/constants/app_colors.dart';
 
+import 'custom_button.dart';
+
 class FilterPopup extends StatefulWidget {
   const FilterPopup({super.key});
 
@@ -33,31 +35,6 @@ class FilterPopupState extends State<FilterPopup> {
             color: purple40,
             endIndent: 165,
             indent: 165,
-          ),
-          const SizedBox(height: 8),
-          const Text(
-            'Filter Transaction',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Colors.black,
-            ),
-          ),
-          Align(
-            alignment: Alignment.topRight,
-            child: TextButton(
-              onPressed: () {
-                setState(() {
-                  selectedFilter = 'Expense';
-                  selectedSort = 'Highest';
-                  selectedCategories = 0;
-                });
-              },
-              child: Text(
-                'Reset',
-                style: TextStyle(color: purple100),
-              ),
-            ),
           ),
           const SizedBox(height: 16),
           const Text(
@@ -116,25 +93,40 @@ class FilterPopupState extends State<FilterPopup> {
             ],
           ),
           const SizedBox(height: 24),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: () {
-                // Apply filters
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: purple100,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: CustomButton(
+                    text: "Reset",
+                    backgroundColor: purple20,
+                    textColor: purple100,
+                    onPressed: () {
+                      setState(() {
+                        selectedFilter = 'Expense';
+                        selectedSort = 'Highest';
+                        selectedCategories = 0;
+                      });
+                    }, // Close the popup},
+                  ),
                 ),
-                padding: const EdgeInsets.symmetric(vertical: 16),
               ),
-              child: const Text(
-                'Apply',
-                style: TextStyle(color: Colors.white, fontSize: 16),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: CustomButton(
+                    text: "Apply",
+                    backgroundColor: purple100,
+                    textColor: light80,
+                    onPressed: () {},
+                  ),
+                ),
               ),
-            ),
+            ],
           ),
+          SizedBox(height: 10),
         ],
       ),
     );
