@@ -113,13 +113,17 @@ class CategoryPageState extends State<CategoryPage> {
                               isScrollControlled: true,
                               builder: (BuildContext context) {
                                 return CategoryDeletePopup(
-                                  onConfirm: () {
-                                    Navigator.of(context).pop();
+                                  categoryId:
+                                      categoryId, // Pass categoryId here
+                                  onConfirm: () async {
+                                    await categoryProvider
+                                        .deleteCategory(categoryId);
+                                    Navigator.of(context)
+                                        .pop(); // Close the popup
                                   },
                                   onCancel: () {
                                     Navigator.of(context).pop();
                                   },
-                                  categoryId: '',
                                 );
                               },
                             );
