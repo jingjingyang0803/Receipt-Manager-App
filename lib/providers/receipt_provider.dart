@@ -34,6 +34,10 @@ class ReceiptProvider extends ChangeNotifier {
 
   set categoryProvider(CategoryProvider categoryProvider) {
     _categoryProvider = categoryProvider;
+    // Set default selected categories to include all category IDs
+    _selectedCategoryIds = _categoryProvider!.categories
+        .map((cat) => cat['id'] as String)
+        .toList();
     notifyListeners();
   }
 
@@ -86,9 +90,27 @@ class ReceiptProvider extends ChangeNotifier {
           String categoryId = receipt['categoryId'] ?? 'null';
           String paymentMethod = receipt['paymentMethod'] ?? '';
 
-          bool matchesCategory = _selectedCategoryIds.contains(categoryId);
-          bool matchesPayment = _selectedPaymentMethods.isEmpty ||
-              _selectedPaymentMethods.contains(paymentMethod);
+          bool matchesCategory = false;
+          bool matchesPayment = false;
+
+          print("Category ID: $categoryId");
+          print("Selected Category IDs: $_selectedCategoryIds");
+          if (_selectedCategoryIds.contains(categoryId)) {
+            matchesCategory = true;
+          } else {
+            print(
+                "Category ID $categoryId does not match any in $_selectedCategoryIds");
+          }
+
+          print("Payment Method: $paymentMethod");
+          print("Selected Payment Methods: $_selectedPaymentMethods");
+          if (_selectedPaymentMethods.isEmpty ||
+              _selectedPaymentMethods.contains(paymentMethod)) {
+            matchesPayment = true;
+          } else {
+            print(
+                "Payment Method $paymentMethod does not match any in $_selectedPaymentMethods");
+          }
 
           // Log the filtering result for debugging
           if (!matchesCategory) {
