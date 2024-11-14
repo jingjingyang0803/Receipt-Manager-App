@@ -1,11 +1,10 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../components/add_category_widget.dart';
 import '../logger.dart';
-import '../services/auth_service.dart';
-import '../services/category_service.dart';
-import '../services/receipt_service_old.dart';
+import '../providers/authentication_provider.dart';
+import '../providers/category_provider.dart';
 
 class CategoryPage extends StatefulWidget {
   static const String id = 'category_page';
@@ -17,69 +16,62 @@ class CategoryPage extends StatefulWidget {
 }
 
 class CategoryPageState extends State<CategoryPage> {
-  User? loggedInUser;
-
-  List<Map<String, dynamic>> userCategories = [];
-
-  final ReceiptService receiptService = ReceiptService();
-
-  final CategoryService _categoryService = CategoryService();
-
   @override
   void initState() {
     super.initState();
-    getCurrentUser();
+    loadCategoriesForUser();
   }
 
-  void getCurrentUser() async {
-    loggedInUser = await AuthService.getCurrentUser();
-    if (loggedInUser != null) {
-      fetchUserCategories(); // Call fetchUserCategories only after loggedInUser is assigned.
-    }
-  }
+  void loadCategoriesForUser() {
+    final authProvider =
+        Provider.of<AuthenticationProvider>(context, listen: false);
+    final categoryProvider =
+        Provider.of<CategoryProvider>(context, listen: false);
 
-  Future<void> fetchUserCategories() async {
-    try {
-      List<Map<String, dynamic>> categories =
-          await _categoryService.fetchUserCategories(loggedInUser!.email!);
-
-      setState(() {
-        userCategories = categories;
-      });
-    } catch (e) {
-      logger.e("Error fetching user categories: $e");
+    final userEmail = authProvider.user?.email;
+    if (userEmail != null) {
+      categoryProvider.loadUserCategories(userEmail);
     }
   }
 
   // Function to show the AddCategoryWidget dialog
   void _showAddCategoryDialog() {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return Dialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: AddCategoryWidget(
-            userId: loggedInUser!.email!,
-            onCategoryAdded: () {
-              // Refresh categories when a new category is added
-              fetchUserCategories();
-            },
-          ),
-        );
-      },
-    );
+    final authProvider =
+        Provider.of<AuthenticationProvider>(context, listen: false);
+    final userEmail = authProvider.user?.email;
+
+    if (userEmail != null) {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return Dialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: AddCategoryWidget(
+              userId: userEmail,
+              onCategoryAdded: () {
+                // Refresh categories when a new category is added
+                Provider.of<CategoryProvider>(context, listen: false)
+                    .loadUserCategories(userEmail);
+              },
+            ),
+          );
+        },
+      );
+    }
   }
 
   Future<void> deleteCategory(String categoryId) async {
-    try {
-      var categoryToRemove = userCategories.firstWhere(
-        (category) => category['id'] == categoryId,
-        orElse: () => <String, dynamic>{},
-      );
+    final authProvider =
+        Provider.of<AuthenticationProvider>(context, listen: false);
+    final userEmail = authProvider.user?.email;
 
-      if (categoryToRemove.isNotEmpty) {
+    if (userEmail != null) {
+      try {
+        final categoryProvider =
+            Provider.of<CategoryProvider>(context, listen: false);
+
         bool? confirmDelete = await showDialog(
           context: context,
           builder: (BuildContext context) {
@@ -107,18 +99,11 @@ class CategoryPageState extends State<CategoryPage> {
         );
 
         if (confirmDelete == true) {
-          await _categoryService.deleteCategory(
-              loggedInUser!.email!, categoryId);
-          await receiptService.setReceiptsCategoryToNull(categoryId);
-          setState(() {
-            userCategories
-                .removeWhere((category) => category['id'] == categoryId);
-          });
-          fetchUserCategories();
+          await categoryProvider.deleteCategory(userEmail, categoryId);
         }
+      } catch (e) {
+        logger.e("Error deleting category: $e");
       }
-    } catch (e) {
-      logger.e("Error deleting category: $e");
     }
   }
 
@@ -131,37 +116,38 @@ class CategoryPageState extends State<CategoryPage> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(20),
-        child: Column(
-          children: [
-            Expanded(
-              child: ListView.builder(
-                itemCount: userCategories.length,
-                itemBuilder: (context, index) {
-                  String categoryId = userCategories[index]['id'] ?? '';
-                  String categoryName =
-                      userCategories[index]['name']?.trim() ?? '';
+        child: Consumer<CategoryProvider>(
+          builder: (context, categoryProvider, _) {
+            final categories = categoryProvider.categories;
 
-                  return ListTile(
-                    leading: Text(userCategories[index]['icon'] ?? '',
-                        style: TextStyle(fontSize: 26)),
-                    title: Text(
-                      categoryName,
-                      style: TextStyle(fontSize: 16),
-                    ),
-                    trailing: IconButton(
-                      icon: Icon(Icons.delete_outline, color: Colors.red),
-                      onPressed: () {
-                        deleteCategory(categoryId);
-                      },
-                    ),
-                    onTap: () {
-                      Navigator.pop(context);
+            return ListView.builder(
+              itemCount: categories.length,
+              itemBuilder: (context, index) {
+                String categoryId = categories[index]['id'] ?? '';
+                String categoryName = categories[index]['name']?.trim() ?? '';
+
+                return ListTile(
+                  leading: Text(
+                    categories[index]['icon'] ?? '',
+                    style: TextStyle(fontSize: 26),
+                  ),
+                  title: Text(
+                    categoryName,
+                    style: TextStyle(fontSize: 16),
+                  ),
+                  trailing: IconButton(
+                    icon: Icon(Icons.delete_outline, color: Colors.red),
+                    onPressed: () {
+                      deleteCategory(categoryId);
                     },
-                  );
-                },
-              ),
-            ),
-          ],
+                  ),
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                );
+              },
+            );
+          },
         ),
       ),
       floatingActionButton: FloatingActionButton(
