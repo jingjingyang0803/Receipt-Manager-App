@@ -122,7 +122,7 @@ class ProfilePageState extends State<ProfilePage> {
 
           return Padding(
             padding:
-                const EdgeInsets.symmetric(horizontal: 20.0, vertical: 40.0),
+                const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -193,7 +193,7 @@ class ProfilePageState extends State<ProfilePage> {
                   ],
                 ),
 
-                const SizedBox(height: 30),
+                const SizedBox(height: 20),
                 Expanded(
                   child: SingleChildScrollView(
                     child: Container(
