@@ -26,20 +26,17 @@ class AddCategoryWidgetState extends State<AddCategoryWidget> {
   String? _errorMessage; // Error message for duplicate category names
 
   final CategoryService _categoryService = CategoryService();
-
-  final FocusNode _textFieldFocusNode =
-      FocusNode(); // FocusNode for the text field
+  final FocusNode _textFieldFocusNode = FocusNode();
 
   @override
   void initState() {
     super.initState();
 
-    // Add listener to hide emoji picker when text field is focused
+    // Hide emoji picker when the text field is focused
     _textFieldFocusNode.addListener(() {
       if (_textFieldFocusNode.hasFocus) {
         setState(() {
-          showEmojiPicker =
-              false; // Hide emoji picker when text field is focused
+          showEmojiPicker = false; // Hide emoji picker
         });
       }
     });
@@ -47,8 +44,7 @@ class AddCategoryWidgetState extends State<AddCategoryWidget> {
 
   @override
   void dispose() {
-    _textFieldFocusNode
-        .dispose(); // Clean up the focus node when the widget is disposed
+    _textFieldFocusNode.dispose();
     super.dispose();
   }
 
@@ -75,9 +71,9 @@ class AddCategoryWidgetState extends State<AddCategoryWidget> {
             onTap: () {
               setState(() {
                 showEmojiPicker = !showEmojiPicker; // Toggle emoji picker
-                // Remove focus from the text field if emoji picker is opened
                 if (showEmojiPicker) {
-                  _textFieldFocusNode.unfocus();
+                  _textFieldFocusNode
+                      .unfocus(); // Remove focus if picker is opened
                 }
               });
             },
@@ -91,7 +87,6 @@ class AddCategoryWidgetState extends State<AddCategoryWidget> {
             ),
           ),
 
-          // Display error message below the text field if exists
           if (_errorMessage != null)
             Padding(
               padding: const EdgeInsets.only(top: 10),
@@ -101,6 +96,7 @@ class AddCategoryWidgetState extends State<AddCategoryWidget> {
               ),
             ),
           SizedBox(height: 10),
+
           // Show emoji picker if toggled
           if (showEmojiPicker)
             SizedBox(
@@ -125,8 +121,10 @@ class AddCategoryWidgetState extends State<AddCategoryWidget> {
               ),
             ),
           SizedBox(height: 10),
+
           // Category name input field
           CustomTextFormField(
+            focusNode: _textFieldFocusNode, // Attach focus node
             labelText: "Category name",
             onChanged: (value) {
               setState(() {
@@ -136,24 +134,19 @@ class AddCategoryWidgetState extends State<AddCategoryWidget> {
             },
           ),
           SizedBox(height: 10),
+
           // Add button
           CustomButton(
             text: "Add Category",
             backgroundColor: purple100,
             textColor: light80,
             onPressed: () async {
-              // Move Navigator.pop(context) before any async operation
-              if (mounted) {
-                Navigator.pop(context); // Close the dialog immediately
-              }
-
               if (categoryName.isNotEmpty) {
                 // Check if the category exists
                 bool categoryExists = await _categoryService.categoryExists(
                     widget.userId, categoryName);
 
                 if (categoryExists) {
-                  // Show error if category already exists
                   setState(() {
                     _errorMessage = "Category '$categoryName' already exists.";
                   });
@@ -164,6 +157,7 @@ class AddCategoryWidgetState extends State<AddCategoryWidget> {
 
                   // Call the callback after adding category
                   widget.onCategoryAdded();
+                  Navigator.pop(context); // Close dialog after adding
                 }
               }
             },
