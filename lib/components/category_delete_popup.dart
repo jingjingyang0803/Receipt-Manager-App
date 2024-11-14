@@ -7,12 +7,14 @@ import 'custom_button.dart';
 
 class CategoryDeletePopup extends StatelessWidget {
   final String categoryId;
+  final VoidCallback onConfirm;
   final VoidCallback onCancel;
 
   const CategoryDeletePopup({
     required this.categoryId,
     required this.onCancel,
     super.key,
+    required this.onConfirm,
   });
 
   @override

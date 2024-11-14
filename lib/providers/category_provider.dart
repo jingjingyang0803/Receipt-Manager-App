@@ -5,9 +5,7 @@ import '../services/category_service.dart';
 
 class CategoryProvider extends ChangeNotifier {
   final CategoryService _categoryService = CategoryService();
-  final AuthenticationProvider _authProvider;
-
-  CategoryProvider(this._authProvider);
+  AuthenticationProvider? _authProvider;
 
   List<Map<String, dynamic>> _categories = [];
   Map<String, dynamic>? _categoryDetails;
@@ -15,8 +13,14 @@ class CategoryProvider extends ChangeNotifier {
   List<Map<String, dynamic>> get categories => _categories;
   Map<String, dynamic>? get categoryDetails => _categoryDetails;
 
-  // Helper function to get the user's email from AuthenticationProvider
-  String? get _userEmail => _authProvider.user?.email;
+  // Setter for AuthenticationProvider
+  set authProvider(AuthenticationProvider authProvider) {
+    _authProvider = authProvider;
+    notifyListeners(); // Notify listeners if the authProvider changes
+  }
+
+  // Helper to get the user's email from AuthenticationProvider
+  String? get _userEmail => _authProvider?.user?.email;
 
   // Fetch all categories for the current user
   Future<void> loadUserCategories() async {
