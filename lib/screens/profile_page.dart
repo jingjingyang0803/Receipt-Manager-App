@@ -1,9 +1,14 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 
 import '../components/logout_popup.dart';
 import '../components/user_edit_popup.dart';
 import '../constants/app_colors.dart';
+import '../providers/authentication_provider.dart';
+import '../providers/user_provider.dart';
 
 class ProfilePage extends StatefulWidget {
   static const String id = 'profile_page';
@@ -16,17 +21,28 @@ class ProfilePage extends StatefulWidget {
 
 class ProfilePageState extends State<ProfilePage> {
   final _picker = ImagePicker();
-  final String _userEmail = "jingjing.yang@tuni.fi";
-  final String _userName = "Iriana Saliha";
   XFile? _profileImage;
 
-  // Function to pick an image from gallery
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // Trigger fetchUserProfile to load data
+      final userProvider = Provider.of<UserProvider>(context, listen: false);
+      userProvider.fetchUserProfile(context);
+    });
+  }
+
   Future<void> _pickImage() async {
     final image = await _picker.pickImage(source: ImageSource.gallery);
     if (image != null) {
       setState(() {
         _profileImage = image;
       });
+
+      // Update profile image in provider
+      final userProvider = Provider.of<UserProvider>(context, listen: false);
+      userProvider.updateProfileImage(context, image.path);
     }
   }
 
@@ -44,6 +60,14 @@ class ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
+    final authProvider =
+        Provider.of<AuthenticationProvider>(context, listen: false);
+    final userEmail = authProvider.user?.email;
+
+    final userProvider = Provider.of<UserProvider>(context);
+    final userName = userProvider.userName ?? "Your Name";
+    final profileImagePath = userProvider.profileImagePath;
+
     return Scaffold(
       backgroundColor: light90,
       body: Padding(
@@ -55,33 +79,32 @@ class ProfilePageState extends State<ProfilePage> {
             Row(
               children: [
                 // Profile Picture with Border
-                // Profile Picture with Border
                 Stack(
                   alignment: Alignment.bottomRight,
                   children: [
                     GestureDetector(
-                      onTap:
-                          _pickImage, // Add the image picker function if needed
+                      onTap: _pickImage,
                       child: Container(
                         width: 80,
                         height: 80,
-                        padding: const EdgeInsets.all(3), // Border thickness
+                        padding: const EdgeInsets.all(3),
                         decoration: BoxDecoration(
-                          color: Colors
-                              .transparent, // Border color, transparent if needed
+                          color: Colors.transparent,
                           shape: BoxShape.circle,
                           border: Border.all(
-                            color: purple100, // Set your preferred border color
-                            width: 2.0, // Border width
+                            color: purple100,
+                            width: 2.0,
                           ),
                         ),
                         child: CircleAvatar(
                           backgroundColor: Colors.transparent,
                           backgroundImage: _profileImage != null
-                              ? AssetImage('assets/images/plan.png')
-                              : null,
+                              ? FileImage(File(_profileImage!.path))
+                              : profileImagePath != null
+                                  ? NetworkImage(profileImagePath)
+                                  : null,
                           radius: 45.0,
-                          child: _profileImage == null
+                          child: profileImagePath == null
                               ? Icon(Icons.person, size: 50, color: Colors.grey)
                               : null,
                         ),
@@ -90,20 +113,20 @@ class ProfilePageState extends State<ProfilePage> {
                   ],
                 ),
                 const SizedBox(width: 16),
-                // Username and Edit
+                // Username and Email
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      _userName,
+                      userEmail!,
+                      style: TextStyle(color: light20, fontSize: 16),
+                    ),
+                    Text(
+                      userName,
                       style: TextStyle(
                           color: dark75,
                           fontSize: 20,
                           fontWeight: FontWeight.bold),
-                    ),
-                    Text(
-                      _userEmail,
-                      style: TextStyle(color: light20, fontSize: 16),
                     ),
                   ],
                 ),
@@ -111,23 +134,23 @@ class ProfilePageState extends State<ProfilePage> {
                 TextButton(
                   onPressed: () => _showEditPopup(context),
                   style: TextButton.styleFrom(
-                    padding: EdgeInsets.zero, // Removes default padding
+                    padding: EdgeInsets.zero,
                   ),
                   child: Container(
                     width: 40,
                     height: 40,
                     decoration: BoxDecoration(
-                      color: light80, // Background color
-                      borderRadius: BorderRadius.circular(8), // Rounded corners
+                      color: light80,
+                      borderRadius: BorderRadius.circular(8),
                       border: Border.all(
-                        color: purple10, // Border color
-                        width: 1, // Border width
+                        color: purple10,
+                        width: 1,
                       ),
                     ),
                     child: Icon(
                       Icons.edit_outlined,
                       color: dark50,
-                      size: 30, // Icon size
+                      size: 30,
                     ),
                   ),
                 )
@@ -138,7 +161,7 @@ class ProfilePageState extends State<ProfilePage> {
               child: SingleChildScrollView(
                 child: Container(
                   decoration: BoxDecoration(
-                    color: light80, // Background color for the entire container
+                    color: light80,
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Column(
@@ -158,20 +181,6 @@ class ProfilePageState extends State<ProfilePage> {
                         iconColor: purple100,
                         onTap: () {},
                       ),
-                      // Divider(thickness: 1, color: light90),
-                      // ProfileMenuItem(
-                      //   icon: Icons.language,
-                      //   text: "Choose language",
-                      //   iconBackgroundColor: purple20,
-                      //   iconColor: purple100,
-                      // ),
-                      // Divider(thickness: 1, color: light90),
-                      // ProfileMenuItem(
-                      //   icon: Icons.help_outline,
-                      //   text: "Frequently asked questions",
-                      //   iconBackgroundColor: purple20,
-                      //   iconColor: purple100,
-                      // ),
                       Divider(thickness: 1, color: light90),
                       ProfileMenuItem(
                         icon: Icons.settings_outlined,
@@ -202,7 +211,6 @@ class ProfilePageState extends State<ProfilePage> {
                             builder: (BuildContext context) {
                               return LogoutPopup(
                                 onConfirm: () {
-                                  // Perform logout action
                                   Navigator.of(context).pop();
                                 },
                                 onCancel: () {
@@ -231,7 +239,7 @@ class ProfileMenuItem extends StatelessWidget {
   final String text;
   final Color iconBackgroundColor;
   final Color iconColor;
-  final VoidCallback onTap; // Add onTap as a parameter
+  final VoidCallback onTap;
 
   const ProfileMenuItem({
     super.key,
@@ -239,19 +247,19 @@ class ProfileMenuItem extends StatelessWidget {
     required this.text,
     required this.iconBackgroundColor,
     required this.iconColor,
-    required this.onTap, // Make onTap required
+    required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap, // Trigger onTap when the item is tapped
+      onTap: onTap,
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
         child: Row(
           children: [
             Container(
-              padding: const EdgeInsets.all(8), // Adjust padding for icon size
+              padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
                 color: iconBackgroundColor,
                 borderRadius: BorderRadius.circular(8.0),

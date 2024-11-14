@@ -4,11 +4,11 @@ import 'package:flutter/material.dart';
 import '../logger.dart';
 import '../services/auth_service.dart';
 
-class AuthProvider extends ChangeNotifier {
+class AuthenticationProvider extends ChangeNotifier {
   User? _user;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  AuthProvider() {
+  AuthenticationProvider() {
     // Initialize the current user and listen for auth state changes
     _user = _auth.currentUser;
     _auth.authStateChanges().listen((user) {

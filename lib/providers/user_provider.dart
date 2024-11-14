@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../services/user_service.dart';
-import 'auth_provider.dart'; // Ensure this import is correct based on your structure
+import 'authentication_provider.dart'; // Ensure this import is correct based on your structure
 
 class UserProvider extends ChangeNotifier {
   final UserService _userService = UserService();
@@ -11,9 +11,16 @@ class UserProvider extends ChangeNotifier {
 
   DocumentSnapshot<Map<String, dynamic>>? get userProfile => _userProfile;
 
+  // Getter for userName
+  String? get userName => _userProfile?.data()?['userName'];
+
+  // Getter for profileImagePath
+  String? get profileImagePath => _userProfile?.data()?['profileImagePath'];
+
   // Fetch user profile data and listen for updates
   void fetchUserProfile(BuildContext context) {
-    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final authProvider =
+        Provider.of<AuthenticationProvider>(context, listen: false);
     final email = authProvider.user?.email;
 
     if (email != null) {
@@ -31,7 +38,8 @@ class UserProvider extends ChangeNotifier {
     String profileImagePath = '',
     String currencyCode = '',
   }) async {
-    final email = Provider.of<AuthProvider>(context, listen: false).user?.email;
+    final email =
+        Provider.of<AuthenticationProvider>(context, listen: false).user?.email;
     if (email != null) {
       await _userService.addUserProfile(
         email: email,
@@ -50,7 +58,8 @@ class UserProvider extends ChangeNotifier {
     String? profileImagePath,
     String? currencyCode,
   }) async {
-    final email = Provider.of<AuthProvider>(context, listen: false).user?.email;
+    final email =
+        Provider.of<AuthenticationProvider>(context, listen: false).user?.email;
     if (email != null) {
       await _userService.updateUserProfile(
         email: email,
@@ -65,7 +74,8 @@ class UserProvider extends ChangeNotifier {
   // Update profile image only
   Future<void> updateProfileImage(
       BuildContext context, String profileImagePath) async {
-    final email = Provider.of<AuthProvider>(context, listen: false).user?.email;
+    final email =
+        Provider.of<AuthenticationProvider>(context, listen: false).user?.email;
     if (email != null) {
       await _userService.updateProfileImage(email, profileImagePath);
       notifyListeners();
@@ -74,7 +84,8 @@ class UserProvider extends ChangeNotifier {
 
   // Clear all user history
   Future<void> clearAllHistory(BuildContext context) async {
-    final email = Provider.of<AuthProvider>(context, listen: false).user?.email;
+    final email =
+        Provider.of<AuthenticationProvider>(context, listen: false).user?.email;
     if (email != null) {
       await _userService.clearAllHistory(email);
       notifyListeners();
@@ -83,7 +94,8 @@ class UserProvider extends ChangeNotifier {
 
   // Delete user profile and associated data
   Future<void> deleteUser(BuildContext context) async {
-    final email = Provider.of<AuthProvider>(context, listen: false).user?.email;
+    final email =
+        Provider.of<AuthenticationProvider>(context, listen: false).user?.email;
     if (email != null) {
       await _userService.deleteUser(email);
       _userProfile = null;
