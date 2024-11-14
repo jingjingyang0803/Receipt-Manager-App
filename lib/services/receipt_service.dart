@@ -20,14 +20,11 @@ class ReceiptService {
     }
   }
 
-  Future<void> addReceipt({
-    required String email,
-    required Map<String, dynamic> receiptData,
-    required String paymentMethod,
-  }) async {
+  Future<void> addReceipt(
+      {required String email,
+      required Map<String, dynamic> receiptData}) async {
     String receiptId = _firestore.collection('receipts').doc().id;
     receiptData['id'] = receiptId;
-    receiptData['paymentMethod'] = paymentMethod;
 
     DocumentReference userDocRef = _firestore.collection('receipts').doc(email);
     await userDocRef.set({

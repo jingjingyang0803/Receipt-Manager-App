@@ -81,16 +81,10 @@ class ReceiptProvider extends ChangeNotifier {
   }
 
   // Add a new receipt with category details
-  Future<void> addReceipt({
-    required Map<String, dynamic> receiptData,
-    required String paymentMethod,
-  }) async {
+  Future<void> addReceipt({required Map<String, dynamic> receiptData}) async {
     if (_userEmail != null) {
       await _receiptService.addReceipt(
-        email: _userEmail!,
-        receiptData: receiptData,
-        paymentMethod: paymentMethod,
-      );
+          email: _userEmail!, receiptData: receiptData);
       await loadReceiptCount();
     }
   }

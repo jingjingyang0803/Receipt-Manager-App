@@ -4,8 +4,8 @@ import 'package:receipt_manager/screens/profile_page.dart';
 
 import '../components/custom_bottom_nav_bar.dart';
 import 'budget_page.dart';
-import 'expense_list_page.dart';
 import 'home_page.dart';
+import 'receipt_list_page.dart';
 
 class BasePage extends StatefulWidget {
   static const String id = 'base_page';
@@ -34,13 +34,13 @@ class BasePageState extends State<BasePage> {
       case 0:
         return HomePage();
       case 1:
-        return ExpenseListPage();
+        return ReceiptListPage();
       case 2:
         return BudgetPage();
       case 3:
         return ProfilePage();
       default:
-        return ExpenseListPage();
+        return ReceiptListPage();
     }
   }
 
