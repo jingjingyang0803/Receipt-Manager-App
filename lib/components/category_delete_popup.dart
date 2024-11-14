@@ -1,20 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:receipt_manager/constants/app_colors.dart';
 
+import '../providers/category_provider.dart';
 import 'custom_button.dart';
 
 class CategoryDeletePopup extends StatelessWidget {
-  final VoidCallback onConfirm;
+  final String categoryId;
   final VoidCallback onCancel;
 
-  const CategoryDeletePopup(
-      {required this.onConfirm, required this.onCancel, super.key});
+  const CategoryDeletePopup({
+    required this.categoryId,
+    required this.onCancel,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(
-          horizontal: 20, vertical: 12), // Reduced vertical padding
+      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.only(
@@ -57,26 +61,29 @@ class CategoryDeletePopup extends StatelessWidget {
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
                   child: CustomButton(
-                      text: "No",
-                      backgroundColor: purple20,
-                      textColor: purple100,
-                      onPressed: () {
-                        Navigator.of(context).pop(false); // Cancel the deletion
-                      } // Close the popup},
-                      ),
+                    text: "No",
+                    backgroundColor: purple20,
+                    textColor: purple100,
+                    onPressed: onCancel, // Use the onCancel callback
+                  ),
                 ),
               ),
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
                   child: CustomButton(
-                      text: "Yes",
-                      backgroundColor: purple100,
-                      textColor: light80,
-                      onPressed: () {
-                        Navigator.of(context).pop(true);
-                      } // Confirm deletion
-                      ),
+                    text: "Yes",
+                    backgroundColor: purple100,
+                    textColor: light80,
+                    onPressed: () async {
+                      // Access CategoryProvider and delete the category
+                      final categoryProvider =
+                          Provider.of<CategoryProvider>(context, listen: false);
+                      await categoryProvider.deleteCategory(categoryId);
+                      Navigator.of(context)
+                          .pop(true); // Close the popup and confirm deletion
+                    },
+                  ),
                 ),
               ),
             ],
