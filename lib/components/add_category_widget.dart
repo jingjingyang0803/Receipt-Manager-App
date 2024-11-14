@@ -1,9 +1,11 @@
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/foundation.dart' as foundation;
 import 'package:flutter/material.dart';
-import 'package:receipt_manager/components/rounded_button.dart';
+import 'package:receipt_manager/components/custom_input_field.dart';
 
+import '../constants/app_colors.dart';
 import '../services/category_service.dart';
+import 'custom_button.dart';
 
 class AddCategoryWidget extends StatefulWidget {
   final String userId; // Add userId parameter
@@ -81,7 +83,7 @@ class AddCategoryWidgetState extends State<AddCategoryWidget> {
             },
             child: CircleAvatar(
               radius: 40,
-              backgroundColor: Colors.blueAccent,
+              backgroundColor: light40,
               child: Text(
                 selectedIcon,
                 style: TextStyle(fontSize: 30),
@@ -102,7 +104,7 @@ class AddCategoryWidgetState extends State<AddCategoryWidget> {
           // Show emoji picker if toggled
           if (showEmojiPicker)
             SizedBox(
-              height: 250, // Adjust height as necessary
+              height: 200, // Adjust height as necessary
               child: EmojiPicker(
                 onEmojiSelected: (category, emoji) {
                   setState(() {
@@ -124,28 +126,21 @@ class AddCategoryWidgetState extends State<AddCategoryWidget> {
             ),
           SizedBox(height: 10),
           // Category name input field
-          TextField(
-            focusNode:
-                _textFieldFocusNode, // Attach FocusNode to the text field
+          CustomTextFormField(
+            labelText: "Category name",
             onChanged: (value) {
               setState(() {
                 categoryName = value;
                 _errorMessage = null; // Reset error when input changes
               });
             },
-            decoration: InputDecoration(
-              border: OutlineInputBorder(),
-              hintText: 'Category name',
-              filled: true,
-              fillColor: Colors.white,
-              contentPadding:
-                  EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            ),
           ),
+          SizedBox(height: 10),
           // Add button
-          RoundedButton(
-            color: Colors.blueAccent,
-            title: 'Add Category',
+          CustomButton(
+            text: "Add Category",
+            backgroundColor: purple100,
+            textColor: light80,
             onPressed: () async {
               // Move Navigator.pop(context) before any async operation
               if (mounted) {
