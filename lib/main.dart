@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:receipt_manager/providers/auth_provider.dart';
+import 'package:receipt_manager/providers/user_provider.dart';
 import 'package:receipt_manager/routes.dart';
 import 'package:receipt_manager/screens/base_page.dart';
 import 'package:receipt_manager/screens/welcome_page.dart';
@@ -13,7 +14,15 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(const MyApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => UserProvider()),
+        // other providers if necessary
+      ],
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {

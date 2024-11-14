@@ -46,7 +46,7 @@ class UserProvider extends ChangeNotifier {
   // Update user profile data
   Future<void> updateUserProfile(
     BuildContext context, {
-    required String userName,
+    String? userName,
     String? profileImagePath,
     String? currencyCode,
   }) async {
@@ -54,9 +54,9 @@ class UserProvider extends ChangeNotifier {
     if (email != null) {
       await _userService.updateUserProfile(
         email: email,
-        userName: userName,
-        profileImagePath: profileImagePath,
-        currencyCode: currencyCode,
+        userName: userName ?? '',
+        profileImagePath: profileImagePath ?? '',
+        currencyCode: currencyCode ?? '',
       );
       notifyListeners();
     }
