@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:receipt_manager/constants/app_colors.dart';
 import 'package:receipt_manager/providers/receipt_provider.dart';
@@ -59,6 +60,13 @@ class ReceiptListPage extends StatelessWidget {
                           .where((receipt) => _isYesterday(
                               (receipt['date'] as Timestamp).toDate()))
                           .toList();
+                      List<Map<String, dynamic>> otherReceipts = receipts
+                          .where((receipt) =>
+                              !_isToday(
+                                  (receipt['date'] as Timestamp).toDate()) &&
+                              !_isYesterday(
+                                  (receipt['date'] as Timestamp).toDate()))
+                          .toList();
 
                       return SingleChildScrollView(
                         child: Column(
@@ -79,8 +87,8 @@ class ReceiptListPage extends StatelessWidget {
                                       '${receipt['amount'] >= 0 ? '+' : '-'} \$${receipt['amount'].abs().toStringAsFixed(2)}',
                                   paymentMethod: receipt['paymentMethod'],
                                 ),
+                              const SizedBox(height: 16),
                             ],
-                            const SizedBox(height: 16),
                             if (yesterdayReceipts.isNotEmpty) ...[
                               const Text(
                                 'Yesterday',
@@ -96,6 +104,29 @@ class ReceiptListPage extends StatelessWidget {
                                       '${receipt['amount'] >= 0 ? '+' : '-'} \$${receipt['amount'].abs().toStringAsFixed(2)}',
                                   paymentMethod: receipt['paymentMethod'],
                                 ),
+                              const SizedBox(height: 16),
+                            ],
+                            if (otherReceipts.isNotEmpty) ...[
+                              for (var receipt
+                                  in _groupReceiptsByDate(otherReceipts)
+                                      .entries) ...[
+                                Text(
+                                  receipt.key, // Date as section header
+                                  style: const TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                for (var entry in receipt.value)
+                                  ExpenseItem(
+                                    categoryIcon: entry['categoryIcon'],
+                                    categoryName: entry['categoryName'],
+                                    merchantName: entry['merchantName'],
+                                    amount:
+                                        '${entry['amount'] >= 0 ? '+' : '-'} \$${entry['amount'].abs().toStringAsFixed(2)}',
+                                    paymentMethod: entry['paymentMethod'],
+                                  ),
+                                const SizedBox(height: 16),
+                              ]
                             ],
                           ],
                         ),
@@ -110,15 +141,14 @@ class ReceiptListPage extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // Add dummy receipt data
           final receiptProvider =
               Provider.of<ReceiptProvider>(context, listen: false);
 
           // Dummy data for new receipt
           final dummyReceipt = {
-            'categoryId': '1f8G7NcXiXAfm4sJ18P5', // Example category ID
+            'categoryId': '1f8G7NcXiXAfm4sJ18P5',
             'merchantName': 'Dummy Store',
-            'amount': -50.0, // Negative value for an expense
+            'amount': -50.0,
             'date': Timestamp.now(),
             'paymentMethod': 'Credit Card',
           };
@@ -178,5 +208,24 @@ class ReceiptListPage extends StatelessWidget {
     return date.year == yesterday.year &&
         date.month == yesterday.month &&
         date.day == yesterday.day;
+  }
+
+  // Helper function to group receipts by date
+  Map<String, List<Map<String, dynamic>>> _groupReceiptsByDate(
+      List<Map<String, dynamic>> receipts) {
+    Map<String, List<Map<String, dynamic>>> groupedReceipts = {};
+
+    for (var receipt in receipts) {
+      DateTime date = (receipt['date'] as Timestamp).toDate();
+      String formattedDate = DateFormat('MMMM dd, yyyy').format(date);
+
+      if (groupedReceipts.containsKey(formattedDate)) {
+        groupedReceipts[formattedDate]!.add(receipt);
+      } else {
+        groupedReceipts[formattedDate] = [receipt];
+      }
+    }
+
+    return groupedReceipts;
   }
 }
