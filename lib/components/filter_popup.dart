@@ -19,6 +19,17 @@ class FilterPopupState extends State<FilterPopup> {
   bool isCategoryExpanded = false; // To control category dropdown visibility
 
   @override
+  void initState() {
+    super.initState();
+    // Initialize all categories as selected
+    final categoryProvider =
+        Provider.of<CategoryProvider>(context, listen: false);
+    selectedCategoryIds = categoryProvider.categories
+        .map<String>((category) => category['id'])
+        .toList();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final categoryProvider = Provider.of<CategoryProvider>(context);
     final userCategories = categoryProvider.categories;
@@ -132,8 +143,13 @@ class FilterPopupState extends State<FilterPopup> {
                       setState(() {
                         selectedFilter = 'Credit Card';
                         selectedSort = 'Highest';
-                        selectedCategoryIds
-                            .clear(); // Clear selected categories
+                        // Reset selectedCategoryIds to include all categories
+                        final categoryProvider = Provider.of<CategoryProvider>(
+                            context,
+                            listen: false);
+                        selectedCategoryIds = categoryProvider.categories
+                            .map<String>((category) => category['id'])
+                            .toList();
                       });
                     },
                   ),
