@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:receipt_manager/constants/app_colors.dart';
 import 'package:receipt_manager/screens/add_update_receipt_screen.dart';
 import 'package:receipt_manager/screens/profile_page.dart';
 
 import '../components/custom_bottom_nav_bar.dart';
-import 'budget_screen.dart';
+import 'budget_page.dart';
 import 'expense_list_page.dart';
 import 'home_page.dart';
 
@@ -37,7 +36,7 @@ class BasePageState extends State<BasePage> {
       case 1:
         return ExpenseListPage();
       case 2:
-        return BudgetScreen();
+        return BudgetPage();
       case 3:
         return ProfilePage();
       default:
@@ -54,40 +53,6 @@ class BasePageState extends State<BasePage> {
         onTabSelected: _onTabSelected,
         onFabPressed: _onFabPressed,
       ),
-      floatingActionButton: Padding(
-        padding: const EdgeInsets.only(
-            bottom: 20), // Move the button up by adding bottom padding
-        child: GestureDetector(
-          onTap: _onFabPressed,
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-            decoration: BoxDecoration(
-              color: purple100,
-              borderRadius:
-                  BorderRadius.circular(30), // Rounded rectangle shape
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black12,
-                  blurRadius: 8,
-                  spreadRadius: 2,
-                ),
-              ],
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: const [
-                Icon(Icons.add, color: light80), // FAB icon
-                SizedBox(width: 8), // Space between icon and text
-                Text(
-                  "Add new",
-                  style: TextStyle(color: light80, fontSize: 16),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
 }

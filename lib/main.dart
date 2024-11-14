@@ -29,12 +29,12 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => AuthenticationProvider()),
 
-        // Inject AuthenticationProvider into other Provider
-        ChangeNotifierProxyProvider<AuthenticationProvider, UserProvider>(
-          create: (_) => UserProvider(),
-          update: (context, authProvider, userProvider) {
-            userProvider!.authProvider = authProvider;
-            return userProvider;
+        // Make sure CategoryProvider comes before BudgetProvider
+        ChangeNotifierProxyProvider<AuthenticationProvider, CategoryProvider>(
+          create: (_) => CategoryProvider(),
+          update: (context, authProvider, categoryProvider) {
+            categoryProvider!.authProvider = authProvider;
+            return categoryProvider;
           },
         ),
         ChangeNotifierProxyProvider<AuthenticationProvider, BudgetProvider>(
@@ -44,11 +44,11 @@ class MyApp extends StatelessWidget {
             return budgetProvider;
           },
         ),
-        ChangeNotifierProxyProvider<AuthenticationProvider, CategoryProvider>(
-          create: (_) => CategoryProvider(),
-          update: (context, authProvider, categoryProvider) {
-            categoryProvider!.authProvider = authProvider;
-            return categoryProvider;
+        ChangeNotifierProxyProvider<AuthenticationProvider, UserProvider>(
+          create: (_) => UserProvider(),
+          update: (context, authProvider, userProvider) {
+            userProvider!.authProvider = authProvider;
+            return userProvider;
           },
         ),
         ChangeNotifierProxyProvider<AuthenticationProvider, ReceiptProvider>(
