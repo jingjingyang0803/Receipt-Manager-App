@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../components/logout_popup.dart';
+import '../components/user_edit_popup.dart';
 import '../constants/app_colors.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -16,7 +17,7 @@ class ProfilePage extends StatefulWidget {
 class ProfilePageState extends State<ProfilePage> {
   final _picker = ImagePicker();
   final String _userEmail = "jingjing.yang@tuni.fi";
-  String _userName = "Iriana Saliha";
+  final String _userName = "Iriana Saliha";
   XFile? _profileImage;
 
   // Function to pick an image from gallery
@@ -29,31 +30,14 @@ class ProfilePageState extends State<ProfilePage> {
     }
   }
 
-  // Function to edit the username
-  void _editUserName() {
-    showDialog(
+  // Function to show edit profile popup
+  void _showEditPopup(BuildContext context) {
+    showModalBottomSheet(
       context: context,
-      builder: (context) {
-        TextEditingController controller =
-            TextEditingController(text: _userName);
-        return AlertDialog(
-          title: Text("Edit Username"),
-          content: TextField(
-            controller: controller,
-            decoration: InputDecoration(hintText: "Enter new username"),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                setState(() {
-                  _userName = controller.text;
-                });
-                Navigator.of(context).pop();
-              },
-              child: Text("Save"),
-            ),
-          ],
-        );
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return const UserEditPopup();
       },
     );
   }
@@ -123,9 +107,12 @@ class ProfilePageState extends State<ProfilePage> {
                     ),
                   ],
                 ),
-                const SizedBox(width: 66),
-                GestureDetector(
-                  onTap: _editUserName,
+                const SizedBox(width: 60),
+                TextButton(
+                  onPressed: () => _showEditPopup(context),
+                  style: TextButton.styleFrom(
+                    padding: EdgeInsets.zero, // Removes default padding
+                  ),
                   child: Container(
                     width: 40,
                     height: 40,
@@ -143,7 +130,7 @@ class ProfilePageState extends State<ProfilePage> {
                       size: 30, // Icon size
                     ),
                   ),
-                ),
+                )
               ],
             ),
             const SizedBox(height: 30),
