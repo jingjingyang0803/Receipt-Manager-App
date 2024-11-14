@@ -155,30 +155,6 @@ class ProfilePageState extends State<ProfilePage> {
                         ],
                       ),
                     ),
-                    const SizedBox(width: 8),
-                    TextButton(
-                      onPressed: () {},
-                      style: TextButton.styleFrom(
-                        padding: EdgeInsets.zero,
-                      ),
-                      child: Container(
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          color: light80,
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(
-                            color: purple10,
-                            width: 1,
-                          ),
-                        ),
-                        child: Icon(
-                          Icons.edit_outlined,
-                          color: dark50,
-                          size: 30,
-                        ),
-                      ),
-                    )
                   ],
                 ),
 
