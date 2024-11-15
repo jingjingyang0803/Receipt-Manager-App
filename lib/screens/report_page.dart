@@ -172,10 +172,13 @@ class ReportPageState extends State<ReportPage> {
                   ),
                   const SizedBox(width: 8),
                   Expanded(
-                    child: Text(
-                      '$categoryIcon $categoryName: ${total.toStringAsFixed(2)} (${percentage.toStringAsFixed(1)}%)',
-                      style: const TextStyle(fontSize: 14),
-                      overflow: TextOverflow.ellipsis,
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Text(
+                        '$categoryIcon $categoryName: ${total.toStringAsFixed(2)} (${percentage.toStringAsFixed(1)}%)',
+                        style: const TextStyle(fontSize: 14),
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
                   ),
                 ],
@@ -206,61 +209,68 @@ class ReportPageState extends State<ReportPage> {
 
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
-      child: SizedBox(
-        width: chartWidth,
-        height: 300,
-        child: BarChart(
-          BarChartData(
-            maxY: maxY,
-            alignment: BarChartAlignment.spaceEvenly,
-            borderData: FlBorderData(show: false),
-            titlesData: FlTitlesData(
-              bottomTitles: AxisTitles(
-                sideTitles: SideTitles(
-                  showTitles: true,
-                  getTitlesWidget: (value, _) {
-                    final key = groupedReceipts.keys.elementAt(value.toInt());
-                    return Padding(
-                      padding: const EdgeInsets.only(top: 8.0),
-                      child: Text(
-                        key,
-                        style: const TextStyle(fontSize: 12),
-                      ),
-                    );
-                  },
-                  reservedSize: 42,
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          minWidth: 350, // Set the minimum width
+          maxWidth: double.infinity, // You can set the maximum width as needed
+        ),
+        child: SizedBox(
+          width: chartWidth,
+          height: 300,
+          child: BarChart(
+            BarChartData(
+              maxY: maxY,
+              alignment: BarChartAlignment.spaceEvenly,
+              borderData: FlBorderData(show: false),
+              titlesData: FlTitlesData(
+                bottomTitles: AxisTitles(
+                  sideTitles: SideTitles(
+                    showTitles: true,
+                    getTitlesWidget: (value, _) {
+                      final key = groupedReceipts.keys.elementAt(value.toInt());
+                      return Padding(
+                        padding: const EdgeInsets.only(top: 8.0),
+                        child: Text(
+                          key,
+                          style: const TextStyle(fontSize: 12),
+                        ),
+                      );
+                    },
+                    reservedSize: 42,
+                  ),
+                ),
+                leftTitles: AxisTitles(
+                  sideTitles: SideTitles(showTitles: false),
                 ),
               ),
-              leftTitles: AxisTitles(
-                sideTitles: SideTitles(showTitles: false),
-              ),
-            ),
-            barGroups: groupedReceipts.entries.map((entry) {
-              final index = groupedReceipts.keys.toList().indexOf(entry.key);
-              final total = entry.value;
+              barGroups: groupedReceipts.entries.map((entry) {
+                final index = groupedReceipts.keys.toList().indexOf(entry.key);
+                final total = entry.value;
 
-              // Cycle through available colors by using modulo to prevent going out of bounds
-              final color = availableColors[index % availableColors.length];
+                // Cycle through available colors by using modulo to prevent going out of bounds
+                final color = availableColors[index % availableColors.length];
 
-              return BarChartGroupData(
-                x: index,
-                barRods: [
-                  BarChartRodData(
-                    toY: total,
-                    color: color,
-                    width: 22,
-                  ),
-                ],
-              );
-            }).toList(),
-            barTouchData: BarTouchData(
-              touchTooltipData: BarTouchTooltipData(
-                getTooltipItem: (group, groupIndex, rod, rodIndex) {
-                  return BarTooltipItem(
-                    rod.toY.toStringAsFixed(1),
-                    const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-                  );
-                },
+                return BarChartGroupData(
+                  x: index,
+                  barRods: [
+                    BarChartRodData(
+                      toY: total,
+                      color: color,
+                      width: 22,
+                    ),
+                  ],
+                );
+              }).toList(),
+              barTouchData: BarTouchData(
+                touchTooltipData: BarTouchTooltipData(
+                  getTooltipItem: (group, groupIndex, rod, rodIndex) {
+                    return BarTooltipItem(
+                      rod.toY.toStringAsFixed(1),
+                      const TextStyle(
+                          fontSize: 14, fontWeight: FontWeight.bold),
+                    );
+                  },
+                ),
               ),
             ),
           ),
@@ -274,13 +284,12 @@ class ReportPageState extends State<ReportPage> {
     required BuildContext context,
     required String title,
     required Widget content, // Dynamic content to display inside the card
-    Color backgroundColor = const Color(0xFFE0E0E0), // Default gray background
     double elevation = 4, // Card elevation
     EdgeInsets padding = const EdgeInsets.all(10.0), // Padding inside the card
     double borderRadius = 10.0, // Border radius
   }) {
     return Card(
-      color: backgroundColor, // Set the background color
+      color: Colors.white, // Set the background color
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(borderRadius), // Rounded corners
       ),
