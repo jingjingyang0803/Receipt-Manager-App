@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../components/date_range_container.dart';
+import '../../logger.dart'; // Import your logger
 import '../../providers/receipt_provider.dart';
 
 class ReportPage extends StatefulWidget {
@@ -21,17 +22,29 @@ class ReportPageState extends State<ReportPage> {
     final receiptProvider =
         Provider.of<ReceiptProvider>(context, listen: false);
 
+    logger.i("Initializing ReportPage...");
+    logger.i("Fetching receipt count, dates, and grouped receipts.");
+
     // Fetch initial data
     receiptProvider.loadReceiptCount();
     receiptProvider.loadOldestAndNewestDates();
-    receiptProvider.fetchDailyGroupedReceipts(
+    receiptProvider
+        .fetchDailyGroupedReceipts(
       DateTime(DateTime.now().year, 1, 1), // Start date: first day of the year
       DateTime.now(), // End date: today
-    );
+    )
+        .then((_) {
+      logger.i("Fetched daily grouped receipts successfully.");
+    }).catchError((error) {
+      logger.e("Error fetching daily grouped receipts: $error");
+    });
   }
 
   Widget buildPieChart(Map<String, double> groupedReceiptsByCategory) {
+    logger.i(
+        "Building PieChart. GroupedReceiptsByCategory: $groupedReceiptsByCategory");
     if (groupedReceiptsByCategory.isEmpty) {
+      logger.i("No data available for PieChart.");
       return Center(child: Text('No data available.'));
     }
 
@@ -53,7 +66,10 @@ class ReportPageState extends State<ReportPage> {
   }
 
   Widget buildBarChart(Map<String, double> groupedReceiptsByInterval) {
+    logger.i(
+        "Building BarChart. GroupedReceiptsByInterval: $groupedReceiptsByInterval");
     if (groupedReceiptsByInterval.isEmpty) {
+      logger.i("No data available for BarChart.");
       return Center(child: Text('No data available.'));
     }
 
@@ -80,6 +96,12 @@ class ReportPageState extends State<ReportPage> {
   Widget build(BuildContext context) {
     final receiptProvider = Provider.of<ReceiptProvider>(context);
 
+    logger.i("Building ReportPage...");
+    logger.i(
+        "ReceiptProvider state: ReceiptSnapshot: ${receiptProvider.receiptsSnapshot}, "
+        "GroupedReceiptsByCategory: ${receiptProvider.groupedReceiptsByCategory}, "
+        "GroupedReceiptsByInterval: ${receiptProvider.groupedReceiptsByInterval}");
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Your Graphs'),
@@ -104,11 +126,13 @@ class ReportPageState extends State<ReportPage> {
                                   .oldestAndNewestDates?['endDate'] ??
                               DateTime.now(),
                           onCalendarPressed: () async {
+                            logger.i("Date range container clicked.");
                             // Open calendar filter dialog
                           },
                         ),
                         TextButton(
                           onPressed: () {
+                            logger.i("Currency picker button clicked.");
                             // Show currency picker
                           },
                           child: Text(
