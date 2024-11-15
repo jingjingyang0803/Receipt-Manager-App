@@ -7,7 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:receipt_manager/providers/category_provider.dart';
 import 'package:receipt_manager/providers/receipt_provider.dart';
-import 'package:receipt_manager/screens/old/receipt_list_screen.dart';
+import 'package:receipt_manager/screens/receipt_list_page.dart';
 
 import '../components/category_select_popup.dart';
 import '../components/old/rounded_button.dart';
@@ -199,7 +199,7 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
         );
         _clearForm();
       }
-      Navigator.pushReplacementNamed(context, ReceiptListScreen.id);
+      Navigator.pushReplacementNamed(context, ReceiptListPage.id);
     } catch (e) {
       messenger.showSnackBar(
         SnackBar(content: Text('Failed to save receipt. Try again.')),
