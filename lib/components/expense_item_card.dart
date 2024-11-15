@@ -85,7 +85,7 @@ class ExpenseItem extends StatelessWidget {
                 Text(
                   amount,
                   style: TextStyle(
-                    color: amount.startsWith('-') ? Colors.red : Colors.green,
+                    color: Colors.red,
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
                   ),
