@@ -2,9 +2,9 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../components/date_range_container.dart';
 import '../../logger.dart';
 import '../../providers/receipt_provider.dart';
+import '../components/custom_app_bar.dart';
 
 class ReportPage extends StatefulWidget {
   static const String id = 'report_page';
@@ -135,10 +135,7 @@ class ReportPageState extends State<ReportPage> {
     final receiptProvider = Provider.of<ReceiptProvider>(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Your Graphs'),
-        backgroundColor: Colors.lightBlueAccent,
-      ),
+      appBar: CustomAppBar(),
       body: receiptProvider.allReceipts.isEmpty
           ? const Center(child: CircularProgressIndicator())
           : Padding(
@@ -147,43 +144,6 @@ class ReportPageState extends State<ReportPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        DateRangeContainer(
-                          startDate: receiptProvider.startDate ??
-                              DateTime(DateTime.now().year, 1, 1),
-                          endDate: receiptProvider.endDate ?? DateTime.now(),
-                          onCalendarPressed: () async {
-                            final pickedDates = await showDateRangePicker(
-                              context: context,
-                              firstDate: DateTime(2000),
-                              lastDate: DateTime.now(),
-                              initialDateRange: DateTimeRange(
-                                start: receiptProvider.startDate ??
-                                    DateTime(DateTime.now().year, 1, 1),
-                                end: receiptProvider.endDate ?? DateTime.now(),
-                              ),
-                            );
-
-                            if (pickedDates != null) {
-                              receiptProvider.updateFilters(
-                                sortOption: receiptProvider.sortOption,
-                                paymentMethods:
-                                    receiptProvider.selectedPaymentMethods,
-                                categoryIds:
-                                    receiptProvider.selectedCategoryIds,
-                                startDate: pickedDates.start,
-                                endDate: pickedDates.end,
-                              );
-                              receiptProvider.fetchReceipts();
-                              receiptProvider.groupByCategory();
-                              receiptProvider.groupByDate();
-                            }
-                          },
-                        ),
-                      ],
-                    ),
                     const SizedBox(height: 20),
                     Text(
                       'Expenses by Category',

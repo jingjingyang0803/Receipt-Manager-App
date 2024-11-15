@@ -6,10 +6,8 @@ import 'package:receipt_manager/constants/app_colors.dart';
 import 'package:receipt_manager/providers/receipt_provider.dart';
 import 'package:receipt_manager/screens/financial_report_page.dart';
 
-import '../components/date_range_container.dart';
-import '../components/date_roller_picker.dart';
+import '../components/custom_app_bar.dart';
 import '../components/expense_item_card.dart';
-import '../components/filter_popup.dart';
 import 'add_update_receipt_page.dart';
 
 //implement a search bar that updates dynamically
@@ -24,31 +22,22 @@ class ReceiptListPage extends StatefulWidget {
 
 class ReceiptListPageState extends State<ReceiptListPage> {
   // Added State Variables for Search
-  bool _isSearching = false;
   final TextEditingController _searchController = TextEditingController();
   final FocusNode _searchFocusNode = FocusNode();
   List<Map<String, dynamic>> _suggestions = []; // To hold search suggestions
 
   // Set default dates
-  DateTime? _startDate =
+  DateTime _startDate =
       DateTime(DateTime.now().year, 1, 1); // Start date: first day of the year
-  DateTime? _endDate = DateTime.now(); // End date: today
+  DateTime _endDate = DateTime.now(); // End date: today
 
-  // Method to open the filter popup
-  void _openFilterPopup(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      builder: (context) => FilterPopup(
-        onApply: (paymentMethods, sortOrder, categoryIds) {
-          Provider.of<ReceiptProvider>(context, listen: false).updateFilters(
-            paymentMethods: paymentMethods,
-            sortOption: sortOrder,
-            categoryIds: categoryIds,
-          );
-        },
-      ),
-    );
+  @override
+  void initState() {
+    super.initState();
+    // Set default dates
+    _startDate = DateTime(
+        DateTime.now().year, 1, 1); // Start date: first day of the year
+    _endDate = DateTime.now(); // End date: today
   }
 
   // Search method: filters receipts by matching the query
@@ -183,52 +172,12 @@ class ReceiptListPageState extends State<ReceiptListPage> {
     );
   }
 
-  Future<void> _showCalendarFilterDialog() async {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      builder: (BuildContext context) {
-        return CalendarFilterWidget(
-          initialStartDate: _startDate!,
-          initialEndDate: _endDate!,
-          onApply: (start, end) {
-            setState(() {
-              _startDate = start;
-              _endDate = end;
-            });
-          },
-        );
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: true,
       backgroundColor: light90,
-      appBar: AppBar(
-        automaticallyImplyLeading: false, // Removes the default back arrow
-        backgroundColor: light90,
-        elevation: 0,
-        centerTitle: true,
-        actions: [
-          DateRangeContainer(
-            startDate: _startDate!,
-            endDate: _endDate!,
-            onCalendarPressed:
-                _showCalendarFilterDialog, // Pass the calendar callback
-          ),
-          SizedBox(width: 8),
-          IconButton(
-            icon: Icon(Icons.filter_list_rounded, color: Colors.black),
-            onPressed: () => _openFilterPopup(context),
-          ),
-        ],
-      ),
+      appBar: CustomAppBar(),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
