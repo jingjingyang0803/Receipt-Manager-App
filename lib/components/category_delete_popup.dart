@@ -51,7 +51,7 @@ class CategoryDeletePopup extends StatelessWidget {
             'If you delete this category, the receipts belonging to it will have a null category value. Are you sure you want to delete this category?',
             style: TextStyle(
               fontSize: 18,
-              color: light20,
+              color: purple200,
             ),
             textAlign: TextAlign.center,
           ),

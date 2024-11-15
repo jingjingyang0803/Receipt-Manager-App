@@ -173,7 +173,7 @@ class SettingsPageState extends State<SettingsPage> {
                         children: [
                           Text(
                             userEmail ?? "Email not available",
-                            style: TextStyle(color: light20, fontSize: 16),
+                            style: TextStyle(color: purple200, fontSize: 16),
                           ),
                           TextFormField(
                             controller: _nameController,

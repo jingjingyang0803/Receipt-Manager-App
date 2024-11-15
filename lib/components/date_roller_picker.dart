@@ -2,7 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import 'old/rounded_button.dart';
+import '../constants/app_colors.dart';
+import 'custom_button.dart';
 
 class CalendarFilterWidget extends StatefulWidget {
   final DateTime initialStartDate;
@@ -48,7 +49,6 @@ class CalendarFilterWidgetState extends State<CalendarFilterWidget> {
         : (_endDate ?? DateTime.now());
     DateTime maximumDate = DateTime.now();
 
-    // Ensure initialDate does not exceed maximumDate
     if (initialDate.isAfter(maximumDate)) {
       initialDate = maximumDate;
     }
@@ -93,7 +93,7 @@ class CalendarFilterWidgetState extends State<CalendarFilterWidget> {
               ),
               TextButton(
                 onPressed: () => Navigator.pop(context),
-                child: Text('DONE'),
+                child: Text('DONE', style: TextStyle(color: purple100)),
               ),
             ],
           ),
@@ -105,7 +105,7 @@ class CalendarFilterWidgetState extends State<CalendarFilterWidget> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.only(
@@ -114,26 +114,13 @@ class CalendarFilterWidgetState extends State<CalendarFilterWidget> {
         ),
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          Center(
-            child: Container(
-              width: 50,
-              height: 5,
-              decoration: BoxDecoration(
-                color: Colors.grey[300],
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
-          ),
-          SizedBox(height: 16),
-          Text(
-            'Select Date Range',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
+          Divider(
+            thickness: 3,
+            color: purple40,
+            endIndent: 165,
+            indent: 165,
           ),
           SizedBox(height: 16),
           Wrap(
@@ -143,21 +130,53 @@ class CalendarFilterWidgetState extends State<CalendarFilterWidget> {
                 label: Text('Wk'),
                 selected: false,
                 onSelected: (_) => _updateRange(7),
+                backgroundColor: light40,
+                selectedColor: purple20,
+                labelStyle: TextStyle(color: Colors.black),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  side: BorderSide(
+                      color: Colors.transparent, width: 0), // Remove border
+                ),
               ),
               ChoiceChip(
                 label: Text('30D'),
                 selected: false,
                 onSelected: (_) => _updateRange(30),
+                backgroundColor: light40,
+                selectedColor: purple20,
+                labelStyle: TextStyle(color: Colors.black),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  side: BorderSide(
+                      color: Colors.transparent, width: 0), // Remove border
+                ),
               ),
               ChoiceChip(
                 label: Text('90D'),
                 selected: false,
                 onSelected: (_) => _updateRange(90),
+                backgroundColor: light40,
+                selectedColor: purple20,
+                labelStyle: TextStyle(color: Colors.black),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  side: BorderSide(
+                      color: Colors.transparent, width: 0), // Remove border
+                ),
               ),
               ChoiceChip(
                 label: Text('Year'),
                 selected: false,
                 onSelected: (_) => _updateRange(365),
+                backgroundColor: light40,
+                selectedColor: purple20,
+                labelStyle: TextStyle(color: Colors.black),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  side: BorderSide(
+                      color: Colors.transparent, width: 0), // Remove border
+                ),
               ),
             ],
           ),
@@ -165,64 +184,28 @@ class CalendarFilterWidgetState extends State<CalendarFilterWidget> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Start Date'),
-                  SizedBox(height: 8),
-                  GestureDetector(
-                    onTap: () => _showRollingDatePicker(context, true),
-                    child: Container(
-                      padding:
-                          EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                      decoration: BoxDecoration(
-                        color: Colors.grey[200],
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Text(
-                        _startDate != null
-                            ? DateFormat.yMMMd().format(_startDate!)
-                            : 'Select',
-                        style: TextStyle(fontSize: 16),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('End Date'),
-                  SizedBox(height: 8),
-                  GestureDetector(
-                    onTap: () => _showRollingDatePicker(context, false),
-                    child: Container(
-                      padding:
-                          EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                      decoration: BoxDecoration(
-                        color: Colors.grey[200],
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Text(
-                        _endDate != null
-                            ? DateFormat.yMMMd().format(_endDate!)
-                            : 'Select',
-                        style: TextStyle(fontSize: 16),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+              _buildDatePickerButton('From', _startDate, true),
+              _buildDatePickerButton('To', _endDate, false),
             ],
           ),
-          SizedBox(height: 16),
+          SizedBox(height: 24),
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Expanded(
-                child: RoundedButton(
-                  color: Colors.lightBlueAccent,
-                  title: 'Filter',
+                child: CustomButton(
+                  text: "Cancel",
+                  backgroundColor: purple20,
+                  textColor: purple100,
+                  onPressed: () => Navigator.pop(context),
+                ),
+              ),
+              SizedBox(width: 8),
+              Expanded(
+                child: CustomButton(
+                  text: "Apply",
+                  backgroundColor: purple100,
+                  textColor: light80,
                   onPressed: () {
                     if (_startDate != null && _endDate != null) {
                       widget.onApply(_startDate!, _endDate!);
@@ -231,18 +214,35 @@ class CalendarFilterWidgetState extends State<CalendarFilterWidget> {
                   },
                 ),
               ),
-              SizedBox(width: 8),
-              Expanded(
-                child: RoundedButton(
-                  color: Colors.grey,
-                  title: 'Cancel',
-                  onPressed: () => Navigator.pop(context),
-                ),
-              ),
             ],
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildDatePickerButton(
+      String label, DateTime? date, bool isStartDate) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label, style: TextStyle(color: dark50)),
+        SizedBox(height: 8),
+        GestureDetector(
+          onTap: () => _showRollingDatePicker(context, isStartDate),
+          child: Container(
+            padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+            decoration: BoxDecoration(
+              color: light40,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Text(
+              date != null ? DateFormat.yMMMd().format(date) : 'Select',
+              style: TextStyle(fontSize: 16, color: dark50),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

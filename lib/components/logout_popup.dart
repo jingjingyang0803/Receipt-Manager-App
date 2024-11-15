@@ -47,7 +47,7 @@ class LogoutPopup extends StatelessWidget {
             'Are you sure do you wanna logout?',
             style: TextStyle(
               fontSize: 18,
-              color: light20,
+              color: purple200,
             ),
             textAlign: TextAlign.center,
           ),

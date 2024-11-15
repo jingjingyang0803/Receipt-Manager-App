@@ -211,7 +211,7 @@ class SignUpPageState extends State<SignUpPage> {
                 child: Text(
                   "Or with",
                   style: TextStyle(
-                    color: light20,
+                    color: purple200,
                     fontWeight: FontWeight.bold,
                     fontSize: 14,
                   ),
@@ -222,7 +222,7 @@ class SignUpPageState extends State<SignUpPage> {
                 child: Text.rich(
                   TextSpan(
                     text: "Already have an account? ",
-                    style: TextStyle(color: light20, fontSize: 16),
+                    style: TextStyle(color: purple200, fontSize: 16),
                     children: [
                       underlineTextSpan(
                         text: "Login",
