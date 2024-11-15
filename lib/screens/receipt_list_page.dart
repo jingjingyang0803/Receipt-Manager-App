@@ -284,16 +284,26 @@ class ReceiptListPageState extends State<ReceiptListPage> {
                       List<Map<String, dynamic>> receipts =
                           _filterReceipts(snapshot.data!, query);
 
-                      List<Map<String, dynamic>> todayReceipts = receipts
-                          .where((receipt) => _isToday(
-                              (receipt['date'] as Timestamp?)?.toDate() ??
-                                  DateTime.now()))
-                          .toList();
-                      List<Map<String, dynamic>> yesterdayReceipts = receipts
-                          .where((receipt) => _isYesterday(
-                              (receipt['date'] as Timestamp?)?.toDate() ??
-                                  DateTime.now()))
-                          .toList();
+                      // Sort option check
+                      bool isSortNewest = true;
+                      // receiptProvider.sortOption == "Newest";
+
+                      List<Map<String, dynamic>> todayReceipts = isSortNewest
+                          ? receipts
+                              .where((receipt) => _isToday(
+                                  (receipt['date'] as Timestamp?)?.toDate() ??
+                                      DateTime.now()))
+                              .toList()
+                          : [];
+                      List<Map<String, dynamic>> yesterdayReceipts =
+                          isSortNewest
+                              ? receipts
+                                  .where((receipt) => _isYesterday(
+                                      (receipt['date'] as Timestamp?)
+                                              ?.toDate() ??
+                                          DateTime.now()))
+                                  .toList()
+                              : [];
                       List<Map<String, dynamic>> otherReceipts = receipts
                           .where((receipt) =>
                               !_isToday(
@@ -308,11 +318,14 @@ class ReceiptListPageState extends State<ReceiptListPage> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            _buildReceiptSection(context,
-                                sectionTitle: 'Today', receipts: todayReceipts),
-                            _buildReceiptSection(context,
-                                sectionTitle: 'Yesterday',
-                                receipts: yesterdayReceipts),
+                            if (isSortNewest)
+                              _buildReceiptSection(context,
+                                  sectionTitle: 'Today',
+                                  receipts: todayReceipts),
+                            if (isSortNewest)
+                              _buildReceiptSection(context,
+                                  sectionTitle: 'Yesterday',
+                                  receipts: yesterdayReceipts),
                             for (var entry
                                 in _groupReceiptsByDate(otherReceipts).entries)
                               _buildReceiptSection(context,
