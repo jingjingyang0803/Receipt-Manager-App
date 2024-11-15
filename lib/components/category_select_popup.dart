@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../constants/app_colors.dart';
 import '../providers/category_provider.dart';
+import 'custom_button.dart';
 
 class CategorySelectPopup extends StatefulWidget {
   const CategorySelectPopup({super.key});
@@ -17,28 +18,7 @@ class CategorySelectPopupState extends State<CategorySelectPopup> {
   @override
   void initState() {
     super.initState();
-    // Load categories when the popup opens
     Provider.of<CategoryProvider>(context, listen: false).loadUserCategories();
-  }
-
-  // Show dialog to add a new category
-  void _showAddCategoryDialog() {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return Dialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          // child: AddCategoryWidget(
-          //   onCategoryAdded: () {
-          //     Provider.of<CategoryProvider>(context, listen: false)
-          //         .loadUserCategories(); // Reload categories
-          //   },
-          // ),
-        );
-      },
-    );
   }
 
   @override
@@ -67,7 +47,13 @@ class CategorySelectPopupState extends State<CategorySelectPopup> {
               ),
               SizedBox(height: 8),
               Expanded(
-                child: ListView.builder(
+                child: GridView.builder(
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3,
+                    mainAxisSpacing: 12,
+                    crossAxisSpacing: 12,
+                    childAspectRatio: 1,
+                  ),
                   itemCount: userCategories.length,
                   itemBuilder: (context, index) {
                     String categoryId = userCategories[index]['id'] ?? '';
@@ -75,35 +61,56 @@ class CategorySelectPopupState extends State<CategorySelectPopup> {
                         userCategories[index]['name']?.trim() ?? '';
                     bool isSelected = categoryId == selectedCategoryId;
 
-                    return Container(
-                      color: isSelected
-                          ? Colors.lightBlue.withOpacity(0.2)
-                          : null, // Highlight selected row
-                      child: ListTile(
-                        leading: Text(
-                          userCategories[index]['icon'] ?? '',
-                          style: TextStyle(fontSize: 24),
+                    return GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          selectedCategoryId = categoryId;
+                        });
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: isSelected
+                              ? purple60 // Active background color
+                              : Colors.grey[200], // Inactive background color
+                          borderRadius: BorderRadius.circular(12),
                         ),
-                        title: Text(
-                          categoryName,
-                          style: TextStyle(
-                            fontWeight: isSelected
-                                ? FontWeight.bold
-                                : FontWeight.normal,
-                          ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              userCategories[index]['icon'] ?? '',
+                              style: TextStyle(
+                                fontSize: 32,
+                                color: isSelected ? Colors.white : Colors.black,
+                              ),
+                            ),
+                            SizedBox(height: 8),
+                            Text(
+                              categoryName,
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                                color: isSelected ? Colors.white : Colors.black,
+                              ),
+                              textAlign: TextAlign.center,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
                         ),
-                        onTap: () {
-                          setState(() {
-                            selectedCategoryId = categoryId;
-                          });
-                          Navigator.pop(context, selectedCategoryId);
-                        },
                       ),
                     );
                   },
                 ),
               ),
               SizedBox(height: 16),
+              CustomButton(
+                  text: "Confirm",
+                  backgroundColor: purple100,
+                  textColor: light80,
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  } // Close the popup},
+                  ),
             ],
           );
         },
