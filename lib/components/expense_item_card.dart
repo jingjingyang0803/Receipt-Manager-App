@@ -4,6 +4,7 @@ class ExpenseItem extends StatelessWidget {
   final dynamic categoryIcon; // Use dynamic to accept both String and IconData
   final String categoryName;
   final String merchantName;
+  final String receiptDate;
   final String amount;
   final String paymentMethod;
   final VoidCallback onTap;
@@ -13,6 +14,7 @@ class ExpenseItem extends StatelessWidget {
     required this.categoryIcon,
     required this.categoryName,
     required this.merchantName,
+    required this.receiptDate,
     required this.amount,
     required this.paymentMethod,
     required this.onTap,
@@ -70,6 +72,13 @@ class ExpenseItem extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     'From: $merchantName',
+                    style: TextStyle(
+                      color: Colors.grey.shade600,
+                      fontSize: 14,
+                    ),
+                  ),
+                  Text(
+                    'On: $receiptDate',
                     style: TextStyle(
                       color: Colors.grey.shade600,
                       fontSize: 14,
