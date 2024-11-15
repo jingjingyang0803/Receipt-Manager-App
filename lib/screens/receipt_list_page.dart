@@ -26,18 +26,9 @@ class ReceiptListPageState extends State<ReceiptListPage> {
   final FocusNode _searchFocusNode = FocusNode();
   List<Map<String, dynamic>> _suggestions = []; // To hold search suggestions
 
-  // Set default dates
-  DateTime _startDate =
-      DateTime(DateTime.now().year, 1, 1); // Start date: first day of the year
-  DateTime _endDate = DateTime.now(); // End date: today
-
   @override
   void initState() {
     super.initState();
-    // Set default dates
-    _startDate = DateTime(
-        DateTime.now().year, 1, 1); // Start date: first day of the year
-    _endDate = DateTime.now(); // End date: today
   }
 
   // Search method: filters receipts by matching the query
@@ -73,6 +64,10 @@ class ReceiptListPageState extends State<ReceiptListPage> {
                     categoryIcon: receipt['categoryIcon'] ?? Icons.category,
                     categoryName: receipt['categoryName'] ?? 'Unknown Category',
                     merchantName: receipt['merchant'] ?? 'Unknown Merchant',
+                    receiptDate: receipt['date'] != null
+                        ? DateFormat('MMM d, yyyy')
+                            .format((receipt['date'] as Timestamp).toDate())
+                        : 'Unknown',
                     amount: receipt['amount'].toStringAsFixed(2),
                     paymentMethod:
                         receipt['paymentMethod'] ?? 'Unknown Payment Method',
@@ -247,53 +242,12 @@ class ReceiptListPageState extends State<ReceiptListPage> {
                       List<Map<String, dynamic>> receipts =
                           _filterReceipts(snapshot.data!, query);
 
-                      // Sort option check
-                      bool isSortNewest =
-                          receiptProvider.sortOption == "Newest";
-
-                      List<Map<String, dynamic>> todayReceipts = isSortNewest
-                          ? receipts
-                              .where((receipt) => _isToday(
-                                  (receipt['date'] as Timestamp?)?.toDate() ??
-                                      DateTime.now()))
-                              .toList()
-                          : [];
-                      List<Map<String, dynamic>> yesterdayReceipts =
-                          isSortNewest
-                              ? receipts
-                                  .where((receipt) => _isYesterday(
-                                      (receipt['date'] as Timestamp?)
-                                              ?.toDate() ??
-                                          DateTime.now()))
-                                  .toList()
-                              : [];
-                      List<Map<String, dynamic>> otherReceipts = receipts
-                          .where((receipt) =>
-                              !_isToday(
-                                  (receipt['date'] as Timestamp?)?.toDate() ??
-                                      DateTime.now()) &&
-                              !_isYesterday(
-                                  (receipt['date'] as Timestamp?)?.toDate() ??
-                                      DateTime.now()))
-                          .toList();
-
                       return SingleChildScrollView(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            if (isSortNewest)
-                              _buildReceiptSection(context,
-                                  sectionTitle: 'Today',
-                                  receipts: todayReceipts),
-                            if (isSortNewest)
-                              _buildReceiptSection(context,
-                                  sectionTitle: 'Yesterday',
-                                  receipts: yesterdayReceipts),
-                            for (var entry
-                                in _groupReceiptsByDate(otherReceipts).entries)
-                              _buildReceiptSection(context,
-                                  sectionTitle: entry.key,
-                                  receipts: entry.value),
+                            _buildReceiptSection(context,
+                                sectionTitle: 'Receipts', receipts: receipts),
                           ],
                         ),
                       );
@@ -349,37 +303,4 @@ Widget _buildFinancialReportBar(BuildContext context) {
       ),
     ),
   );
-}
-
-bool _isToday(DateTime date) {
-  DateTime now = DateTime.now();
-  return date.year == now.year &&
-      date.month == now.month &&
-      date.day == now.day;
-}
-
-bool _isYesterday(DateTime date) {
-  DateTime yesterday = DateTime.now().subtract(const Duration(days: 1));
-  return date.year == yesterday.year &&
-      date.month == yesterday.month &&
-      date.day == yesterday.day;
-}
-
-// Helper function to group receipts by date
-Map<String, List<Map<String, dynamic>>> _groupReceiptsByDate(
-    List<Map<String, dynamic>> receipts) {
-  Map<String, List<Map<String, dynamic>>> groupedReceipts = {};
-
-  for (var receipt in receipts) {
-    DateTime date = (receipt['date'] as Timestamp?)?.toDate() ?? DateTime.now();
-    String formattedDate = DateFormat('MMMM dd, yyyy').format(date);
-
-    if (groupedReceipts.containsKey(formattedDate)) {
-      groupedReceipts[formattedDate]!.add(receipt);
-    } else {
-      groupedReceipts[formattedDate] = [receipt];
-    }
-  }
-
-  return groupedReceipts;
 }
