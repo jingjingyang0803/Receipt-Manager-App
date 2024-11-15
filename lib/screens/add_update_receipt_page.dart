@@ -9,6 +9,7 @@ import 'package:receipt_manager/providers/category_provider.dart';
 import 'package:receipt_manager/providers/receipt_provider.dart';
 import 'package:receipt_manager/screens/old/receipt_list_screen.dart';
 
+import '../components/category_select_popup.dart';
 import '../components/old/rounded_button.dart';
 import '../services/storage_service.dart';
 
@@ -138,77 +139,6 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
     );
   }
 
-  Future<void> _showCategoryBottomSheet(BuildContext context) async {
-    final result = await showModalBottomSheet(
-      context: context,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      isScrollControlled: true,
-      builder: (BuildContext context) {
-        final categoryProvider = Provider.of<CategoryProvider>(context);
-        final categories = categoryProvider.categories;
-
-        return Padding(
-          padding: EdgeInsets.all(20),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                'Select Category',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 20),
-              SizedBox(
-                height: 400,
-                child: ListView.builder(
-                  itemCount: categories.length,
-                  itemBuilder: (context, index) {
-                    String categoryId = categories[index]['id'] ?? '';
-                    String categoryName = categories[index]['name'] ?? '';
-                    String categoryIcon = categories[index]['icon'] ?? '';
-
-                    bool isSelected = categoryId == selectedCategoryId;
-
-                    return Container(
-                      color:
-                          isSelected ? Colors.lightBlue.withOpacity(0.2) : null,
-                      child: ListTile(
-                        leading:
-                            Text(categoryIcon, style: TextStyle(fontSize: 24)),
-                        title: Text(
-                          categoryName,
-                          style: TextStyle(
-                            fontWeight: isSelected
-                                ? FontWeight.bold
-                                : FontWeight.normal,
-                          ),
-                        ),
-                        onTap: () {
-                          Navigator.pop(context, categoryId);
-                        },
-                      ),
-                    );
-                  },
-                ),
-              ),
-              ElevatedButton(
-                onPressed: () => _showAddCategoryDialog(),
-                child: Text('Add Category'),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-
-    if (result != null) {
-      setState(() {
-        selectedCategoryId = result;
-      });
-    }
-  }
-
   void _showAddCategoryDialog() {
     showDialog(
       context: context,
@@ -326,6 +256,27 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
       await receiptProvider.deleteReceipt(widget.receiptId!);
       Navigator.pop(context);
     }
+  }
+
+  void _showCategoryBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return ChangeNotifierProvider.value(
+          value: Provider.of<CategoryProvider>(context, listen: false),
+          child: CategorySelectPopup(),
+        );
+      },
+    ).then((selectedCategoryId) {
+      if (selectedCategoryId != null) {
+        // Handle the selected category ID
+        print('Selected category ID: $selectedCategoryId');
+      }
+    });
   }
 
   @override
