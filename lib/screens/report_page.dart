@@ -29,7 +29,9 @@ class ReportPageState extends State<ReportPage> {
   ];
   Map<String, Color> categoryColors = {};
 
-  @override
+  TimeInterval selectedInterval =
+      TimeInterval.day; // Default time interval (day)
+
   @override
   void initState() {
     super.initState();
@@ -345,6 +347,32 @@ class ReportPageState extends State<ReportPage> {
     );
   }
 
+  Widget _buildFilterOption({
+    required String label,
+    required bool isSelected,
+    required Function(bool) onSelected,
+  }) {
+    return GestureDetector(
+      onTap: () {
+        onSelected(!isSelected);
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          color: isSelected ? Colors.blue : Colors.grey.shade200,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: isSelected ? Colors.white : Colors.black,
+            fontSize: 14,
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final receiptProvider = Provider.of<ReceiptProvider>(context);
@@ -365,6 +393,29 @@ class ReportPageState extends State<ReportPage> {
                       context: context,
                       title: 'Expenses by Category',
                       content: buildPieChart(context),
+                    ),
+                    const SizedBox(height: 20),
+                    Center(
+                      child: Wrap(
+                        spacing: 8,
+                        children: ['Day', 'Week', 'Month', 'Year']
+                            .map((interval) => _buildFilterOption(
+                                  label: interval,
+                                  isSelected: selectedInterval.name ==
+                                      interval.toLowerCase(),
+                                  onSelected: (_) {
+                                    setState(() {
+                                      selectedInterval = TimeInterval.values
+                                          .firstWhere((e) =>
+                                              e.name.toLowerCase() ==
+                                              interval.toLowerCase());
+                                      debugPrint(
+                                          "Selected Interval: ${selectedInterval.name}");
+                                    });
+                                  },
+                                ))
+                            .toList(),
+                      ),
                     ),
                     const SizedBox(height: 20),
                     buildCard(
