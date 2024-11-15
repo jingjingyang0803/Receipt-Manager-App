@@ -16,16 +16,17 @@ class FinancialReportPageState extends State<FinancialReportPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: light90,
       appBar: AppBar(
-        title: Text("Financial Report"),
-        centerTitle: true,
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
-        elevation: 1,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () => Navigator.of(context).pop(),
+        automaticallyImplyLeading:
+            false, // Removes the default back arrowbackgroundColor: Colors.white,
+        backgroundColor: light90,
+        elevation: 0,
+        title: const Text(
+          'Report',
+          style: TextStyle(color: Colors.black),
         ),
+        centerTitle: true,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

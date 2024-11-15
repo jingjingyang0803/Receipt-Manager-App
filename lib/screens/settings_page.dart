@@ -113,6 +113,8 @@ class SettingsPageState extends State<SettingsPage> {
     return Scaffold(
       backgroundColor: light90,
       appBar: AppBar(
+        automaticallyImplyLeading:
+            false, // Removes the default back arrowbackgroundColor: light90,
         backgroundColor: light90,
         elevation: 0,
         iconTheme: IconThemeData(color: Colors.black),
