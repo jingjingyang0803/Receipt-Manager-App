@@ -56,7 +56,7 @@ class ReceiptProvider extends ChangeNotifier {
     'Credit Card',
     'Debit Card',
     'Cash',
-    'Other'
+    'Others'
   ];
   String _sortOrder = 'Newest';
   List<String> _selectedCategoryIds = [];
@@ -153,14 +153,14 @@ class ReceiptProvider extends ChangeNotifier {
           if (_selectedPaymentMethods.isEmpty ||
               _selectedPaymentMethods.contains(paymentMethod)) {
             matchesPayment = true;
-          } else if (_selectedPaymentMethods.contains('Other')) {
-            // If "Other" is selected, match any method not in primaryMethods
+          } else if (_selectedPaymentMethods.contains('Others')) {
+            // If "Others" is selected, match any method not in primaryMethods
             if (!primaryMethods.contains(paymentMethod)) {
               matchesPayment = true;
             } else {
               matchesPayment = false;
               logger.i(
-                  "Payment Method $paymentMethod is in primary methods and does not match 'Other'.");
+                  "Payment Method $paymentMethod is in primary methods and does not match 'Others'.");
             }
           } else {
             matchesPayment = false;
