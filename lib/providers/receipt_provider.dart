@@ -297,19 +297,29 @@ class ReceiptProvider extends ChangeNotifier {
 
   // Get oldest and newest dates of receipts
   Future<void> loadOldestAndNewestDates() async {
-    // for (var receipt in receiptList) {
-    //   DateTime receiptDate = (receipt['date'] as Timestamp).toDate();
-    //   if (oldestDate == null || receiptDate.isBefore(oldestDate)) {
-    //     oldestDate = receiptDate;
-    //   }
-    //   if (newestDate == null || receiptDate.isAfter(newestDate)) {
-    //     newestDate = receiptDate;
-    //   }
-    // }
-    // if (_userEmail != null) {
-    //   _oldestAndNewestDates =
-    //       await _receiptService.getOldestAndNewestDates(_userEmail!);
-    //   notifyListeners();
-    // }
+    DateTime? oldestDate;
+    DateTime? newestDate;
+
+    for (var receipt in _allReceipts) {
+      DateTime receiptDate = (receipt['date'] as Timestamp).toDate();
+
+      // Check for the oldest date
+      if (oldestDate == null || receiptDate.isBefore(oldestDate)) {
+        oldestDate = receiptDate;
+      }
+
+      // Check for the newest date
+      if (newestDate == null || receiptDate.isAfter(newestDate)) {
+        newestDate = receiptDate;
+      }
+    }
+
+    // Update the provider's state with the oldest and newest dates
+    _oldestAndNewestDates = {
+      'oldestDate': oldestDate ?? DateTime.now(),
+      'newestDate': newestDate ?? DateTime.now(),
+    };
+
+    notifyListeners();
   }
 }
