@@ -45,8 +45,16 @@ class CategorySelectPopupState extends State<CategorySelectPopup> {
                 endIndent: 165,
                 indent: 165,
               ),
-              SizedBox(height: 8),
-              Expanded(
+              SizedBox(
+                  height:
+                      8), // Set a fixed height for the grid, allowing it to scroll if there are too many items
+              Container(
+                height: 250, // Fixed height for the grid container
+                decoration: BoxDecoration(
+                  color: light90,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                padding: EdgeInsets.all(18), // Optional padding for the grid
                 child: GridView.builder(
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 3,
@@ -71,7 +79,7 @@ class CategorySelectPopupState extends State<CategorySelectPopup> {
                         decoration: BoxDecoration(
                           color: isSelected
                               ? purple60 // Active background color
-                              : Colors.grey[200], // Inactive background color
+                              : light40, // Inactive background color
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Column(
