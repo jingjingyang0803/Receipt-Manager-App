@@ -36,7 +36,7 @@ class ReceiptListPageState extends State<ReceiptListPage> {
         onApply: (paymentMethods, sortOrder, categoryIds) {
           Provider.of<ReceiptProvider>(context, listen: false).updateFilters(
             paymentMethods: paymentMethods,
-            sortOrder: sortOrder,
+            sortOption: sortOrder,
             categoryIds: categoryIds,
           );
         },
@@ -285,8 +285,8 @@ class ReceiptListPageState extends State<ReceiptListPage> {
                           _filterReceipts(snapshot.data!, query);
 
                       // Sort option check
-                      bool isSortNewest = true;
-                      // receiptProvider.sortOption == "Newest";
+                      bool isSortNewest =
+                          receiptProvider.sortOption == "Newest";
 
                       List<Map<String, dynamic>> todayReceipts = isSortNewest
                           ? receipts

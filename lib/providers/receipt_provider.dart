@@ -11,25 +11,35 @@ class ReceiptProvider extends ChangeNotifier {
   AuthenticationProvider? _authProvider;
   CategoryProvider? _categoryProvider;
 
-  DocumentSnapshot<Map<String, dynamic>>? _receiptsSnapshot;
+  // State properties
+  String _sortOption = "Newest";
+  List<String> _selectedPaymentMethods = [
+    'Credit Card',
+    'Debit Card',
+    'Cash',
+    'Others'
+  ];
+  List<String> _selectedCategoryIds = [];
+  DateTime? _startDate;
+  DateTime? _endDate;
   Map<String, double>? _groupedReceiptsByCategory;
-  Map<String, double>? _groupedReceiptsByInterval;
-  Map<String, DateTime>? _oldestAndNewestDates;
-  List<Map<String, dynamic>> _filteredReceipts =
-      []; // Filtered list of receipts
-  List<Map<String, dynamic>> get allReceipts => _allReceipts;
-  List<Map<String, dynamic>> get filteredReceipts =>
-      _filteredReceipts; // Getter for filtered receipts
-  // Stores all fetched receipts for search and filtering
+  Map<String, double>? _groupedReceiptsByDate;
   List<Map<String, dynamic>> _allReceipts = [];
+  List<Map<String, dynamic>> _filteredReceipts = [];
   int? _receiptCount;
+  Map<String, DateTime>? _oldestAndNewestDates;
 
-  DocumentSnapshot<Map<String, dynamic>>? get receiptsSnapshot =>
-      _receiptsSnapshot;
+  String get sortOption => _sortOption;
+  List<String> get selectedPaymentMethods => _selectedPaymentMethods;
+  List<String> get selectedCategoryIds => _selectedCategoryIds;
+  DateTime? get startDate => _startDate;
+  DateTime? get endDate => _endDate;
   Map<String, double>? get groupedReceiptsByCategory =>
       _groupedReceiptsByCategory;
-  Map<String, double>? get groupedReceiptsByInterval =>
-      _groupedReceiptsByInterval;
+  Map<String, double>? get groupedReceiptsByDate => _groupedReceiptsByDate;
+  List<Map<String, dynamic>> get allReceipts => _allReceipts;
+  List<Map<String, dynamic>> get filteredReceipts => _filteredReceipts;
+
   Map<String, DateTime>? get oldestAndNewestDates => _oldestAndNewestDates;
   int? get receiptCount => _receiptCount;
 
@@ -41,7 +51,6 @@ class ReceiptProvider extends ChangeNotifier {
 
   set categoryProvider(CategoryProvider categoryProvider) {
     _categoryProvider = categoryProvider;
-    // Set default selected categories to include all category IDs
     _selectedCategoryIds = _categoryProvider!.categories
         .map((cat) => cat['id'] as String)
         .toList();
@@ -49,175 +58,184 @@ class ReceiptProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Helper to get user email from AuthenticationProvider
   String? get _userEmail => _authProvider?.user?.email;
 
-  List<String> _selectedPaymentMethods = [
-    'Credit Card',
-    'Debit Card',
-    'Cash',
-    'Others'
-  ];
-  String _sortOrder = 'Newest';
-  List<String> _selectedCategoryIds = [];
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-
-  // Method to update filters
+  // Update filters
   void updateFilters({
+    required String sortOption,
     required List<String> paymentMethods,
-    required String sortOrder,
     required List<String> categoryIds,
+    DateTime? startDate,
+    DateTime? endDate,
   }) {
+    _sortOption = sortOption;
     _selectedPaymentMethods = paymentMethods;
-    _sortOrder = sortOrder;
     _selectedCategoryIds = categoryIds;
-    notifyListeners(); // Notify to rebuild with updated filters
+    _startDate = startDate;
+    _endDate = endDate;
+    notifyListeners();
   }
 
-  // Method to filter receipts based on the search query
+  // Fetch and filter receipts
+  Stream<List<Map<String, dynamic>>> fetchReceipts() async* {
+    try {
+      final userDoc =
+          FirebaseFirestore.instance.collection('receipts').doc(_userEmail);
+      await for (var snapshot in userDoc.snapshots()) {
+        if (snapshot.data() == null) {
+          yield [];
+          continue;
+        }
+
+        _allReceipts = (snapshot.data()?['receiptlist'] ?? [])
+            .cast<Map<String, dynamic>>();
+
+        // Apply filters
+        _filteredReceipts = _applyFilters(_allReceipts);
+        yield _filteredReceipts;
+      }
+    } catch (e) {
+      logger.e("Error fetching receipts: $e");
+      yield [];
+    }
+  }
+
+  // Apply filters to receipts
+  List<Map<String, dynamic>> _applyFilters(
+      List<Map<String, dynamic>> receipts) {
+    const primaryMethods = ['Credit Card', 'Debit Card', 'Cash'];
+
+    return receipts.where((receipt) {
+      // Handle default values for missing fields
+      final categoryId = receipt['categoryId'] ?? 'null';
+      final paymentMethod = receipt['paymentMethod'] ?? '';
+      final date = (receipt['date'] as Timestamp?)?.toDate() ?? DateTime.now();
+
+      // Check if the category matches
+      final matchesCategory = _selectedCategoryIds.contains(categoryId);
+
+      // Check if the payment method matches
+      bool matchesPaymentMethod;
+      if (_selectedPaymentMethods.isEmpty ||
+          _selectedPaymentMethods.contains(paymentMethod)) {
+        matchesPaymentMethod = true;
+      } else if (_selectedPaymentMethods.contains('Others')) {
+        // If "Others" is selected, match any method not in primaryMethods
+        matchesPaymentMethod = !primaryMethods.contains(paymentMethod);
+      } else {
+        matchesPaymentMethod = false;
+      }
+
+      // Check if the date falls within the selected range
+      final matchesDate = (_startDate == null || date.isAfter(_startDate!)) &&
+          (_endDate == null || date.isBefore(_endDate!));
+
+      // Log for debugging
+      logger.i("Category ID: $categoryId, Matches Category: $matchesCategory");
+      logger.i(
+          "Payment Method: $paymentMethod, Matches Payment: $matchesPaymentMethod");
+      logger.i("Date: $date, Matches Date Range: $matchesDate");
+
+      return matchesCategory && matchesPaymentMethod && matchesDate;
+    }).map((receipt) {
+      // Map category details if available
+      final category = _categoryProvider?.categories.firstWhere(
+        (cat) => cat['id'] == receipt['categoryId'],
+        orElse: () => {'name': 'Unknown', 'icon': '❓'},
+      );
+
+      return {
+        ...receipt,
+        'categoryName': category?['name'],
+        'categoryIcon': category?['icon'],
+      };
+    }).toList();
+  }
+
+  // Group receipts by category
+  void groupByCategory() {
+    _groupedReceiptsByCategory = {};
+    for (var receipt in _filteredReceipts) {
+      final categoryId = receipt['categoryId'] ?? 'null';
+      final amount = (receipt['amount'] as num?)?.toDouble() ?? 0.0;
+      _groupedReceiptsByCategory![categoryId] =
+          (_groupedReceiptsByCategory![categoryId] ?? 0.0) + amount;
+    }
+    notifyListeners();
+  }
+
+  // Group receipts by date
+  void groupByDate() {
+    _groupedReceiptsByDate = {};
+    for (var receipt in _filteredReceipts) {
+      final date = (receipt['date'] as Timestamp?)?.toDate() ?? DateTime.now();
+      final dateKey = "${date.year}-${date.month}-${date.day}";
+      final amount = (receipt['amount'] as num?)?.toDouble() ?? 0.0;
+      _groupedReceiptsByDate![dateKey] =
+          (_groupedReceiptsByDate![dateKey] ?? 0.0) + amount;
+    }
+    notifyListeners();
+  }
+
+  // Search receipts by query
   void searchReceipts(String query) {
-    if (_receiptsSnapshot == null) return; // Exit if there is no data yet
+    if (_allReceipts.isEmpty) return;
 
-    final allReceipts = (_receiptsSnapshot!.data()?['receiptlist'] ?? [])
-        .cast<Map<String, dynamic>>();
-
-    // If the query is empty, reset to show all receipts
     if (query.isEmpty) {
-      _filteredReceipts = List.from(allReceipts);
+      _filteredReceipts = List.from(_allReceipts);
     } else {
-      _filteredReceipts = allReceipts.where((receipt) {
+      _filteredReceipts = _allReceipts.where((receipt) {
         final merchant = receipt['merchantName']?.toLowerCase() ?? '';
         final itemName = receipt['itemName']?.toLowerCase() ?? '';
         final description = receipt['description']?.toLowerCase() ?? '';
         final amount = receipt['amount']?.toString() ?? '';
 
-        // Check if any field contains the query (case-insensitive)
         return merchant.contains(query.toLowerCase()) ||
             itemName.contains(query.toLowerCase()) ||
             description.contains(query.toLowerCase()) ||
             amount.contains(query);
       }).toList();
     }
-
-    notifyListeners(); // Notify consumers of changes
+    notifyListeners();
   }
 
-  Stream<List<Map<String, dynamic>>> fetchReceipts() async* {
-    try {
-      logger.i("Fetching receipts for user: $_userEmail");
-      final userDoc = _firestore.collection('receipts').doc(_userEmail);
+  // Add receipt
+  Future<void> addReceipt({required Map<String, dynamic> receiptData}) async {
+    if (_userEmail != null) {
+      await _receiptService.addReceipt(
+          email: _userEmail!, receiptData: receiptData);
+      notifyListeners();
+    }
+  }
 
-      await for (var snapshot in userDoc.snapshots()) {
-        if (snapshot.data() == null) {
-          logger.i("No receipt data found for user: $_userEmail");
-          yield [];
-          continue;
-        }
-        _allReceipts = (snapshot.data()?['receiptlist'] ?? [])
-            .cast<Map<String, dynamic>>();
-        yield _allReceipts;
+  // Update receipt
+  Future<void> updateReceipt({
+    required String receiptId,
+    required Map<String, dynamic> updatedData,
+  }) async {
+    if (_userEmail != null) {
+      await _receiptService.updateReceipt(
+        email: _userEmail!,
+        receiptId: receiptId,
+        updatedData: updatedData,
+      );
+      notifyListeners();
+    }
+  }
 
-        List<Map<String, dynamic>> allReceipts =
-            (snapshot.data()?['receiptlist'] ?? [])
-                .cast<Map<String, dynamic>>();
-        logger.i("Total receipts fetched: ${allReceipts.length}");
+  // Delete receipt
+  Future<void> deleteReceipt(String receiptId) async {
+    if (_userEmail != null) {
+      await _receiptService.deleteReceipt(_userEmail!, receiptId);
+      notifyListeners();
+    }
+  }
 
-        // Get categories from CategoryProvider to map category details
-        final categories = _categoryProvider?.categories ?? [];
-
-        // Apply category and payment method filters with default values
-        List<Map<String, dynamic>> filteredReceipts =
-            allReceipts.where((receipt) {
-          // Set default values for categoryId and paymentMethod if they are missing
-          String categoryId = receipt['categoryId'] ?? 'null';
-          String paymentMethod = receipt['paymentMethod'] ?? '';
-
-          bool matchesCategory = false;
-          bool matchesPayment = false;
-
-          logger.i("Category ID: $categoryId");
-          logger.i("Selected Category IDs: $_selectedCategoryIds");
-          if (_selectedCategoryIds.contains(categoryId)) {
-            matchesCategory = true;
-          } else {
-            logger.w(
-                "Category ID $categoryId does not match any in $_selectedCategoryIds");
-          }
-
-          logger.i("Payment Method: $paymentMethod");
-          logger.i("Selected Payment Methods: $_selectedPaymentMethods");
-
-          // Define the list of primary payment methods
-          const primaryMethods = ['Credit Card', 'Debit Card', 'Cash'];
-
-          if (_selectedPaymentMethods.isEmpty ||
-              _selectedPaymentMethods.contains(paymentMethod)) {
-            matchesPayment = true;
-          } else if (_selectedPaymentMethods.contains('Others')) {
-            // If "Others" is selected, match any method not in primaryMethods
-            if (!primaryMethods.contains(paymentMethod)) {
-              matchesPayment = true;
-            } else {
-              matchesPayment = false;
-              logger.i(
-                  "Payment Method $paymentMethod is in primary methods and does not match 'Others'.");
-            }
-          } else {
-            matchesPayment = false;
-            logger.w(
-                "Payment Method $paymentMethod does not match any in $_selectedPaymentMethods");
-          }
-
-          // Log the filtering result for debugging
-          if (!matchesCategory) {
-            logger.i("Receipt filtered out by category: $categoryId");
-          }
-          if (!matchesPayment) {
-            logger.i("Receipt filtered out by payment method: $paymentMethod");
-          }
-
-          return matchesCategory && matchesPayment;
-        }).map((receipt) {
-          // Add categoryName and categoryIcon to each receipt based on categoryId
-          final category = categories.firstWhere(
-            (cat) => cat['id'] == receipt['categoryId'],
-            orElse: () => {'name': 'Unknown', 'icon': '❓'},
-          );
-
-          return {
-            ...receipt,
-            'categoryName': category['name'],
-            'categoryIcon': category['icon'],
-          };
-        }).toList();
-
-        logger.i("Receipts after filtering: ${filteredReceipts.length}");
-
-        // Apply sorting based on amount or date
-        try {
-          filteredReceipts.sort((a, b) {
-            int result;
-            if (_sortOrder == 'Highest' || _sortOrder == 'Lowest') {
-              result = (b['amount'] as double).compareTo(a['amount'] as double);
-              if (_sortOrder == 'Lowest') result = -result;
-            } else {
-              DateTime dateA = (a['date'] as Timestamp).toDate();
-              DateTime dateB = (b['date'] as Timestamp).toDate();
-              result = dateB.compareTo(dateA);
-              if (_sortOrder == 'Oldest') result = -result;
-            }
-            return result;
-          });
-        } catch (e) {
-          logger.e("Error while sorting receipts: $e");
-        }
-
-        logger.i("Yielding ${filteredReceipts.length} sorted receipts.");
-        yield filteredReceipts;
-      }
-    } catch (e) {
-      logger.e("Error fetching receipts: $e");
-      yield [];
+  // Set receipts' category ID to null
+  Future<void> setReceiptsCategoryToNull(String categoryId) async {
+    if (_userEmail != null) {
+      await _receiptService.setReceiptsCategoryToNull(_userEmail!, categoryId);
+      notifyListeners();
     }
   }
 
@@ -226,101 +244,6 @@ class ReceiptProvider extends ChangeNotifier {
     if (_userEmail != null) {
       _receiptCount = await _receiptService.getReceiptCount(_userEmail!);
       notifyListeners();
-    }
-  }
-
-  // Add a new receipt with category details
-  Future<void> addReceipt({required Map<String, dynamic> receiptData}) async {
-    if (_userEmail != null) {
-      await _receiptService.addReceipt(
-          email: _userEmail!, receiptData: receiptData);
-      await loadReceiptCount();
-    }
-  }
-
-  // Update an existing receipt
-  Future<void> updateReceipt({
-    required String receiptId,
-    required Map<String, dynamic> updatedData,
-    String? paymentMethod,
-  }) async {
-    if (_userEmail != null) {
-      await _receiptService.updateReceipt(
-        email: _userEmail!,
-        receiptId: receiptId,
-        updatedData: updatedData,
-        paymentMethod: paymentMethod,
-      );
-      await loadReceiptCount();
-    }
-  }
-
-  // Delete a receipt
-  Future<void> deleteReceipt(String receiptId) async {
-    if (_userEmail != null) {
-      await _receiptService.deleteReceipt(_userEmail!, receiptId);
-      await loadReceiptCount();
-    }
-  }
-
-  // Set category ID to null for receipts with a specific category ID
-  Future<void> setReceiptsCategoryToNull(String categoryId) async {
-    if (_userEmail != null) {
-      await _receiptService.setReceiptsCategoryToNull(_userEmail!, categoryId);
-      notifyListeners();
-    }
-  }
-
-  // Group receipts by category within a date range, including category details
-  Future<void> groupReceiptsByCategory(
-      DateTime startDate, DateTime endDate) async {
-    if (_userEmail != null) {
-      _groupedReceiptsByCategory =
-          await _receiptService.groupReceiptsByCategory(
-        _userEmail!,
-        startDate,
-        endDate,
-      );
-
-      // Map category details (name and icon) to the grouped result
-      _groupedReceiptsByCategory =
-          _groupedReceiptsByCategory?.map((key, value) {
-        final category = _categoryProvider?.categories.firstWhere(
-          (cat) => cat['id'] == key,
-          orElse: () => {'name': 'Unknown', 'icon': '❓'},
-        );
-        return MapEntry(
-          '${category?['name']} ${category?['icon']}',
-          value,
-        );
-      });
-
-      notifyListeners();
-    }
-  }
-
-  // Group receipts by interval within a date range
-  Future<void> groupReceiptsByInterval(
-    TimeInterval interval,
-    DateTime startDate,
-    DateTime endDate,
-  ) async {
-    if (_userEmail != null) {
-      _groupedReceiptsByInterval =
-          await _receiptService.groupReceiptsByInterval(
-        _userEmail!,
-        interval,
-        startDate,
-        endDate,
-      );
-      notifyListeners();
-    }
-  }
-
-  Future<void> fetchDailyGroupedReceipts(
-      DateTime startDate, DateTime endDate) async {
-    if (_userEmail != null) {
-      await groupReceiptsByInterval(TimeInterval.day, startDate, endDate);
     }
   }
 
