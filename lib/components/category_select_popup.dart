@@ -116,7 +116,8 @@ class CategorySelectPopupState extends State<CategorySelectPopup> {
                   backgroundColor: purple100,
                   textColor: light80,
                   onPressed: () {
-                    Navigator.of(context).pop();
+                    Navigator.of(context)
+                        .pop(selectedCategoryId); // Return selected category ID
                   } // Close the popup},
                   ),
             ],
