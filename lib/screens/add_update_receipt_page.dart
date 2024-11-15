@@ -7,11 +7,11 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:receipt_manager/providers/category_provider.dart';
 import 'package:receipt_manager/providers/receipt_provider.dart';
-import 'package:receipt_manager/screens/receipt_list_page.dart';
 
 import '../components/category_select_popup.dart';
 import '../components/old/rounded_button.dart';
 import '../services/storage_service.dart';
+import 'base_page.dart';
 
 class AddOrUpdateReceiptPage extends StatefulWidget {
   static const String id = 'add_update_receipt_page';
@@ -199,7 +199,7 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
         );
         _clearForm();
       }
-      Navigator.pushReplacementNamed(context, ReceiptListPage.id);
+      Navigator.pushReplacementNamed(context, BasePage.id);
     } catch (e) {
       messenger.showSnackBar(
         SnackBar(content: Text('Failed to save receipt. Try again.')),
