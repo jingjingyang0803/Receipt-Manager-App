@@ -29,22 +29,21 @@ class AddOrUpdateReceiptPage extends StatefulWidget {
 }
 
 class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
-  final StorageService storageService = StorageService(); // Storage instance
+  final StorageService _storageService = StorageService(); // Storage instance
 
-  final TextEditingController merchantController = TextEditingController();
-  final TextEditingController dateController = TextEditingController();
-  final TextEditingController totalController = TextEditingController();
-  final TextEditingController descriptionController = TextEditingController();
-  final TextEditingController itemNameController = TextEditingController();
+  final TextEditingController _merchantController = TextEditingController();
+  final TextEditingController _dateController = TextEditingController();
+  final TextEditingController _totalController = TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
+  final TextEditingController _itemNameController = TextEditingController();
 
-  List<Map<String, dynamic>> categories = [];
-  String? selectedCategoryId;
-  String? selectedCategoryIcon;
-  String? selectedCategoryName;
-  String? selectedPaymentMethod; // Added payment method field
+  List<Map<String, dynamic>> _categories = [];
+  String? _selectedCategoryId;
+  String? _selectedCategoryIcon;
+  String? _selectedCategoryName;
+  String? _selectedPaymentMethod; // Added payment method field
 
-  bool isLoading = true;
-  String? uploadedImageUrl;
+  String? _uploadedImageUrl;
 
   @override
   void initState() {
@@ -55,26 +54,27 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
   void _initializeFormFields() {
     if (widget.existingReceipt != null) {
       // Populate fields if editing an existing receipt
-      merchantController.text = widget.existingReceipt!['merchant'] ?? '';
-      dateController.text = widget.existingReceipt!['date']
+      _merchantController.text = widget.existingReceipt!['merchant'] ?? '';
+      _dateController.text = widget.existingReceipt!['date']
               ?.toDate()
               .toLocal()
               .toString()
               .split(' ')[0] ??
           '';
-      totalController.text =
+      _totalController.text =
           widget.existingReceipt!['amount']?.toString() ?? '';
-      itemNameController.text = widget.existingReceipt!['itemName'] ?? '';
-      descriptionController.text = widget.existingReceipt!['description'] ?? '';
-      selectedCategoryId = widget.existingReceipt!['categoryId'];
-      selectedPaymentMethod = widget.existingReceipt!['paymentMethod'] ?? '';
+      _itemNameController.text = widget.existingReceipt!['itemName'] ?? '';
+      _descriptionController.text =
+          widget.existingReceipt!['description'] ?? '';
+      _selectedCategoryId = widget.existingReceipt!['categoryId'];
+      _selectedPaymentMethod = widget.existingReceipt!['paymentMethod'] ?? '';
 
       if (widget.existingReceipt!.containsKey('imageUrl')) {
-        uploadedImageUrl = widget.existingReceipt!['imageUrl'];
+        _uploadedImageUrl = widget.existingReceipt!['imageUrl'];
       }
     } else {
       // New receipt mode
-      dateController.text = DateTime.now().toLocal().toString().split(' ')[0];
+      _dateController.text = DateTime.now().toLocal().toString().split(' ')[0];
     }
 
     // Fetch categories through CategoryProvider
@@ -82,10 +82,10 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
   }
 
   Future<void> uploadReceiptImage() async {
-    String? imageUrl = await storageService.uploadReceiptImage();
+    String? imageUrl = await _storageService.uploadReceiptImage();
     if (imageUrl != null) {
       setState(() {
-        uploadedImageUrl = imageUrl.trim();
+        _uploadedImageUrl = imageUrl.trim();
       });
     }
   }
@@ -125,7 +125,7 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
               ElevatedButton(
                 onPressed: () {
                   setState(() {
-                    dateController.text =
+                    _dateController.text =
                         "${tempPickedDate.toLocal()}".split(' ')[0];
                   });
                   Navigator.pop(context);
@@ -163,9 +163,10 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
     final receiptProvider =
         Provider.of<ReceiptProvider>(context, listen: false);
 
-    double? amount = double.tryParse(totalController.text.replaceAll(',', '.'));
+    double? amount =
+        double.tryParse(_totalController.text.replaceAll(',', '.'));
 
-    if (dateController.text.isEmpty || amount == null) {
+    if (_dateController.text.isEmpty || amount == null) {
       messenger.showSnackBar(
         SnackBar(content: Text('Please fill in all required fields')),
       );
@@ -173,14 +174,14 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
     }
 
     Map<String, dynamic> receiptData = {
-      'merchant': merchantController.text,
-      'date': Timestamp.fromDate(DateTime.parse(dateController.text)),
+      'merchant': _merchantController.text,
+      'date': Timestamp.fromDate(DateTime.parse(_dateController.text)),
       'amount': amount,
-      'categoryId': selectedCategoryId,
-      'paymentMethod': selectedPaymentMethod,
-      'itemName': itemNameController.text,
-      'description': descriptionController.text,
-      'imageUrl': uploadedImageUrl ?? '',
+      'categoryId': _selectedCategoryId,
+      'paymentMethod': _selectedPaymentMethod,
+      'itemName': _itemNameController.text,
+      'description': _descriptionController.text,
+      'imageUrl': _uploadedImageUrl ?? '',
     };
 
     try {
@@ -209,14 +210,14 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
 
   void _clearForm() {
     setState(() {
-      merchantController.clear();
-      dateController.text = DateTime.now().toLocal().toString().split(' ')[0];
-      totalController.clear();
-      descriptionController.clear();
-      itemNameController.clear();
-      selectedCategoryId = null;
-      selectedPaymentMethod = null;
-      uploadedImageUrl = null;
+      _merchantController.clear();
+      _dateController.text = DateTime.now().toLocal().toString().split(' ')[0];
+      _totalController.clear();
+      _descriptionController.clear();
+      _itemNameController.clear();
+      _selectedCategoryId = null;
+      _selectedPaymentMethod = null;
+      _uploadedImageUrl = null;
     });
   }
 
@@ -270,8 +271,12 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
       },
     ).then((selectedCategoryId) {
       if (selectedCategoryId != null) {
-        // Handle the selected category ID
-        print('Selected category ID: $selectedCategoryId');
+        // Handle the selected category ID here
+        setState(() {
+          // Update your UI or state based on the selected category ID
+          selectedCategoryId = selectedCategoryId;
+          print('Selected category ID: $selectedCategoryId');
+        });
       }
     });
   }
@@ -296,14 +301,14 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
               //   onPressed: scanReceiptData,
               // ),
               TextField(
-                controller: merchantController,
+                controller: _merchantController,
                 decoration: InputDecoration(labelText: 'Merchant'),
               ),
               GestureDetector(
                 onTap: () => _selectDate(context),
                 child: AbsorbPointer(
                   child: TextField(
-                    controller: dateController,
+                    controller: _dateController,
                     decoration: InputDecoration(labelText: 'Date'),
                   ),
                 ),
@@ -321,9 +326,9 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
                           child: AbsorbPointer(
                             child: TextField(
                               decoration: InputDecoration(
-                                labelText: selectedCategoryId?.isNotEmpty ==
+                                labelText: _selectedCategoryId?.isNotEmpty ==
                                         true
-                                    ? '$selectedCategoryIcon $selectedCategoryName'
+                                    ? '$_selectedCategoryIcon $_selectedCategoryName'
                                     : 'Select Category',
                                 border: OutlineInputBorder(),
                               ),
@@ -336,7 +341,7 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
                   SizedBox(width: 20),
                   Expanded(
                     child: TextField(
-                      controller: itemNameController,
+                      controller: _itemNameController,
                       decoration: InputDecoration(labelText: 'Item Name'),
                     ),
                   ),
@@ -344,7 +349,7 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
               ),
               SizedBox(height: 20),
               DropdownButtonFormField<String>(
-                value: selectedPaymentMethod,
+                value: _selectedPaymentMethod,
                 items: ['Credit Card', 'Debit Card', 'Cash', 'Other']
                     .map((method) => DropdownMenuItem(
                           value: method,
@@ -352,13 +357,13 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
                         ))
                     .toList(),
                 onChanged: (value) => setState(() {
-                  selectedPaymentMethod = value;
+                  _selectedPaymentMethod = value;
                 }),
                 decoration: InputDecoration(labelText: 'Payment Method'),
               ),
               SizedBox(height: 20),
               TextField(
-                controller: totalController,
+                controller: _totalController,
                 decoration: InputDecoration(
                   labelText: 'Total',
                   hintText: 'e.g. 0.00',
@@ -369,7 +374,7 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
                 ],
               ),
               TextField(
-                controller: descriptionController,
+                controller: _descriptionController,
                 decoration: InputDecoration(labelText: 'Description'),
               ),
               SizedBox(height: 20),
@@ -379,7 +384,7 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
                   child: Text('Upload Receipt Image'),
                 ),
               ),
-              if (uploadedImageUrl != null) ...[
+              if (_uploadedImageUrl != null) ...[
                 SizedBox(height: 20),
                 Stack(
                   alignment: Alignment.topRight,
@@ -390,7 +395,7 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
                           alignment: Alignment.topRight,
                           child: GestureDetector(
                             onTap: () => setState(() {
-                              uploadedImageUrl = null;
+                              _uploadedImageUrl = null;
                             }),
                             child: Icon(
                               Icons.close,
@@ -402,9 +407,9 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
                         SizedBox(height: 8),
                         ClipRRect(
                           borderRadius: BorderRadius.circular(8.0),
-                          child: uploadedImageUrl!.startsWith('http')
-                              ? Image.network(uploadedImageUrl!.trim())
-                              : Image.file(File(uploadedImageUrl!)),
+                          child: _uploadedImageUrl!.startsWith('http')
+                              ? Image.network(_uploadedImageUrl!.trim())
+                              : Image.file(File(_uploadedImageUrl!)),
                         ),
                       ],
                     ),
