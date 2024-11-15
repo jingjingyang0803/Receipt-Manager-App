@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import '../../logger.dart';
 import '../../providers/receipt_provider.dart';
 import '../components/custom_app_bar.dart';
+import '../constants/app_colors.dart';
 
 class ReportPage extends StatefulWidget {
   static const String id = 'report_page';
@@ -28,6 +29,7 @@ class ReportPageState extends State<ReportPage> {
   ];
   Map<String, Color> categoryColors = {};
 
+  @override
   @override
   void initState() {
     super.initState();
@@ -53,9 +55,14 @@ class ReportPageState extends State<ReportPage> {
     receiptProvider.fetchReceipts();
     receiptProvider.groupByCategory();
     receiptProvider.groupByDate();
+
+    // Generate colors for each category
+    categoryColors = generateTemporaryColorMapping(
+      receiptProvider.groupedReceiptsByCategory?.keys.toList() ?? [],
+    );
   }
 
-  // Generate a temporary mapping for categories
+  // Generate a unique color mapping for categories
   Map<String, Color> generateTemporaryColorMapping(List<String> categoryIds) {
     Map<String, Color> tempColors = {};
     int colorIndex = 0;
@@ -76,7 +83,7 @@ class ReportPageState extends State<ReportPage> {
       final total = entry.value;
 
       return PieChartSectionData(
-        color: categoryColors[categoryId],
+        color: categoryColors[categoryId] ?? Colors.grey,
         value: total,
         title: '', // Set the title to empty
         radius: 70,
@@ -232,12 +239,15 @@ class ReportPageState extends State<ReportPage> {
               final index = groupedReceipts.keys.toList().indexOf(entry.key);
               final total = entry.value;
 
+              // Cycle through available colors by using modulo to prevent going out of bounds
+              final color = availableColors[index % availableColors.length];
+
               return BarChartGroupData(
                 x: index,
                 barRods: [
                   BarChartRodData(
                     toY: total,
-                    color: categoryColors[entry.key],
+                    color: color,
                     width: 22,
                   ),
                 ],
@@ -300,6 +310,7 @@ class ReportPageState extends State<ReportPage> {
     final receiptProvider = Provider.of<ReceiptProvider>(context);
 
     return Scaffold(
+      backgroundColor: light90,
       appBar: CustomAppBar(),
       body: receiptProvider.allReceipts.isEmpty
           ? const Center(child: CircularProgressIndicator())
@@ -309,11 +320,6 @@ class ReportPageState extends State<ReportPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SizedBox(height: 20),
-                    Text(
-                      'Expenses by Category',
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
                     const SizedBox(height: 10),
                     buildCard(
                       context: context,
