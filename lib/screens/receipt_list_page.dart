@@ -10,11 +10,32 @@ import '../components/expense_item_card.dart';
 import '../components/filter_popup.dart';
 import 'add_update_receipt_page.dart';
 
-class ReceiptListPage extends StatelessWidget {
+//implement a search bar that updates dynamically
+class ReceiptListPage extends StatefulWidget {
   static const String id = 'receipt_list_page';
 
-  const ReceiptListPage({super.key});
+  ReceiptListPage({Key? key}) : super(key: key);
 
+  @override
+  _ReceiptListPageState createState() => _ReceiptListPageState();
+}
+
+class _ReceiptListPageState extends State<ReceiptListPage> {
+  // Added State Variables for Search
+  bool _isSearching = false;
+  final TextEditingController _searchController = TextEditingController();
+  final FocusNode _searchFocusNode = FocusNode();
+
+// check this later
+  @override
+  void dispose() {
+    _searchController.dispose();
+    _searchFocusNode.dispose();
+    super.dispose();
+  }
+
+
+  // Method to open the filter popup
   void _openFilterPopup(BuildContext context) {
     showModalBottomSheet(
       context: context,
@@ -31,49 +52,65 @@ class ReceiptListPage extends StatelessWidget {
     );
   }
 
+  // Search method: filters receipts by matching the query
+  List<Map<String, dynamic>> _filterReceipts(
+      List<Map<String, dynamic>> receipts, String query) {
+    if (query.isEmpty) return receipts;
+    return receipts
+        .where((receipt) =>
+    (receipt['merchantName']?.toLowerCase().contains(query) ?? false) ||
+        (receipt['itemName']?.toLowerCase().contains(query) ?? false) ||
+        (receipt['description']?.toLowerCase().contains(query) ?? false) ||
+        (receipt['amount']?.toString().contains(query) ?? false))
+        .toList();
+  }
+
+  // Builds each receipt section
   Widget _buildReceiptSection(
-    BuildContext context, {
-    required String sectionTitle,
-    required List<Map<String, dynamic>> receipts,
-  }) {
+      BuildContext context, {
+        required String sectionTitle,
+        required List<Map<String, dynamic>> receipts,
+      }) {
     return receipts.isNotEmpty
         ? Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                sectionTitle,
-                style:
-                    const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          sectionTitle,
+          style:
+          const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 8),
+        ...receipts.map((receipt) => ExpenseItem(
+          categoryIcon: receipt['categoryIcon'] ?? Icons.category,
+          categoryName: receipt['categoryName'] ?? 'Unknown Category',
+          merchantName: receipt['merchantName'] ?? 'Unknown Merchant',
+          amount:
+          '${(receipt['amount'] ?? 0) >= 0 ? '+' : '-'} \$${(receipt['amount'] ?? 0).abs().toStringAsFixed(2)}',
+          paymentMethod:
+          receipt['paymentMethod'] ?? 'Unknown Payment Method',
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => AddOrUpdateReceiptPage(
+                  existingReceipt: receipt,
+                  receiptId: receipt['id'],
+                ),
               ),
-              const SizedBox(height: 8),
-              ...receipts.map((receipt) => ExpenseItem(
-                    categoryIcon: receipt['categoryIcon'] ?? Icons.category,
-                    categoryName: receipt['categoryName'] ?? 'Unknown Category',
-                    merchantName: receipt['merchantName'] ?? 'Unknown Merchant',
-                    amount:
-                        '${(receipt['amount'] ?? 0) >= 0 ? '+' : '-'} \$${(receipt['amount'] ?? 0).abs().toStringAsFixed(2)}',
-                    paymentMethod:
-                        receipt['paymentMethod'] ?? 'Unknown Payment Method',
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => AddOrUpdateReceiptPage(
-                            existingReceipt: receipt,
-                            receiptId: receipt['id'],
-                          ),
-                        ),
-                      ).then((_) {
-                        Provider.of<ReceiptProvider>(context, listen: false)
-                            .fetchReceipts();
-                      });
-                    },
-                  )),
-              const SizedBox(height: 16),
-            ],
-          )
+            ).then((_) {
+              Provider.of<ReceiptProvider>(context, listen: false)
+                  .fetchReceipts();
+            });
+          },
+        )),
+        const SizedBox(height: 16),
+      ],
+    )
         : const SizedBox.shrink();
   }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -81,9 +118,40 @@ class ReceiptListPage extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        title: const Text('Expense', style: TextStyle(color: Colors.black)),
+        title: _isSearching //When _isSearching is true, a TextField (search bar) appears in place
+            ? TextField(
+          controller: _searchController,
+          focusNode: _searchFocusNode,
+          decoration: const InputDecoration(
+            hintText: 'Search...',
+            border: InputBorder.none,
+          ),
+          style: const TextStyle(color: Colors.black),
+          onChanged: (query) { //listens to changes in the text input
+            setState(() {}); // Trigger rebuild on search query change
+          },
+        )
+            : const Text('Expense', style: TextStyle(color: Colors.black)),
         centerTitle: true,
         actions: [
+          IconButton(
+            icon: Icon(
+              //When _isSearching is false, a search icon (Icons.search) is shown
+              _isSearching ? Icons.close : Icons.search,
+              color: Colors.black,
+            ),
+            onPressed: () {
+              setState(() {
+                if (_isSearching) {
+                  _isSearching = false;
+                  _searchController.clear();
+                } else {
+                  _isSearching = true;
+                  _searchFocusNode.requestFocus();
+                }
+              });
+            },
+          ),
           IconButton(
             icon: Icon(Icons.filter_list_rounded, color: Colors.black),
             onPressed: () => _openFilterPopup(context),
@@ -103,7 +171,8 @@ class ReceiptListPage extends StatelessWidget {
                   return StreamBuilder<List<Map<String, dynamic>>>(
                     stream: receiptProvider.fetchReceipts(),
                     builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
+                      if (snapshot.connectionState ==
+                          ConnectionState.waiting) {
                         return const Center(child: CircularProgressIndicator());
                       }
 
@@ -113,25 +182,29 @@ class ReceiptListPage extends StatelessWidget {
                         );
                       }
 
-                      List<Map<String, dynamic>> receipts = snapshot.data!;
+                      // Filter receipts based on the search query
+                      String query = _searchController.text.toLowerCase();
+                      List<Map<String, dynamic>> receipts =
+                      _filterReceipts(snapshot.data!, query); //f query is empty, it returns the full list
+
                       List<Map<String, dynamic>> todayReceipts = receipts
                           .where((receipt) => _isToday(
-                              (receipt['date'] as Timestamp?)?.toDate() ??
-                                  DateTime.now()))
+                          (receipt['date'] as Timestamp?)?.toDate() ??
+                              DateTime.now()))
                           .toList();
                       List<Map<String, dynamic>> yesterdayReceipts = receipts
                           .where((receipt) => _isYesterday(
-                              (receipt['date'] as Timestamp?)?.toDate() ??
-                                  DateTime.now()))
+                          (receipt['date'] as Timestamp?)?.toDate() ??
+                              DateTime.now()))
                           .toList();
                       List<Map<String, dynamic>> otherReceipts = receipts
                           .where((receipt) =>
-                              !_isToday(
-                                  (receipt['date'] as Timestamp?)?.toDate() ??
-                                      DateTime.now()) &&
-                              !_isYesterday(
-                                  (receipt['date'] as Timestamp?)?.toDate() ??
-                                      DateTime.now()))
+                      !_isToday(
+                          (receipt['date'] as Timestamp?)?.toDate() ??
+                              DateTime.now()) &&
+                          !_isYesterday(
+                              (receipt['date'] as Timestamp?)?.toDate() ??
+                                  DateTime.now()))
                           .toList();
 
                       return SingleChildScrollView(
@@ -144,7 +217,7 @@ class ReceiptListPage extends StatelessWidget {
                                 sectionTitle: 'Yesterday',
                                 receipts: yesterdayReceipts),
                             for (var entry
-                                in _groupReceiptsByDate(otherReceipts).entries)
+                            in _groupReceiptsByDate(otherReceipts).entries)
                               _buildReceiptSection(context,
                                   sectionTitle: entry.key,
                                   receipts: entry.value),
