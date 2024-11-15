@@ -398,19 +398,14 @@ class ReportPageState extends State<ReportPage> {
                     Center(
                       child: Wrap(
                         spacing: 8,
-                        children: ['Day', 'Week', 'Month', 'Year']
+                        children: TimeInterval.values
                             .map((interval) => _buildFilterOption(
-                                  label: interval,
-                                  isSelected: selectedInterval.name ==
-                                      interval.toLowerCase(),
+                                  label: interval.name.toUpperCase(),
+                                  isSelected: selectedInterval == interval,
                                   onSelected: (_) {
                                     setState(() {
-                                      selectedInterval = TimeInterval.values
-                                          .firstWhere((e) =>
-                                              e.name.toLowerCase() ==
-                                              interval.toLowerCase());
-                                      debugPrint(
-                                          "Selected Interval: ${selectedInterval.name}");
+                                      selectedInterval = interval;
+                                      receiptProvider.updateInterval(interval);
                                     });
                                   },
                                 ))
@@ -420,8 +415,8 @@ class ReportPageState extends State<ReportPage> {
                     const SizedBox(height: 20),
                     buildCard(
                       context: context,
-                      title: 'Expenses by Month',
-                      content: buildBarChart(context, TimeInterval.month),
+                      title: 'Expenses by ${selectedInterval.name}',
+                      content: buildBarChart(context, selectedInterval),
                     ),
                   ],
                 ),
