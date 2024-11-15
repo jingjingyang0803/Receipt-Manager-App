@@ -41,22 +41,9 @@ class ReportPageState extends State<ReportPage> {
     logger.i("Initializing ReportPage...");
     logger.i("Fetching initial data.");
 
-    // Set default date range to the current year
-    final startDate = DateTime(DateTime.now().year, 1, 1);
-    final endDate = DateTime.now();
-
-    receiptProvider.updateFilters(
-      sortOption: 'Newest',
-      paymentMethods: receiptProvider.selectedPaymentMethods,
-      categoryIds: receiptProvider.selectedCategoryIds,
-      startDate: startDate,
-      endDate: endDate,
-    );
-
     // Fetch initial receipts and grouping
     receiptProvider.fetchReceipts();
     receiptProvider.groupByCategory();
-    receiptProvider.groupByDate();
 
     // Generate colors for each category
     categoryColors = generateTemporaryColorMapping(
