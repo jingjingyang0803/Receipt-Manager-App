@@ -1,10 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import '../logger.dart';
 import '../services/receipt_service.dart';
 import 'authentication_provider.dart';
 import 'category_provider.dart';
+
+enum TimeInterval { day, week, month, year }
 
 class ReceiptProvider extends ChangeNotifier {
   final ReceiptService _receiptService = ReceiptService();
@@ -12,6 +15,10 @@ class ReceiptProvider extends ChangeNotifier {
   CategoryProvider? _categoryProvider;
 
   // State properties
+  // Default date range: start date is one year ago, end date is today
+  DateTime? _startDate = DateTime(
+      DateTime.now().year - 1, DateTime.now().month, DateTime.now().day);
+  DateTime? _endDate = DateTime.now();
   String _sortOption = "Newest";
   List<String> _selectedPaymentMethods = [
     'Credit Card',
@@ -20,31 +27,30 @@ class ReceiptProvider extends ChangeNotifier {
     'Others'
   ];
   List<String> _selectedCategoryIds = [];
-  // Default date range: start date is one year ago, end date is today
-  DateTime? _startDate = DateTime(
-      DateTime.now().year - 1, DateTime.now().month, DateTime.now().day);
-  DateTime? _endDate = DateTime.now();
 
   Map<String, double>? _groupedReceiptsByCategory;
   Map<String, double>? _groupedReceiptsByDate;
+  Map<String, double>? _groupedReceiptsByInterval;
+
   List<Map<String, dynamic>> _allReceipts = [];
   List<Map<String, dynamic>> _filteredReceipts = [];
   int? _receiptCount;
   Map<String, DateTime>? _oldestAndNewestDates;
 
-  String get sortOption => _sortOption;
-  List<String> get selectedPaymentMethods => _selectedPaymentMethods;
-  List<String> get selectedCategoryIds => _selectedCategoryIds;
+  List<Map<String, dynamic>> get allReceipts => _allReceipts;
+  int? get receiptCount => _receiptCount;
+  Map<String, DateTime>? get oldestAndNewestDates => _oldestAndNewestDates;
   DateTime? get startDate => _startDate;
   DateTime? get endDate => _endDate;
+  List<String> get selectedPaymentMethods => _selectedPaymentMethods;
+  List<String> get selectedCategoryIds => _selectedCategoryIds;
   Map<String, double>? get groupedReceiptsByCategory =>
       _groupedReceiptsByCategory;
   Map<String, double>? get groupedReceiptsByDate => _groupedReceiptsByDate;
-  List<Map<String, dynamic>> get allReceipts => _allReceipts;
+  Map<String, double>? get groupedReceiptsByInterval =>
+      _groupedReceiptsByInterval;
   List<Map<String, dynamic>> get filteredReceipts => _filteredReceipts;
-
-  Map<String, DateTime>? get oldestAndNewestDates => _oldestAndNewestDates;
-  int? get receiptCount => _receiptCount;
+  String get sortOption => _sortOption;
 
   // Inject AuthenticationProvider and CategoryProvider
   set authProvider(AuthenticationProvider authProvider) {
@@ -180,6 +186,45 @@ class ReceiptProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  // Group receipts by interval
+  void groupByInterval(TimeInterval interval) {
+    _groupedReceiptsByInterval = {};
+    for (var receipt in _filteredReceipts) {
+      final date = (receipt['date'] as Timestamp?)?.toDate() ?? DateTime.now();
+      final amount = (receipt['amount'] as num?)?.toDouble() ?? 0.0;
+
+      // Generate group key based on interval
+      String groupKey;
+      switch (interval) {
+        case TimeInterval.day:
+          groupKey = DateFormat('yyyy-MM-dd').format(date);
+          break;
+        case TimeInterval.week:
+          groupKey = '${date.year}-W${getWeekNumber(date)}';
+          break;
+        case TimeInterval.month:
+          groupKey = DateFormat('yyyy-MM').format(date);
+          break;
+        case TimeInterval.year:
+          groupKey = DateFormat('yyyy').format(date);
+          break;
+      }
+
+      // Add the amount to the appropriate group
+      _groupedReceiptsByInterval![groupKey] =
+          (_groupedReceiptsByInterval![groupKey] ?? 0.0) + amount;
+    }
+
+    notifyListeners();
+  }
+
+// Helper function to calculate the week number
+  int getWeekNumber(DateTime date) {
+    final firstDayOfYear = DateTime(date.year, 1, 1);
+    final daysSinceFirstDay = date.difference(firstDayOfYear).inDays;
+    return (daysSinceFirstDay / 7).ceil();
+  }
+
   // Search receipts by query
   void searchReceipts(String query) {
     if (_allReceipts.isEmpty) return;
@@ -245,17 +290,26 @@ class ReceiptProvider extends ChangeNotifier {
   // Fetch receipt count
   Future<void> loadReceiptCount() async {
     if (_userEmail != null) {
-      _receiptCount = await _receiptService.getReceiptCount(_userEmail!);
+      _receiptCount = _allReceipts.length;
       notifyListeners();
     }
   }
 
   // Get oldest and newest dates of receipts
   Future<void> loadOldestAndNewestDates() async {
-    if (_userEmail != null) {
-      _oldestAndNewestDates =
-          await _receiptService.getOldestAndNewestDates(_userEmail!);
-      notifyListeners();
-    }
+    // for (var receipt in receiptList) {
+    //   DateTime receiptDate = (receipt['date'] as Timestamp).toDate();
+    //   if (oldestDate == null || receiptDate.isBefore(oldestDate)) {
+    //     oldestDate = receiptDate;
+    //   }
+    //   if (newestDate == null || receiptDate.isAfter(newestDate)) {
+    //     newestDate = receiptDate;
+    //   }
+    // }
+    // if (_userEmail != null) {
+    //   _oldestAndNewestDates =
+    //       await _receiptService.getOldestAndNewestDates(_userEmail!);
+    //   notifyListeners();
+    // }
   }
 }
