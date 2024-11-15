@@ -78,6 +78,8 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
       _descriptionController.text =
           widget.existingReceipt!['description'] ?? '';
       _selectedCategoryId = widget.existingReceipt!['categoryId'];
+      _selectedCategoryName = widget.existingReceipt!['categoryName'];
+      _selectedCategoryIcon = widget.existingReceipt!['categoryIcon'];
       _selectedPaymentMethod = widget.existingReceipt!['paymentMethod'] ?? '';
 
       if (widget.existingReceipt!.containsKey('imageUrl')) {
