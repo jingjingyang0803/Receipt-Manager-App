@@ -165,10 +165,7 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
 
     double? amount = double.tryParse(totalController.text.replaceAll(',', '.'));
 
-    if (merchantController.text.isEmpty ||
-        amount == null ||
-        selectedCategoryId == null ||
-        selectedPaymentMethod == null) {
+    if (dateController.text.isEmpty || amount == null) {
       messenger.showSnackBar(
         SnackBar(content: Text('Please fill in all required fields')),
       );
