@@ -54,36 +54,36 @@ class CustomBottomNavBarState extends State<CustomBottomNavBar> {
           child: Container(
             height: 80,
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            child: BottomNavigationBar(
-              type: BottomNavigationBarType.fixed,
-              backgroundColor: light80,
-              elevation: 0, // Set elevation to 0 to remove shadow
-              currentIndex: _currentIndex,
-              onTap: _onItemTapped,
-              selectedItemColor: purple100,
-              unselectedItemColor: const Color(0xFFC6C6C6), // Inactive color
-              showSelectedLabels: true,
-              showUnselectedLabels: true,
-              selectedLabelStyle: const TextStyle(fontSize: 12),
-              unselectedLabelStyle: const TextStyle(fontSize: 12),
-              items: const <BottomNavigationBarItem>[
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.home),
-                  label: 'Home',
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.receipt),
-                  label: 'Expense',
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.savings),
-                  label: 'Budget',
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.person),
-                  label: 'Profile',
-                ),
-              ],
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: List.generate(4, (index) {
+                final icons = [
+                  Icons.home,
+                  Icons.receipt,
+                  Icons.bar_chart,
+                  Icons.settings_outlined
+                ];
+                return GestureDetector(
+                  onTap: () => _onItemTapped(index),
+                  child: Container(
+                    width: 56,
+                    height: 56,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: _currentIndex == index
+                          ? purple80
+                          : Colors.transparent,
+                    ),
+                    child: Icon(
+                      icons[index],
+                      size: 28,
+                      color: _currentIndex == index
+                          ? Colors.white
+                          : const Color(0xFFC6C6C6),
+                    ),
+                  ),
+                );
+              }),
             ),
           ),
         ),
