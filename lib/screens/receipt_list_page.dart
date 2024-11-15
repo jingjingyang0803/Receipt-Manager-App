@@ -77,8 +77,7 @@ class ReceiptListPageState extends State<ReceiptListPage> {
                     categoryIcon: receipt['categoryIcon'] ?? Icons.category,
                     categoryName: receipt['categoryName'] ?? 'Unknown Category',
                     merchantName: receipt['merchantName'] ?? 'Unknown Merchant',
-                    amount:
-                        '${(receipt['amount'] ?? 0) >= 0 ? '+' : '-'} \$${(receipt['amount'] ?? 0).abs().toStringAsFixed(2)}',
+                    amount: receipt['amount'].toStringAsFixed(2),
                     paymentMethod:
                         receipt['paymentMethod'] ?? 'Unknown Payment Method',
                     onTap: () {
