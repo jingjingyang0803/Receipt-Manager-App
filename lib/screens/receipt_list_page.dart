@@ -76,7 +76,7 @@ class ReceiptListPageState extends State<ReceiptListPage> {
               ...receipts.map((receipt) => ExpenseItem(
                     categoryIcon: receipt['categoryIcon'] ?? Icons.category,
                     categoryName: receipt['categoryName'] ?? 'Unknown Category',
-                    merchantName: receipt['merchantName'] ?? 'Unknown Merchant',
+                    merchantName: receipt['merchant'] ?? 'Unknown Merchant',
                     amount: receipt['amount'].toStringAsFixed(2),
                     paymentMethod:
                         receipt['paymentMethod'] ?? 'Unknown Payment Method',
