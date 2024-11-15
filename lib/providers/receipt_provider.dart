@@ -226,24 +226,30 @@ class ReceiptProvider extends ChangeNotifier {
   }
 
   // Search receipts by query
+
   void searchReceipts(String query) {
     if (_allReceipts.isEmpty) return;
 
     if (query.isEmpty) {
       _filteredReceipts = List.from(_allReceipts);
     } else {
-      _filteredReceipts = _allReceipts.where((receipt) {
-        final merchant = receipt['merchantName']?.toLowerCase() ?? '';
-        final itemName = receipt['itemName']?.toLowerCase() ?? '';
-        final description = receipt['description']?.toLowerCase() ?? '';
-        final amount = receipt['amount']?.toString() ?? '';
+      final lowerCaseQuery = query.toLowerCase();
+      print("Search query: $query");
 
-        return merchant.contains(query.toLowerCase()) ||
-            itemName.contains(query.toLowerCase()) ||
-            description.contains(query.toLowerCase()) ||
-            amount.contains(query);
+      _filteredReceipts = _allReceipts.where((receipt) {
+        print("Checking receipt: $receipt");
+        final matches = receipt.entries.any((entry) {
+          final value = entry.value?.toString().toLowerCase() ?? '';
+          print(
+              "Field: ${entry.key}, Value: $value, Matches: ${value.contains(lowerCaseQuery)}");
+          return value.contains(lowerCaseQuery);
+        });
+        print("Receipt matches: $matches");
+        return matches;
       }).toList();
     }
+
+    print("Filtered Receipts: $_filteredReceipts");
     notifyListeners();
   }
 

@@ -47,7 +47,6 @@ class ReceiptListPageState extends State<ReceiptListPage> {
   // Builds each receipt section
   Widget _buildReceiptSection(
     BuildContext context, {
-    required String sectionTitle,
     required List<Map<String, dynamic>> receipts,
   }) {
     return receipts.isNotEmpty
@@ -55,7 +54,7 @@ class ReceiptListPageState extends State<ReceiptListPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                sectionTitle,
+                'Receipts',
                 style:
                     const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
@@ -104,30 +103,11 @@ class ReceiptListPageState extends State<ReceiptListPage> {
   void _performSearch(String query) {
     final receiptProvider =
         Provider.of<ReceiptProvider>(context, listen: false);
-    final allReceipts =
-        receiptProvider.allReceipts; // Assume you get all receipts here
 
     setState(() {
-      // Update suggestions based on partial match in any of the fields
-      _suggestions = allReceipts.where((receipt) {
-        return (receipt['merchantName']
-                    ?.toLowerCase()
-                    .startsWith(query.toLowerCase()) ??
-                false) ||
-            (receipt['itemName']
-                    ?.toLowerCase()
-                    .startsWith(query.toLowerCase()) ??
-                false) ||
-            (receipt['paymentMethod']
-                    ?.toLowerCase()
-                    .startsWith(query.toLowerCase()) ??
-                false) ||
-            (receipt['amount']?.toString().startsWith(query) ?? false) ||
-            (receipt['description']
-                    ?.toLowerCase()
-                    .contains(query.toLowerCase()) ??
-                false);
-      }).toList();
+      receiptProvider
+          .searchReceipts(query); // Delegate the search to the provider
+      _suggestions = receiptProvider.filteredReceipts; // Get filtered results
     });
   }
 
@@ -192,34 +172,6 @@ class ReceiptListPageState extends State<ReceiptListPage> {
                     _performSearch(query); // Call search on each text change
                   },
                 ),
-                // Display the search suggestions dynamically
-                if (_suggestions.isNotEmpty)
-                  Container(
-                    color: Colors.white,
-                    height: 150, // Adjust height for suggestions display
-                    child: ListView.builder(
-                      itemCount: _suggestions.length,
-                      itemBuilder: (context, index) {
-                        final suggestion = _suggestions[index];
-                        final displayText =
-                            "${suggestion['merchantName'] ?? 'Unknown'} - "
-                            "${suggestion['itemName'] ?? ''} "
-                            "\$${suggestion['amount']?.toStringAsFixed(2) ?? '0.00'}";
-
-                        return ListTile(
-                          title: Text(displayText),
-                          onTap: () {
-                            _searchController.text = displayText;
-                            _performSearch(displayText);
-                            setState(() {
-                              _suggestions
-                                  .clear(); // Clear suggestions on selection
-                            });
-                          },
-                        );
-                      },
-                    ),
-                  ),
               ],
             ),
             _buildFinancialReportBar(context),
@@ -242,12 +194,14 @@ class ReceiptListPageState extends State<ReceiptListPage> {
                       List<Map<String, dynamic>> receipts =
                           _filterReceipts(snapshot.data!, query);
 
+                      debugPrint(
+                          "Building receipt section with ${receipts.length} receipts.");
+
                       return SingleChildScrollView(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            _buildReceiptSection(context,
-                                sectionTitle: 'Receipts', receipts: receipts),
+                            _buildReceiptSection(context, receipts: receipts),
                           ],
                         ),
                       );
