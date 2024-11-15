@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../components/date_range_container.dart';
 import '../constants/app_colors.dart';
+import '../logger.dart'; // Import the logger
 import '../providers/receipt_provider.dart';
 import 'date_roller_picker.dart';
 import 'filter_popup.dart';
@@ -56,6 +57,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
               receiptProvider.startDate ?? DateTime(DateTime.now().year, 1, 1),
           initialEndDate: receiptProvider.endDate ?? DateTime.now(),
           onApply: (start, end) {
+            logger.i('Applying date range filter: Start: $start, End: $end');
             receiptProvider.updateFilters(
               startDate: start,
               endDate: end,
@@ -86,10 +88,12 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           initialPaymentMethods: receiptProvider.selectedPaymentMethods,
           initialCategories: receiptProvider.selectedCategoryIds,
           onApply: (sortOption, paymentMethods, categories) {
+            logger.i(
+                'Applying filter: SortOption: $sortOption, PaymentMethods: $paymentMethods, Categories: $categories');
             receiptProvider.updateFilters(
               sortOption: sortOption,
               paymentMethods: paymentMethods,
-              categoryIds: categories,
+              categoryIds: categories.toSet().toList(), // Avoid duplicates
               startDate: receiptProvider.startDate,
               endDate: receiptProvider.endDate,
             );

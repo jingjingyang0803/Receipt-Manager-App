@@ -32,9 +32,13 @@ class FilterPopupState extends State<FilterPopup> {
   @override
   void initState() {
     super.initState();
+    // Remove duplicates by converting to Set and back to List
     selectedSort = widget.initialSortOption;
-    selectedPaymentMethods = List.from(widget.initialPaymentMethods);
-    selectedCategoryIds = List.from(widget.initialCategories);
+    selectedPaymentMethods = widget.initialPaymentMethods.toSet().toList();
+    selectedCategoryIds = widget.initialCategories.toSet().toList();
+
+    debugPrint("Initialized Payment Methods: $selectedPaymentMethods");
+    debugPrint("Initialized Categories: $selectedCategoryIds");
   }
 
   @override
@@ -66,14 +70,23 @@ class FilterPopupState extends State<FilterPopup> {
                 .map((filter) => _buildFilterOption(
                       label: filter,
                       isSelected: selectedPaymentMethods.contains(filter),
-                      onSelected: (isSelected) {
+                      onSelected: (_) {
+                        debugPrint(
+                            "selectedPaymentMethods: $selectedPaymentMethods");
                         setState(() {
-                          if (isSelected) {
+                          if (selectedPaymentMethods.contains(filter)) {
+                            // If already selected, remove it
                             selectedPaymentMethods.remove(filter);
+                            debugPrint("Removed Payment Method: $filter");
                           } else {
+                            // If not selected, add it
                             selectedPaymentMethods.add(filter);
+                            debugPrint("Added Payment Method: $filter");
                           }
                         });
+                        // Log the updated state
+                        debugPrint(
+                            "Updated Payment Methods: $selectedPaymentMethods");
                       },
                     ))
                 .toList(),
@@ -91,6 +104,7 @@ class FilterPopupState extends State<FilterPopup> {
                       onSelected: (_) {
                         setState(() {
                           selectedSort = sort;
+                          debugPrint("Selected Sort Option: $selectedSort");
                         });
                       },
                     ))
@@ -135,35 +149,43 @@ class FilterPopupState extends State<FilterPopup> {
                 ...userCategories.map((category) {
                   final categoryId = category['id'] ?? 'null';
                   final categoryName = category['name'] ?? 'Unknown';
-                  final isSelected = selectedCategoryIds.contains(categoryId);
                   return _buildFilterOption(
                     label: categoryName,
-                    isSelected: isSelected,
-                    onSelected: (selected) {
+                    isSelected: selectedCategoryIds.contains(categoryId),
+                    onSelected: (_) {
                       setState(() {
-                        if (selected) {
+                        if (selectedCategoryIds.contains(categoryId)) {
+                          // If already selected, remove it
                           selectedCategoryIds.remove(categoryId);
+                          debugPrint("Removed Category: $categoryName");
                         } else {
+                          // If not selected, add it
                           selectedCategoryIds.add(categoryId);
+                          debugPrint("Added Category: $categoryName");
                         }
                       });
+                      // Log the updated state
+                      debugPrint("Updated Categories: $selectedCategoryIds");
                     },
                   );
                 }),
-                if (!userCategories.any((category) => category['id'] == null))
-                  _buildFilterOption(
-                    label: 'Uncategorized',
-                    isSelected: selectedCategoryIds.contains('null'),
-                    onSelected: (isSelected) {
-                      setState(() {
-                        if (isSelected) {
-                          selectedCategoryIds.remove('null');
-                        } else {
-                          selectedCategoryIds.add('null');
-                        }
-                      });
-                    },
-                  ),
+                _buildFilterOption(
+                  label: 'Uncategorized',
+                  isSelected: selectedCategoryIds.contains('null'),
+                  onSelected: (_) {
+                    setState(() {
+                      if (selectedCategoryIds.contains('null')) {
+                        selectedCategoryIds.remove('null');
+                        debugPrint("Removed 'Uncategorized'");
+                      } else {
+                        selectedCategoryIds.add('null');
+                        debugPrint("Added 'Uncategorized'");
+                      }
+                    });
+                    // Log the updated state
+                    debugPrint("Updated Categories: $selectedCategoryIds");
+                  },
+                ),
               ],
             ),
           const SizedBox(height: 24),
@@ -184,6 +206,7 @@ class FilterPopupState extends State<FilterPopup> {
                             List.from(widget.initialPaymentMethods);
                         selectedCategoryIds =
                             List.from(widget.initialCategories);
+                        debugPrint("Reset filters to initial values");
                       });
                     },
                   ),
@@ -202,6 +225,8 @@ class FilterPopupState extends State<FilterPopup> {
                         selectedPaymentMethods,
                         selectedCategoryIds,
                       );
+                      debugPrint(
+                          "Applying filter: SortOption: $selectedSort, PaymentMethods: $selectedPaymentMethods, Categories: $selectedCategoryIds");
                       Navigator.pop(context);
                     },
                   ),
@@ -221,6 +246,7 @@ class FilterPopupState extends State<FilterPopup> {
   }) {
     return GestureDetector(
       onTap: () {
+        // Properly toggle the selection state
         onSelected(!isSelected);
       },
       child: Container(
