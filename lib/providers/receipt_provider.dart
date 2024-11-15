@@ -15,6 +15,11 @@ class ReceiptProvider extends ChangeNotifier {
   Map<String, double>? _groupedReceiptsByCategory;
   Map<String, double>? _groupedReceiptsByInterval;
   Map<String, DateTime>? _oldestAndNewestDates;
+  List<Map<String, dynamic>> _filteredReceipts = []; // Filtered list of receipts
+  List<Map<String, dynamic>> get allReceipts => _allReceipts;
+  List<Map<String, dynamic>> get filteredReceipts => _filteredReceipts; // Getter for filtered receipts
+  // Stores all fetched receipts for search and filtering
+  List<Map<String, dynamic>> _allReceipts = [];
   int? _receiptCount;
 
   DocumentSnapshot<Map<String, dynamic>>? get receiptsSnapshot =>
@@ -67,6 +72,35 @@ class ReceiptProvider extends ChangeNotifier {
     notifyListeners(); // Notify to rebuild with updated filters
   }
 
+  // Method to filter receipts based on the search query
+  void searchReceipts(String query) {
+    if (_receiptsSnapshot == null) return; // Exit if there is no data yet
+
+    final allReceipts = (_receiptsSnapshot!.data()?['receiptlist'] ?? [])
+        .cast<Map<String, dynamic>>();
+
+    // If the query is empty, reset to show all receipts
+    if (query.isEmpty) {
+      _filteredReceipts = List.from(allReceipts);
+    } else {
+      _filteredReceipts = allReceipts.where((receipt) {
+        final merchant = receipt['merchantName']?.toLowerCase() ?? '';
+        final itemName = receipt['itemName']?.toLowerCase() ?? '';
+        final description = receipt['description']?.toLowerCase() ?? '';
+        final amount = receipt['amount']?.toString() ?? '';
+
+        // Check if any field contains the query (case-insensitive)
+        return merchant.contains(query.toLowerCase()) ||
+            itemName.contains(query.toLowerCase()) ||
+            description.contains(query.toLowerCase()) ||
+            amount.contains(query);
+      }).toList();
+    }
+
+    notifyListeners(); // Notify consumers of changes
+  }
+
+
   Stream<List<Map<String, dynamic>>> fetchReceipts() async* {
     try {
       logger.i("Fetching receipts for user: $_userEmail");
@@ -78,6 +112,10 @@ class ReceiptProvider extends ChangeNotifier {
           yield [];
           continue;
         }
+        _allReceipts = (snapshot.data()?['receiptlist'] ?? [])
+            .cast<Map<String, dynamic>>();
+        yield _allReceipts;
+
 
         List<Map<String, dynamic>> allReceipts =
             (snapshot.data()?['receiptlist'] ?? [])
