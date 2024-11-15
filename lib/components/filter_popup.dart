@@ -6,42 +6,35 @@ import '../providers/category_provider.dart';
 import 'custom_button.dart';
 
 class FilterPopup extends StatefulWidget {
-  final Function(List<String> paymentMethods, String sortOrder,
-      List<String> categoryIds) onApply;
+  final String initialSortOption;
+  final List<String> initialPaymentMethods;
+  final List<String> initialCategories;
+  final Function(String, List<String>, List<String>) onApply;
 
-  const FilterPopup({super.key, required this.onApply});
+  const FilterPopup({
+    super.key,
+    required this.initialSortOption,
+    required this.initialPaymentMethods,
+    required this.initialCategories,
+    required this.onApply,
+  });
 
   @override
   FilterPopupState createState() => FilterPopupState();
 }
 
 class FilterPopupState extends State<FilterPopup> {
-  List<String> selectedPaymentMethods = [
-    'Credit Card',
-    'Debit Card',
-    'Cash',
-    'Other'
-  ];
-  String selectedSort = 'Newest';
-  List<String> selectedCategoryIds = [];
-  bool isCategoryExpanded = false; // To control category dropdown visibility
+  late String selectedSort;
+  late List<String> selectedPaymentMethods;
+  late List<String> selectedCategoryIds;
+  bool isCategoryExpanded = false;
 
   @override
   void initState() {
     super.initState();
-    _selectAllCategories(); // Ensure all categories are selected by default
-  }
-
-  void _selectAllCategories() {
-    final categoryProvider =
-        Provider.of<CategoryProvider>(context, listen: false);
-    selectedCategoryIds = categoryProvider.categories
-        .map<String>((category) =>
-            category['id'] ?? 'null') // Include "null" for Uncategorized
-        .toList();
-    if (!selectedCategoryIds.contains('null')) {
-      selectedCategoryIds.add('null'); // Add 'Uncategorized' if missing
-    }
+    selectedSort = widget.initialSortOption;
+    selectedPaymentMethods = List.from(widget.initialPaymentMethods);
+    selectedCategoryIds = List.from(widget.initialCategories);
   }
 
   @override
@@ -69,7 +62,7 @@ class FilterPopupState extends State<FilterPopup> {
           const SizedBox(height: 8),
           Wrap(
             spacing: 8,
-            children: ['Credit Card', 'Debit Card', 'Cash', 'Others']
+            children: ['Credit Card', 'Debit Card', 'Cash', 'Other']
                 .map((filter) => _buildFilterOption(
                       label: filter,
                       isSelected: selectedPaymentMethods.contains(filter),
@@ -186,14 +179,11 @@ class FilterPopupState extends State<FilterPopup> {
                     textColor: purple100,
                     onPressed: () {
                       setState(() {
-                        selectedPaymentMethods = [
-                          'Credit Card',
-                          'Debit Card',
-                          'Cash',
-                          'Other'
-                        ];
-                        selectedSort = 'Newest';
-                        _selectAllCategories();
+                        selectedSort = widget.initialSortOption;
+                        selectedPaymentMethods =
+                            List.from(widget.initialPaymentMethods);
+                        selectedCategoryIds =
+                            List.from(widget.initialCategories);
                       });
                     },
                   ),
@@ -207,8 +197,11 @@ class FilterPopupState extends State<FilterPopup> {
                     backgroundColor: purple100,
                     textColor: light80,
                     onPressed: () {
-                      widget.onApply(selectedPaymentMethods, selectedSort,
-                          selectedCategoryIds);
+                      widget.onApply(
+                        selectedSort,
+                        selectedPaymentMethods,
+                        selectedCategoryIds,
+                      );
                       Navigator.pop(context);
                     },
                   ),
@@ -228,7 +221,7 @@ class FilterPopupState extends State<FilterPopup> {
   }) {
     return GestureDetector(
       onTap: () {
-        onSelected(isSelected);
+        onSelected(!isSelected);
       },
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
