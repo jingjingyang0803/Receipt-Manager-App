@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
+import 'package:receipt_manager/screens/budget_page.dart';
 
 import '../components/currency_roller_picker.dart';
 import '../components/logout_popup.dart';
@@ -12,16 +13,16 @@ import '../providers/authentication_provider.dart';
 import '../providers/user_provider.dart';
 import 'category_page.dart';
 
-class ProfilePage extends StatefulWidget {
-  static const String id = 'profile_page';
+class SettingsPage extends StatefulWidget {
+  static const String id = 'settings_page';
 
-  const ProfilePage({super.key});
+  const SettingsPage({super.key});
 
   @override
-  ProfilePageState createState() => ProfilePageState();
+  SettingsPageState createState() => SettingsPageState();
 }
 
-class ProfilePageState extends State<ProfilePage> {
+class SettingsPageState extends State<SettingsPage> {
   final _picker = ImagePicker();
   XFile? _profileImage;
   late TextEditingController _nameController;
@@ -203,7 +204,7 @@ class ProfilePageState extends State<ProfilePage> {
                       ),
                       child: Column(
                         children: [
-                          ProfileMenuItem(
+                          SettingsMenuItem(
                             icon: Icons.category_outlined,
                             text: "Manage categories",
                             iconBackgroundColor: purple20,
@@ -213,7 +214,17 @@ class ProfilePageState extends State<ProfilePage> {
                             },
                           ),
                           Divider(thickness: 1, color: light90),
-                          ProfileMenuItem(
+                          SettingsMenuItem(
+                            icon: Icons.savings_outlined,
+                            text: "Manage budgets",
+                            iconBackgroundColor: purple20,
+                            iconColor: purple100,
+                            onTap: () {
+                              Navigator.pushNamed(context, BudgetPage.id);
+                            },
+                          ),
+                          Divider(thickness: 1, color: light90),
+                          SettingsMenuItem(
                             icon: Icons.attach_money,
                             text: "Choose currency",
                             iconBackgroundColor: purple20,
@@ -221,15 +232,7 @@ class ProfilePageState extends State<ProfilePage> {
                             onTap: () => _showCurrencyPicker(context),
                           ),
                           Divider(thickness: 1, color: light90),
-                          ProfileMenuItem(
-                            icon: Icons.settings_outlined,
-                            text: "Settings",
-                            iconBackgroundColor: purple20,
-                            iconColor: purple100,
-                            onTap: () {},
-                          ),
-                          Divider(thickness: 1, color: light90),
-                          ProfileMenuItem(
+                          SettingsMenuItem(
                             icon: Icons.file_download_outlined,
                             text: "Export Data",
                             iconBackgroundColor: purple20,
@@ -237,7 +240,7 @@ class ProfilePageState extends State<ProfilePage> {
                             onTap: () {},
                           ),
                           Divider(thickness: 1, color: light90),
-                          ProfileMenuItem(
+                          SettingsMenuItem(
                             icon: Icons.logout,
                             text: "Logout",
                             iconBackgroundColor: red20,
@@ -275,14 +278,14 @@ class ProfilePageState extends State<ProfilePage> {
 }
 
 // Widget for Profile Menu Item
-class ProfileMenuItem extends StatelessWidget {
+class SettingsMenuItem extends StatelessWidget {
   final IconData icon;
   final String text;
   final Color iconBackgroundColor;
   final Color iconColor;
   final VoidCallback onTap;
 
-  const ProfileMenuItem({
+  const SettingsMenuItem({
     super.key,
     required this.icon,
     required this.text,
@@ -310,7 +313,7 @@ class ProfileMenuItem extends StatelessWidget {
             const SizedBox(width: 16),
             Text(
               text,
-              style: TextStyle(fontSize: 16, color: Colors.black87),
+              style: TextStyle(fontSize: 18, color: dark75),
             ),
           ],
         ),

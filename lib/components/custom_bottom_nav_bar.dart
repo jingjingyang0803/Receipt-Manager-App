@@ -58,10 +58,10 @@ class CustomBottomNavBarState extends State<CustomBottomNavBar> {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: List.generate(4, (index) {
                 final icons = [
-                  Icons.home,
+                  Icons.home_outlined,
                   Icons.receipt,
                   Icons.bar_chart,
-                  Icons.settings_outlined
+                  Icons.settings
                 ];
                 return GestureDetector(
                   onTap: () => _onItemTapped(index),
@@ -77,9 +77,7 @@ class CustomBottomNavBarState extends State<CustomBottomNavBar> {
                     child: Icon(
                       icons[index],
                       size: 28,
-                      color: _currentIndex == index
-                          ? Colors.white
-                          : const Color(0xFFC6C6C6),
+                      color: _currentIndex == index ? Colors.white : dark50,
                     ),
                   ),
                 );
