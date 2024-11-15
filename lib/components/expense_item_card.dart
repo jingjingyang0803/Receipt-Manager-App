@@ -69,7 +69,7 @@ class ExpenseItem extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    merchantName,
+                    'From: $merchantName',
                     style: TextStyle(
                       color: Colors.grey.shade600,
                       fontSize: 14,
