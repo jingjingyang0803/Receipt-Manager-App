@@ -10,13 +10,11 @@ import 'screens/financial_report_page.dart';
 import 'screens/forgot_password_page.dart';
 import 'screens/home_page.dart';
 import 'screens/login_page.dart';
-import 'screens/old/add_update_receipt_screen.dart';
 import 'screens/old/expense_chart_screen.dart';
 import 'screens/old/receipt_list_screen.dart';
 import 'screens/old/scan_screen.dart';
 import 'screens/old/summary_screen.dart';
 import 'screens/receipt_list_page.dart';
-import 'screens/set_budget_page.dart';
 import 'screens/settings_page.dart';
 import 'screens/signup_page.dart';
 import 'screens/verification_link_page.dart';
@@ -42,9 +40,7 @@ Map<String, WidgetBuilder> appRoutes = {
 
   ////
   ScanScreen.id: (context) => ScanScreen(),
-  AddOrUpdateReceiptScreen.id: (context) => AddOrUpdateReceiptScreen(),
   ReceiptListScreen.id: (context) => ReceiptListScreen(),
   SummaryScreen.id: (context) => SummaryScreen(),
   ExpenseChartScreen.id: (context) => ExpenseChartScreen(),
-  SetBudgetPage.id: (context) => SetBudgetPage(),
 };
