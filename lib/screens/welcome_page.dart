@@ -127,7 +127,7 @@ class WelcomePageState extends State<WelcomePage> {
                 fontFamily: 'Inter',
                 fontSize: 18,
                 fontWeight: FontWeight.w500, // Use ExtraLight
-                color: light20),
+                color: purple200),
           ),
         ],
       ),

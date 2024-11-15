@@ -30,7 +30,7 @@ class CustomTextFormField extends StatelessWidget {
       focusNode: focusNode, // Use focusNode if provided
       decoration: InputDecoration(
         labelText: labelText,
-        labelStyle: TextStyle(color: light20), // Use your color variable here
+        labelStyle: TextStyle(color: purple200), // Use your color variable here
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16.0),
           borderSide: BorderSide(color: Colors.grey.shade300),

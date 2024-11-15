@@ -168,7 +168,7 @@ class LogInPageState extends State<LogInPage> {
                 child: Text.rich(
                   TextSpan(
                     text: "Don’t have an account yet? ",
-                    style: TextStyle(color: light20, fontSize: 16),
+                    style: TextStyle(color: purple200, fontSize: 16),
                     children: [
                       underlineTextSpan(
                         text: "Sign Up",

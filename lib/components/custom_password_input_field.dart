@@ -30,7 +30,7 @@ class CustomPasswordFormFieldState extends State<CustomPasswordFormField> {
       decoration: InputDecoration(
         labelText: widget.labelText,
         labelStyle:
-            TextStyle(color: light20), // Replace with your color variable
+            TextStyle(color: purple200), // Replace with your color variable
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16.0),
           borderSide: BorderSide(color: Colors.grey.shade300),
