@@ -35,16 +35,10 @@ class CustomBottomNavBarState extends State<CustomBottomNavBar> {
     return Stack(
       alignment: Alignment.bottomCenter,
       children: [
-        // Background with rounded corners
+        // Background
         Container(
           height: 80,
-          decoration: const BoxDecoration(
-            color: light80,
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(12),
-              topRight: Radius.circular(12),
-            ),
-          ),
+          decoration: const BoxDecoration(color: light80),
         ),
         // Bottom Navigation Bar
         BottomAppBar(
