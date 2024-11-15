@@ -20,8 +20,10 @@ class ReceiptProvider extends ChangeNotifier {
     'Others'
   ];
   List<String> _selectedCategoryIds = [];
-  DateTime? _startDate;
-  DateTime? _endDate;
+  // Default date range: start date is one year ago, end date is today
+  DateTime? _startDate = DateTime(
+      DateTime.now().year - 1, DateTime.now().month, DateTime.now().day);
+  DateTime? _endDate = DateTime.now();
   Map<String, double>? _groupedReceiptsByCategory;
   Map<String, double>? _groupedReceiptsByDate;
   List<Map<String, dynamic>> _allReceipts = [];

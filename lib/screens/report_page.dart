@@ -49,19 +49,22 @@ class ReportPageState extends State<ReportPage> {
       return const Center(child: Text('No data available.'));
     }
 
-    return PieChart(
-      PieChartData(
-        sections: groupedReceiptsByCategory.entries.map((entry) {
-          return PieChartSectionData(
-            color:
-                Colors.primaries[entry.key.hashCode % Colors.primaries.length],
-            value: entry.value,
-            title: '${entry.value.toStringAsFixed(2)}',
-            radius: 70,
-          );
-        }).toList(),
-        centerSpaceRadius: 60,
-        borderData: FlBorderData(show: false),
+    return SizedBox(
+      height: 200, // Set a fixed height for the chart
+      child: PieChart(
+        PieChartData(
+          sections: groupedReceiptsByCategory.entries.map((entry) {
+            return PieChartSectionData(
+              color: Colors
+                  .primaries[entry.key.hashCode % Colors.primaries.length],
+              value: entry.value,
+              title: '${entry.value.toStringAsFixed(2)}',
+              radius: 70,
+            );
+          }).toList(),
+          centerSpaceRadius: 60,
+          borderData: FlBorderData(show: false),
+        ),
       ),
     );
   }
@@ -72,48 +75,56 @@ class ReportPageState extends State<ReportPage> {
       return const Center(child: Text('No data available.'));
     }
 
-    return BarChart(
-      BarChartData(
-        barGroups: groupedReceiptsByInterval.entries.map((entry) {
-          return BarChartGroupData(
-            x: entry.key.hashCode,
-            barRods: [
-              BarChartRodData(
-                toY: entry.value,
-                color: Colors
-                    .primaries[entry.key.hashCode % Colors.primaries.length],
+    return SizedBox(
+      height: 300, // Set a fixed height for the bar chart
+      child: BarChart(
+        BarChartData(
+          barGroups: groupedReceiptsByInterval.entries.map((entry) {
+            return BarChartGroupData(
+              x: groupedReceiptsByInterval.keys.toList().indexOf(entry.key),
+              barRods: [
+                BarChartRodData(
+                  toY: entry.value,
+                  color: Colors
+                      .primaries[entry.key.hashCode % Colors.primaries.length],
+                ),
+              ],
+            );
+          }).toList(),
+          titlesData: FlTitlesData(
+            leftTitles: AxisTitles(
+              sideTitles: SideTitles(
+                showTitles: true,
+                getTitlesWidget: (value, meta) {
+                  return Text(
+                    value.toString(),
+                    style: const TextStyle(fontSize: 12),
+                  );
+                },
               ),
-            ],
-          );
-        }).toList(),
-        titlesData: FlTitlesData(
-          leftTitles: AxisTitles(
-            sideTitles: SideTitles(
-              showTitles: true,
-              getTitlesWidget: (value, meta) {
-                return Text(
-                  value.toString(),
-                  style: TextStyle(fontSize: 12),
-                );
-              },
             ),
-          ),
-          bottomTitles: AxisTitles(
-            sideTitles: SideTitles(
-              showTitles: true,
-              getTitlesWidget: (value, meta) {
-                final dateKey = groupedReceiptsByInterval.keys
-                    .elementAt(value.toInt())
-                    .substring(0, 10); // Show short date
-                return Text(
-                  dateKey,
-                  style: TextStyle(fontSize: 10),
-                );
-              },
+            bottomTitles: AxisTitles(
+              sideTitles: SideTitles(
+                showTitles: true,
+                getTitlesWidget: (value, meta) {
+                  final index = value.toInt();
+                  if (index < groupedReceiptsByInterval.keys.length) {
+                    final dateKey = groupedReceiptsByInterval.keys
+                        .elementAt(index)
+                        .substring(0, 10); // Show short date
+                    return Text(
+                      dateKey,
+                      style: const TextStyle(fontSize: 10),
+                    );
+                  }
+                  return const SizedBox.shrink();
+                },
+              ),
             ),
+            topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+            rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
           ),
-          topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-          rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          borderData: FlBorderData(show: false),
         ),
       ),
     );
@@ -170,13 +181,6 @@ class ReportPageState extends State<ReportPage> {
                               receiptProvider.groupByDate();
                             }
                           },
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            // Placeholder for currency picker
-                            logger.i("Currency picker button clicked.");
-                          },
-                          child: const Text('EUR'),
                         ),
                       ],
                     ),
