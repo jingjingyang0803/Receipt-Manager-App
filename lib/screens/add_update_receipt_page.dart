@@ -37,7 +37,7 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _itemNameController = TextEditingController();
 
-  List<Map<String, dynamic>> _categories = [];
+  List<Map<String, dynamic>> _userCategories = [];
   String? _selectedCategoryId;
   String? _selectedCategoryIcon;
   String? _selectedCategoryName;
@@ -48,7 +48,18 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
   @override
   void initState() {
     super.initState();
+    _loadUserCategories();
     _initializeFormFields();
+  }
+
+  Future<void> _loadUserCategories() async {
+    // Fetch categories from the provider
+    final categoryProvider =
+        Provider.of<CategoryProvider>(context, listen: false);
+    await categoryProvider.loadUserCategories();
+    setState(() {
+      _userCategories = categoryProvider.categories;
+    });
   }
 
   void _initializeFormFields() {
@@ -134,25 +145,6 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
               ),
             ],
           ),
-        );
-      },
-    );
-  }
-
-  void _showAddCategoryDialog() {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return Dialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          // child: AddCategoryWidget(
-          //   onCategoryAdded: () {
-          //     Provider.of<CategoryProvider>(context, listen: false)
-          //         .loadCategories();
-          //   },
-          // ),
         );
       },
     );
@@ -271,12 +263,18 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
       },
     ).then((selectedCategoryId) {
       if (selectedCategoryId != null) {
-        // Handle the selected category ID here
-        setState(() {
-          // Update your UI or state based on the selected category ID
-          selectedCategoryId = selectedCategoryId;
-          print('Selected category ID: $selectedCategoryId');
-        });
+        final selectedCategory = _userCategories.firstWhere(
+          (category) => category['id'] == selectedCategoryId,
+          orElse: () => {},
+        );
+
+        if (selectedCategory.isNotEmpty) {
+          setState(() {
+            _selectedCategoryId = selectedCategoryId;
+            _selectedCategoryName = selectedCategory['name'];
+            _selectedCategoryIcon = selectedCategory['icon'];
+          });
+        }
       }
     });
   }
