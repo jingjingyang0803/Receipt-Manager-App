@@ -190,6 +190,38 @@ class ReportPageState extends State<ReportPage> {
     );
   }
 
+  List<BarChartGroupData> getBarChartGroups(BuildContext context) {
+    final receiptProvider =
+        Provider.of<ReceiptProvider>(context, listen: false);
+    final groupedReceipts = receiptProvider.groupedReceiptsByInterval ?? {};
+
+    return groupedReceipts.entries.map((entry) {
+      final index = groupedReceipts.keys.toList().indexOf(entry.key);
+      final total = entry.value;
+
+      // Cycle through available colors for each bar
+      final color = availableColors[index % availableColors.length];
+
+      return BarChartGroupData(
+        x: index,
+        barRods: [
+          BarChartRodData(
+            toY: total,
+            color: color,
+            width: 22,
+            borderRadius: BorderRadius.circular(1),
+            // Add a label for the value above the bar
+            rodStackItems: [
+              BarChartRodStackItem(0, total, color),
+            ],
+          ),
+        ],
+        // Show tooltip or indicator with value above the bar
+        showingTooltipIndicators: [0],
+      );
+    }).toList();
+  }
+
   Widget buildBarChart(BuildContext context, TimeInterval interval) {
     final receiptProvider = Provider.of<ReceiptProvider>(context);
 
@@ -217,63 +249,62 @@ class ReportPageState extends State<ReportPage> {
         child: SizedBox(
           width: chartWidth,
           height: 300,
-          child: BarChart(
-            BarChartData(
-              maxY: maxY,
-              alignment: BarChartAlignment.spaceEvenly,
-              borderData: FlBorderData(show: false),
-              titlesData: FlTitlesData(
-                bottomTitles: AxisTitles(
-                  sideTitles: SideTitles(
-                    showTitles: true,
-                    getTitlesWidget: (value, _) {
-                      final key = groupedReceipts.keys.elementAt(value.toInt());
-                      return Padding(
-                        padding: const EdgeInsets.only(top: 8.0),
-                        child: Text(
-                          key,
-                          style: const TextStyle(fontSize: 12),
-                        ),
-                      );
-                    },
-                    reservedSize: 42,
-                  ),
-                ),
-                leftTitles: AxisTitles(
-                  sideTitles: SideTitles(showTitles: false),
+          child: BarChart(BarChartData(
+            maxY: maxY, // Set maxY based on calculated max value
+            alignment: BarChartAlignment.spaceEvenly,
+            borderData: FlBorderData(show: false),
+            titlesData: FlTitlesData(
+              topTitles: AxisTitles(
+                sideTitles: SideTitles(
+                  showTitles: false, // Hide the top axis titles
                 ),
               ),
-              barGroups: groupedReceipts.entries.map((entry) {
-                final index = groupedReceipts.keys.toList().indexOf(entry.key);
-                final total = entry.value;
+              bottomTitles: AxisTitles(
+                sideTitles: SideTitles(
+                  showTitles: true,
+                  getTitlesWidget: (double value, TitleMeta meta) {
+                    // Display the interval (day, week, month, or year) as the title
 
-                // Cycle through available colors by using modulo to prevent going out of bounds
-                final color = availableColors[index % availableColors.length];
-
-                return BarChartGroupData(
-                  x: index,
-                  barRods: [
-                    BarChartRodData(
-                      toY: total,
-                      color: color,
-                      width: 22,
-                    ),
-                  ],
-                );
-              }).toList(),
-              barTouchData: BarTouchData(
-                touchTooltipData: BarTouchTooltipData(
-                  getTooltipItem: (group, groupIndex, rod, rodIndex) {
-                    return BarTooltipItem(
-                      rod.toY.toStringAsFixed(1),
-                      const TextStyle(
-                          fontSize: 14, fontWeight: FontWeight.bold),
+                    final key = groupedReceipts.keys.elementAt(value.toInt());
+                    return Padding(
+                      padding: const EdgeInsets.only(top: 8.0),
+                      child: Text(
+                        key, // Display the grouped interval as the label
+                        style: TextStyle(fontSize: 12),
+                      ),
                     );
                   },
+                  reservedSize: 42,
+                ),
+              ),
+              rightTitles: AxisTitles(
+                sideTitles: SideTitles(
+                  showTitles: false, // Hide the left axis values
                 ),
               ),
             ),
-          ),
+
+            barGroups: getBarChartGroups(context),
+            barTouchData: BarTouchData(
+              touchTooltipData: BarTouchTooltipData(
+                getTooltipItem: (group, groupIndex, rod, rodIndex) {
+                  return BarTooltipItem(
+                    rod.toY.toStringAsFixed(1), // Format the value displayed
+                    const TextStyle(
+                      color: Colors.black, // Tooltip text color
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                    ),
+                  );
+                },
+                getTooltipColor: (group) =>
+                    Colors.transparent, // Set background color
+                tooltipPadding:
+                    const EdgeInsets.all(0), // Padding inside the tooltip
+                tooltipMargin: 0, // Margin from the bar
+              ),
+            ),
+          )),
         ),
       ),
     );
