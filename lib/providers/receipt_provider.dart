@@ -28,7 +28,7 @@ class ReceiptProvider extends ChangeNotifier {
   ];
   List<String> _selectedCategoryIds = [];
 
-  Map<String, double>? _groupedReceiptsByCategory;
+  Map<String, Map<String, dynamic>>? _groupedReceiptsByCategory;
   Map<String, double>? _groupedReceiptsByDate;
   Map<String, double>? _groupedReceiptsByInterval;
 
@@ -44,7 +44,7 @@ class ReceiptProvider extends ChangeNotifier {
   DateTime? get endDate => _endDate;
   List<String> get selectedPaymentMethods => _selectedPaymentMethods;
   List<String> get selectedCategoryIds => _selectedCategoryIds;
-  Map<String, double>? get groupedReceiptsByCategory =>
+  Map<String, Map<String, dynamic>>? get groupedReceiptsByCategory =>
       _groupedReceiptsByCategory;
   Map<String, double>? get groupedReceiptsByDate => _groupedReceiptsByDate;
   Map<String, double>? get groupedReceiptsByInterval =>
@@ -212,9 +212,21 @@ class ReceiptProvider extends ChangeNotifier {
     for (var receipt in _filteredReceipts) {
       final categoryId = receipt['categoryId'] ?? 'null';
       final amount = (receipt['amount'] as num?)?.toDouble() ?? 0.0;
-      _groupedReceiptsByCategory![categoryId] =
-          (_groupedReceiptsByCategory![categoryId] ?? 0.0) + amount;
+      final categoryName = receipt['categoryName'];
+      final categoryIcon = receipt['categoryIcon'];
+      // If the categoryId already exists, update the amount
+      if (_groupedReceiptsByCategory!.containsKey(categoryId)) {
+        _groupedReceiptsByCategory![categoryId]!['total'] += amount;
+      } else {
+        // If the categoryId does not exist, initialize with name, icon, and amount
+        _groupedReceiptsByCategory![categoryId] = {
+          'total': amount,
+          'name': categoryName,
+          'icon': categoryIcon,
+        };
+      }
     }
+
     notifyListeners();
   }
 
