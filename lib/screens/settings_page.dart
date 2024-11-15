@@ -143,7 +143,7 @@ class SettingsPageState extends State<SettingsPage> {
                               color: Colors.transparent,
                               shape: BoxShape.circle,
                               border: Border.all(
-                                color: purple100,
+                                color: purple80,
                                 width: 2.0,
                               ),
                             ),
@@ -308,7 +308,7 @@ class SettingsMenuItem extends StatelessWidget {
                 color: iconBackgroundColor,
                 borderRadius: BorderRadius.circular(8.0),
               ),
-              child: Icon(icon, color: iconColor),
+              child: Icon(icon, color: iconColor, size: 32),
             ),
             const SizedBox(width: 16),
             Text(
