@@ -69,7 +69,7 @@ class ReceiptProvider extends ChangeNotifier {
 
   String? get _userEmail => _authProvider?.user?.email;
 
-  // Update filters
+// Update filters
   void updateFilters({
     required String sortOption,
     required List<String> paymentMethods,
@@ -82,16 +82,26 @@ class ReceiptProvider extends ChangeNotifier {
     _selectedCategoryIds = categoryIds;
     _startDate = startDate;
     _endDate = endDate;
+
+    // Log updated filters
+    print('Updated Filters:');
+    print('Sort Option: $_sortOption');
+    print('Payment Methods: $_selectedPaymentMethods');
+    print('Category IDs: $_selectedCategoryIds');
+    print('Start Date: $_startDate');
+    print('End Date: $_endDate');
+
     notifyListeners();
   }
 
-  // Fetch and filter receipts
+// Fetch and filter receipts
   Stream<List<Map<String, dynamic>>> fetchReceipts() async* {
     try {
       final userDoc =
           FirebaseFirestore.instance.collection('receipts').doc(_userEmail);
       await for (var snapshot in userDoc.snapshots()) {
         if (snapshot.data() == null) {
+          print('No receipts found.');
           yield [];
           continue;
         }
@@ -101,6 +111,13 @@ class ReceiptProvider extends ChangeNotifier {
 
         // Apply filters
         _filteredReceipts = _applyFilters(_allReceipts);
+
+        // Log filtered receipts
+        print('Filtered Receipts (${_filteredReceipts.length}):');
+        for (var receipt in _filteredReceipts) {
+          print(receipt);
+        }
+
         yield _filteredReceipts;
       }
     } catch (e) {
@@ -114,7 +131,8 @@ class ReceiptProvider extends ChangeNotifier {
       List<Map<String, dynamic>> receipts) {
     const primaryMethods = ['Credit Card', 'Debit Card', 'Cash'];
 
-    return receipts.where((receipt) {
+    // Apply filters
+    final filteredReceipts = receipts.where((receipt) {
       // Handle default values for missing fields
       final categoryId = receipt['categoryId'] ?? 'null';
       final paymentMethod = receipt['paymentMethod'] ?? '';
@@ -159,6 +177,33 @@ class ReceiptProvider extends ChangeNotifier {
         'categoryIcon': category?['icon'],
       };
     }).toList();
+
+    // Add sorting logic for Newest and Oldest
+    filteredReceipts.sort((a, b) {
+      final dateA = (a['date'] as Timestamp).toDate();
+      final dateB = (b['date'] as Timestamp).toDate();
+      final amountA = (a['amount'] as num?)?.toDouble() ?? 0.0;
+      final amountB = (b['amount'] as num?)?.toDouble() ?? 0.0;
+
+      if (_sortOption == 'Newest') {
+        return dateB.compareTo(dateA); // Descending by date
+      } else if (_sortOption == 'Oldest') {
+        return dateA.compareTo(dateB); // Ascending by date
+      } else if (_sortOption == 'Highest') {
+        return amountB.compareTo(amountA); // Descending by amount
+      } else if (_sortOption == 'Lowest') {
+        return amountA.compareTo(amountB); // Ascending by amount
+      }
+      return 0; // Default: no sorting
+    });
+
+    // Log sorted receipts
+    logger.i("Sorted Receipts (${filteredReceipts.length}):");
+    for (var receipt in filteredReceipts) {
+      logger.i(receipt);
+    }
+
+    return filteredReceipts;
   }
 
   // Group receipts by category
