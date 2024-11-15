@@ -133,6 +133,7 @@ class _ReceiptListPageState extends State<ReceiptListPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
@@ -189,9 +190,15 @@ class _ReceiptListPageState extends State<ReceiptListPage> {
             ),
             onPressed: () {
               setState(() {
-                _isSearching = !_isSearching;
-                _searchController.clear();
-                _suggestions.clear(); // Clear suggestions when closing search
+                if (_isSearching){
+                  _isSearching = false;
+                  _searchController.clear();
+                  _suggestions.clear(); // Clear suggestions when closing search
+                  _searchFocusNode.unfocus(); // Remove focus to hide the keyboard
+                } else {
+                  _isSearching = true;
+                  _searchFocusNode.requestFocus();
+                }
               });
             },
           ),
