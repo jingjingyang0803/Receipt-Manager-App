@@ -24,16 +24,24 @@ class CalendarFilterWidget extends StatefulWidget {
 class CalendarFilterWidgetState extends State<CalendarFilterWidget> {
   DateTime? _startDate;
   DateTime? _endDate;
+  int _selectedDays = 90;
 
   @override
   void initState() {
     super.initState();
-    _startDate = widget.initialStartDate;
-    _endDate = widget.initialEndDate;
+    // Ensure _endDate is not null before calculating _startDate
+    if (_endDate != null) {
+      _startDate = _endDate!.subtract(Duration(days: _selectedDays));
+    } else {
+      // Provide a default end date if it's null
+      _endDate = DateTime.now();
+      _startDate = _endDate!.subtract(Duration(days: _selectedDays));
+    }
   }
 
   void _updateRange(int days) {
     setState(() {
+      _selectedDays = days;
       if (_endDate != null) {
         _startDate = _endDate!.subtract(Duration(days: days));
       } else if (_startDate != null) {
@@ -102,6 +110,32 @@ class CalendarFilterWidgetState extends State<CalendarFilterWidget> {
     );
   }
 
+  Widget _buildOptionRow({
+    required String label,
+    required bool isSelected,
+    required Function(bool) onSelected,
+  }) {
+    return GestureDetector(
+      onTap: () {
+        onSelected(!isSelected); // Toggle selection state
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          color: isSelected ? purple100 : Colors.grey.shade200,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: isSelected ? Colors.white : Colors.black,
+            fontSize: 14,
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -126,59 +160,17 @@ class CalendarFilterWidgetState extends State<CalendarFilterWidget> {
           Wrap(
             spacing: 8,
             children: [
-              ChoiceChip(
-                label: Text('Wk'),
-                selected: false,
-                onSelected: (_) => _updateRange(7),
-                backgroundColor: light40,
-                selectedColor: purple20,
-                labelStyle: TextStyle(color: Colors.black),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  side: BorderSide(
-                      color: Colors.transparent, width: 0), // Remove border
-                ),
-              ),
-              ChoiceChip(
-                label: Text('30D'),
-                selected: false,
-                onSelected: (_) => _updateRange(30),
-                backgroundColor: light40,
-                selectedColor: purple20,
-                labelStyle: TextStyle(color: Colors.black),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  side: BorderSide(
-                      color: Colors.transparent, width: 0), // Remove border
-                ),
-              ),
-              ChoiceChip(
-                label: Text('90D'),
-                selected: false,
-                onSelected: (_) => _updateRange(90),
-                backgroundColor: light40,
-                selectedColor: purple20,
-                labelStyle: TextStyle(color: Colors.black),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  side: BorderSide(
-                      color: Colors.transparent, width: 0), // Remove border
-                ),
-              ),
-              ChoiceChip(
-                label: Text('Year'),
-                selected: false,
-                onSelected: (_) => _updateRange(365),
-                backgroundColor: light40,
-                selectedColor: purple20,
-                labelStyle: TextStyle(color: Colors.black),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  side: BorderSide(
-                      color: Colors.transparent, width: 0), // Remove border
-                ),
-              ),
-            ],
+              {'label': 'Wk', 'days': 7},
+              {'label': '30D', 'days': 30},
+              {'label': '90D', 'days': 90},
+              {'label': 'Year', 'days': 365}
+            ]
+                .map((item) => _buildOptionRow(
+                      label: item['label'] as String,
+                      isSelected: _selectedDays == item['days'],
+                      onSelected: (_) => _updateRange(item['days'] as int),
+                    ))
+                .toList(),
           ),
           SizedBox(height: 16),
           Row(
@@ -233,7 +225,7 @@ class CalendarFilterWidgetState extends State<CalendarFilterWidget> {
           child: Container(
             padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
             decoration: BoxDecoration(
-              color: light40,
+              color: Colors.grey.shade200,
               borderRadius: BorderRadius.circular(8),
             ),
             child: Text(
