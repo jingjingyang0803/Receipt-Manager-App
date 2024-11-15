@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:receipt_manager/constants/app_colors.dart';
+import 'package:receipt_manager/providers/receipt_provider.dart';
 
 import '../providers/category_provider.dart';
 import 'custom_button.dart';
@@ -82,6 +83,10 @@ class CategoryDeletePopup extends StatelessWidget {
                       final categoryProvider =
                           Provider.of<CategoryProvider>(context, listen: false);
                       await categoryProvider.deleteCategory(categoryId);
+                      final receiptProvider =
+                          Provider.of<ReceiptProvider>(context, listen: false);
+                      await receiptProvider
+                          .setReceiptsCategoryToNull(categoryId);
                       Navigator.of(context)
                           .pop(true); // Close the popup and confirm deletion
                     },
