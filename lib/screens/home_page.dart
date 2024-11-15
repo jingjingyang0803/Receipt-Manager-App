@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../constants/app_colors.dart';
+
 class HomePage extends StatefulWidget {
   static const String id = 'home_page';
 
@@ -13,8 +15,11 @@ class HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: light90,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        automaticallyImplyLeading:
+            false, // Removes the default back arrowbackgroundColor: Colors.white,
+        backgroundColor: light90,
         elevation: 0,
         title: const Text(
           'Home',
@@ -22,7 +27,6 @@ class HomePageState extends State<HomePage> {
         ),
         centerTitle: true,
       ),
-      backgroundColor: Colors.grey.shade100,
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(

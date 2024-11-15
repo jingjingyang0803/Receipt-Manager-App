@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:receipt_manager/screens/financial_report_page.dart';
 import 'package:receipt_manager/screens/old/add_update_receipt_screen.dart';
 import 'package:receipt_manager/screens/settings_page.dart';
 
 import '../components/custom_bottom_nav_bar.dart';
-import 'budget_page.dart';
 import 'home_page.dart';
 import 'receipt_list_page.dart';
 
@@ -36,7 +36,7 @@ class BasePageState extends State<BasePage> {
       case 1:
         return ReceiptListPage();
       case 2:
-        return BudgetPage();
+        return FinancialReportPage();
       case 3:
         return SettingsPage();
       default:

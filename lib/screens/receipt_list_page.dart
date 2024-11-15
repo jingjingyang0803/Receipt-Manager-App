@@ -181,8 +181,10 @@ class ReceiptListPageState extends State<ReceiptListPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: true,
+      backgroundColor: light90,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        automaticallyImplyLeading: false, // Removes the default back arrow
+        backgroundColor: light90,
         elevation: 0,
         title: _isSearching
             ? Column(
@@ -258,81 +260,74 @@ class ReceiptListPageState extends State<ReceiptListPage> {
           ),
         ],
       ),
-      body: Container(
-        color: Colors.white,
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildFinancialReportBar(context),
-              const SizedBox(height: 16),
-              Expanded(
-                child: Consumer<ReceiptProvider>(
-                  builder: (context, receiptProvider, _) {
-                    return StreamBuilder<List<Map<String, dynamic>>>(
-                      stream: receiptProvider.fetchReceipts(),
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return const Center(
-                              child: CircularProgressIndicator());
-                        }
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildFinancialReportBar(context),
+            const SizedBox(height: 16),
+            Expanded(
+              child: Consumer<ReceiptProvider>(
+                builder: (context, receiptProvider, _) {
+                  return StreamBuilder<List<Map<String, dynamic>>>(
+                    stream: receiptProvider.fetchReceipts(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
 
-                        if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                          return buildNoResultsFound();
-                        }
+                      if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                        return buildNoResultsFound();
+                      }
 
-                        String query = _searchController.text.toLowerCase();
-                        List<Map<String, dynamic>> receipts =
-                            _filterReceipts(snapshot.data!, query);
+                      String query = _searchController.text.toLowerCase();
+                      List<Map<String, dynamic>> receipts =
+                          _filterReceipts(snapshot.data!, query);
 
-                        List<Map<String, dynamic>> todayReceipts = receipts
-                            .where((receipt) => _isToday(
-                                (receipt['date'] as Timestamp?)?.toDate() ??
-                                    DateTime.now()))
-                            .toList();
-                        List<Map<String, dynamic>> yesterdayReceipts = receipts
-                            .where((receipt) => _isYesterday(
-                                (receipt['date'] as Timestamp?)?.toDate() ??
-                                    DateTime.now()))
-                            .toList();
-                        List<Map<String, dynamic>> otherReceipts = receipts
-                            .where((receipt) =>
-                                !_isToday(
-                                    (receipt['date'] as Timestamp?)?.toDate() ??
-                                        DateTime.now()) &&
-                                !_isYesterday(
-                                    (receipt['date'] as Timestamp?)?.toDate() ??
-                                        DateTime.now()))
-                            .toList();
+                      List<Map<String, dynamic>> todayReceipts = receipts
+                          .where((receipt) => _isToday(
+                              (receipt['date'] as Timestamp?)?.toDate() ??
+                                  DateTime.now()))
+                          .toList();
+                      List<Map<String, dynamic>> yesterdayReceipts = receipts
+                          .where((receipt) => _isYesterday(
+                              (receipt['date'] as Timestamp?)?.toDate() ??
+                                  DateTime.now()))
+                          .toList();
+                      List<Map<String, dynamic>> otherReceipts = receipts
+                          .where((receipt) =>
+                              !_isToday(
+                                  (receipt['date'] as Timestamp?)?.toDate() ??
+                                      DateTime.now()) &&
+                              !_isYesterday(
+                                  (receipt['date'] as Timestamp?)?.toDate() ??
+                                      DateTime.now()))
+                          .toList();
 
-                        return SingleChildScrollView(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
+                      return SingleChildScrollView(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _buildReceiptSection(context,
+                                sectionTitle: 'Today', receipts: todayReceipts),
+                            _buildReceiptSection(context,
+                                sectionTitle: 'Yesterday',
+                                receipts: yesterdayReceipts),
+                            for (var entry
+                                in _groupReceiptsByDate(otherReceipts).entries)
                               _buildReceiptSection(context,
-                                  sectionTitle: 'Today',
-                                  receipts: todayReceipts),
-                              _buildReceiptSection(context,
-                                  sectionTitle: 'Yesterday',
-                                  receipts: yesterdayReceipts),
-                              for (var entry
-                                  in _groupReceiptsByDate(otherReceipts)
-                                      .entries)
-                                _buildReceiptSection(context,
-                                    sectionTitle: entry.key,
-                                    receipts: entry.value),
-                            ],
-                          ),
-                        );
-                      },
-                    );
-                  },
-                ),
+                                  sectionTitle: entry.key,
+                                  receipts: entry.value),
+                          ],
+                        ),
+                      );
+                    },
+                  );
+                },
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
