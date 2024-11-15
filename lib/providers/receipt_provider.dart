@@ -15,9 +15,11 @@ class ReceiptProvider extends ChangeNotifier {
   Map<String, double>? _groupedReceiptsByCategory;
   Map<String, double>? _groupedReceiptsByInterval;
   Map<String, DateTime>? _oldestAndNewestDates;
-  List<Map<String, dynamic>> _filteredReceipts = []; // Filtered list of receipts
+  List<Map<String, dynamic>> _filteredReceipts =
+      []; // Filtered list of receipts
   List<Map<String, dynamic>> get allReceipts => _allReceipts;
-  List<Map<String, dynamic>> get filteredReceipts => _filteredReceipts; // Getter for filtered receipts
+  List<Map<String, dynamic>> get filteredReceipts =>
+      _filteredReceipts; // Getter for filtered receipts
   // Stores all fetched receipts for search and filtering
   List<Map<String, dynamic>> _allReceipts = [];
   int? _receiptCount;
@@ -100,7 +102,6 @@ class ReceiptProvider extends ChangeNotifier {
     notifyListeners(); // Notify consumers of changes
   }
 
-
   Stream<List<Map<String, dynamic>>> fetchReceipts() async* {
     try {
       logger.i("Fetching receipts for user: $_userEmail");
@@ -115,7 +116,6 @@ class ReceiptProvider extends ChangeNotifier {
         _allReceipts = (snapshot.data()?['receiptlist'] ?? [])
             .cast<Map<String, dynamic>>();
         yield _allReceipts;
-
 
         List<Map<String, dynamic>> allReceipts =
             (snapshot.data()?['receiptlist'] ?? [])
@@ -135,22 +135,36 @@ class ReceiptProvider extends ChangeNotifier {
           bool matchesCategory = false;
           bool matchesPayment = false;
 
-          print("Category ID: $categoryId");
-          print("Selected Category IDs: $_selectedCategoryIds");
+          logger.i("Category ID: $categoryId");
+          logger.i("Selected Category IDs: $_selectedCategoryIds");
           if (_selectedCategoryIds.contains(categoryId)) {
             matchesCategory = true;
           } else {
-            print(
+            logger.w(
                 "Category ID $categoryId does not match any in $_selectedCategoryIds");
           }
 
-          print("Payment Method: $paymentMethod");
-          print("Selected Payment Methods: $_selectedPaymentMethods");
+          logger.i("Payment Method: $paymentMethod");
+          logger.i("Selected Payment Methods: $_selectedPaymentMethods");
+
+          // Define the list of primary payment methods
+          const primaryMethods = ['Credit Card', 'Debit Card', 'Cash'];
+
           if (_selectedPaymentMethods.isEmpty ||
               _selectedPaymentMethods.contains(paymentMethod)) {
             matchesPayment = true;
+          } else if (_selectedPaymentMethods.contains('Other')) {
+            // If "Other" is selected, match any method not in primaryMethods
+            if (!primaryMethods.contains(paymentMethod)) {
+              matchesPayment = true;
+            } else {
+              matchesPayment = false;
+              logger.i(
+                  "Payment Method $paymentMethod is in primary methods and does not match 'Other'.");
+            }
           } else {
-            print(
+            matchesPayment = false;
+            logger.w(
                 "Payment Method $paymentMethod does not match any in $_selectedPaymentMethods");
           }
 
