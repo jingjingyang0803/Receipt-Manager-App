@@ -47,6 +47,7 @@ class ReceiptListPageState extends State<ReceiptListPage> {
   // Builds each receipt section
   Widget _buildReceiptSection(
     BuildContext context, {
+    required String sectionTitle,
     required List<Map<String, dynamic>> receipts,
   }) {
     return receipts.isNotEmpty
@@ -54,7 +55,7 @@ class ReceiptListPageState extends State<ReceiptListPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Receipts',
+                sectionTitle,
                 style:
                     const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
@@ -197,11 +198,18 @@ class ReceiptListPageState extends State<ReceiptListPage> {
                       debugPrint(
                           "Building receipt section with ${receipts.length} receipts.");
 
+                      // Get the sortOption from ReceiptProvider
+                      String sectionTitle = receiptProvider.sortOption;
+
                       return SingleChildScrollView(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            _buildReceiptSection(context, receipts: receipts),
+                            _buildReceiptSection(
+                              context,
+                              sectionTitle: 'Receipts $sectionTitle',
+                              receipts: receipts,
+                            ),
                           ],
                         ),
                       );

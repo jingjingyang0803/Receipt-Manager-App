@@ -226,7 +226,6 @@ class ReceiptProvider extends ChangeNotifier {
   }
 
   // Search receipts by query
-
   void searchReceipts(String query) {
     if (_allReceipts.isEmpty) return;
 
