@@ -2,9 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../logger.dart';
 
-final _firestore = FirebaseFirestore.instance;
-
 class UserService {
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
   // Fetch user profile data for a specified user by email
   Stream<DocumentSnapshot<Map<String, dynamic>>> fetchUserProfile(
       String email) {
