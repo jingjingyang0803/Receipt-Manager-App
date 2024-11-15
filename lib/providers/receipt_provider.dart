@@ -69,7 +69,17 @@ class ReceiptProvider extends ChangeNotifier {
 
   String? get _userEmail => _authProvider?.user?.email;
 
-// Update filters
+  TimeInterval _selectedInterval = TimeInterval.month;
+
+  TimeInterval get selectedInterval => _selectedInterval;
+
+  void updateInterval(TimeInterval interval) {
+    _selectedInterval = interval;
+    groupByInterval(interval); // Regroup receipts based on the new interval
+    notifyListeners();
+  }
+
+  // Update filters
   void updateFilters({
     required String sortOption,
     required List<String> paymentMethods,
