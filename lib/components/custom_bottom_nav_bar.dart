@@ -66,8 +66,8 @@ class CustomBottomNavBarState extends State<CustomBottomNavBar> {
                 return GestureDetector(
                   onTap: () => _onItemTapped(index),
                   child: Container(
-                    width: 56,
-                    height: 56,
+                    width: 52,
+                    height: 52,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       color: _currentIndex == index
