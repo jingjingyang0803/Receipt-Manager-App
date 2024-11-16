@@ -3,16 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:receipt_manager/screens/add_update_receipt_page.dart';
 import 'package:receipt_manager/screens/budget_page.dart';
 import 'package:receipt_manager/screens/category_page.dart';
-import 'package:receipt_manager/screens/report_page.dart';
 
 import 'screens/base_page.dart';
 import 'screens/email_sent_page.dart';
-import 'screens/financial_report_page.dart';
 import 'screens/forgot_password_page.dart';
 import 'screens/home_page.dart';
 import 'screens/login_page.dart';
-import 'screens/old/expense_chart_screen.dart';
-import 'screens/old/receipt_list_screen.dart';
 import 'screens/old/scan_screen.dart';
 import 'screens/old/summary_screen.dart';
 import 'screens/receipt_list_page.dart';
@@ -37,11 +33,7 @@ Map<String, WidgetBuilder> appRoutes = {
   SettingsPage.id: (context) => SettingsPage(),
   CategoryPage.id: (context) => CategoryPage(),
   BudgetPage.id: (context) => BudgetPage(),
-  ReportPage.id: (context) => FinancialReportPage(),
   ////
   ScanScreen.id: (context) => ScanScreen(),
-  ReceiptListScreen.id: (context) => ReceiptListScreen(),
   SummaryScreen.id: (context) => SummaryScreen(),
-  ExpenseChartScreen.id: (context) => ExpenseChartScreen(),
-  FinancialReportPage.id: (context) => FinancialReportPage(),
 };

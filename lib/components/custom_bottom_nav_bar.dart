@@ -5,13 +5,11 @@ import '../constants/app_colors.dart';
 class CustomBottomNavBar extends StatefulWidget {
   final int initialIndex;
   final Function(int) onTabSelected;
-  final VoidCallback onFabPressed;
 
   const CustomBottomNavBar({
     super.key,
     required this.initialIndex,
     required this.onTabSelected,
-    required this.onFabPressed,
   });
 
   @override

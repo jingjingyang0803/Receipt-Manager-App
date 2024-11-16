@@ -4,7 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:receipt_manager/constants/app_colors.dart';
 import 'package:receipt_manager/providers/receipt_provider.dart';
-import 'package:receipt_manager/screens/financial_report_page.dart';
+import 'package:receipt_manager/screens/report_page.dart';
 
 import '../components/custom_app_bar.dart';
 import '../components/expense_item_card.dart';
@@ -237,7 +237,7 @@ Widget _buildFinancialReportBar(BuildContext context) {
     width: double.infinity,
     child: TextButton(
       onPressed: () {
-        Navigator.pushNamed(context, FinancialReportPage.id);
+        Navigator.pushNamed(context, ReportPage.id);
       },
       style: TextButton.styleFrom(
         backgroundColor: purple20,
