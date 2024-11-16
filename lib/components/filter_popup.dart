@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:receipt_manager/components/custom_divider.dart';
 
 import '../constants/app_colors.dart';
 import '../providers/category_provider.dart';
@@ -59,7 +60,7 @@ class FilterPopupState extends State<FilterPopup> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Divider(thickness: 3, color: purple40, endIndent: 165, indent: 165),
+          const CustomDivider(),
           const SizedBox(height: 16),
           const Text('Choose Payment Method',
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),

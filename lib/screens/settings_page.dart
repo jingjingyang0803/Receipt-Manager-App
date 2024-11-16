@@ -5,7 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:receipt_manager/screens/budget_page.dart';
 
-import '../components/currency_roller_picker.dart';
+import '../components/currency_roller_picker_popup.dart';
 import '../components/logout_popup.dart';
 import '../constants/app_colors.dart';
 import '../logger.dart';

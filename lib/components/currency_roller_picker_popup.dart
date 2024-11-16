@@ -5,6 +5,7 @@ import '../constants/app_colors.dart';
 import '../logger.dart';
 import '../services/currency_service.dart';
 import 'custom_button.dart';
+import 'custom_divider.dart';
 
 class CurrencyPicker extends StatelessWidget {
   final String selectedCurrencyCode;
@@ -225,12 +226,7 @@ class CurrencyPicker extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Divider(
-                thickness: 3,
-                color: purple40,
-                endIndent: 165,
-                indent: 165,
-              ),
+              const CustomDivider(),
               SizedBox(height: 8),
               Expanded(
                 child: Column(
