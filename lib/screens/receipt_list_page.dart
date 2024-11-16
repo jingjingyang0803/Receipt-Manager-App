@@ -22,6 +22,8 @@ class ReceiptListPage extends StatefulWidget {
 }
 
 class ReceiptListPageState extends State<ReceiptListPage> {
+  late Stream<List<Map<String, dynamic>>> _receiptStream;
+
   // Added State Variables for Search
   final TextEditingController _searchController = TextEditingController();
   final FocusNode _searchFocusNode = FocusNode();
@@ -38,6 +40,8 @@ class ReceiptListPageState extends State<ReceiptListPage> {
       final receiptProvider =
           Provider.of<ReceiptProvider>(context, listen: false);
       final userCurrencyCode = receiptProvider.currencySymbol;
+
+      _receiptStream = receiptProvider.fetchReceipts();
 
       setState(() {
         currencySymbol = userCurrencyCode ?? '€'; // Fallback to '€' if null
@@ -213,7 +217,7 @@ class ReceiptListPageState extends State<ReceiptListPage> {
               child: Consumer<ReceiptProvider>(
                 builder: (context, receiptProvider, _) {
                   return StreamBuilder<List<Map<String, dynamic>>>(
-                    stream: receiptProvider.fetchReceipts(),
+                    stream: _receiptStream,
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return const Center(child: CircularProgressIndicator());
