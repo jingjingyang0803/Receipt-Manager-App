@@ -10,7 +10,6 @@ import 'screens/email_sent_page.dart';
 import 'screens/forgot_password_page.dart';
 import 'screens/home_page.dart';
 import 'screens/login_page.dart';
-import 'screens/old/scan_screen.dart';
 import 'screens/old/summary_screen.dart';
 import 'screens/receipt_list_page.dart';
 import 'screens/settings_page.dart';
@@ -36,6 +35,5 @@ Map<String, WidgetBuilder> appRoutes = {
   CategoryPage.id: (context) => CategoryPage(),
   BudgetPage.id: (context) => BudgetPage(),
   ////
-  ScanScreen.id: (context) => ScanScreen(),
   SummaryScreen.id: (context) => SummaryScreen(),
 };
