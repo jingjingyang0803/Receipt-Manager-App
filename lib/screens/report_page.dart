@@ -32,7 +32,8 @@ class ReportPageState extends State<ReportPage> {
   TimeInterval selectedInterval =
       TimeInterval.day; // Default time interval (day)
 
-  @override
+  bool isPieChart = true; // Toggle state for chart
+
   @override
   void initState() {
     super.initState();
@@ -350,7 +351,7 @@ class ReportPageState extends State<ReportPage> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
-          color: isSelected ? Colors.blue : Colors.grey.shade200,
+          color: isSelected ? purple100 : Colors.grey.shade200,
           borderRadius: BorderRadius.circular(20),
         ),
         child: Text(
@@ -381,38 +382,106 @@ class ReportPageState extends State<ReportPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // Toggle Button for Bar Chart and Pie Chart
+                  Row(
+                    children: [
+                      // Bar Chart Button with rounded left corners
+                      TextButton(
+                        onPressed: () {
+                          setState(() {
+                            isPieChart = false;
+                          });
+                        },
+                        style: TextButton.styleFrom(
+                          backgroundColor: isPieChart ? Colors.white : purple80,
+                          minimumSize: const Size(
+                              10, 50), // Adjust width and height if necessary
+                          shape: RoundedRectangleBorder(
+                            borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(8),
+                              bottomLeft: Radius.circular(8),
+                            ),
+                            side: BorderSide(
+                              color: isPieChart
+                                  ? light60
+                                  : Colors
+                                      .transparent, // Border only when inactive
+                              width: 1.5,
+                            ),
+                          ),
+                        ),
+                        child: Icon(
+                          Icons.bar_chart, // Use preferred icon for bar chart
+                          color: isPieChart ? purple80 : light60,
+                        ),
+                      ),
+                      // Pie Chart Button with rounded right corners
+                      TextButton(
+                        onPressed: () {
+                          setState(() {
+                            isPieChart = true;
+                          });
+                        },
+                        style: TextButton.styleFrom(
+                          backgroundColor: isPieChart ? purple80 : Colors.white,
+                          minimumSize: const Size(10, 50),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: const BorderRadius.only(
+                              topRight: Radius.circular(8),
+                              bottomRight: Radius.circular(8),
+                            ),
+                            side: BorderSide(
+                              color: isPieChart
+                                  ? Colors.transparent
+                                  : light60, // Border only when inactive
+                              width: 1.5,
+                            ),
+                          ),
+                        ),
+                        child: Icon(
+                          Icons.pie_chart,
+                          color: isPieChart ? light80 : purple100,
+                        ),
+                      ),
+                    ],
+                  ),
                   const SizedBox(height: 10),
-                  buildCard(
-                    context: context,
-                    title: 'Expenses by Category',
-                    content: buildPieChart(context), // Uses Consumer internally
-                  ),
-                  const SizedBox(height: 20),
-                  Center(
-                    child: Wrap(
-                      spacing: 8,
-                      children: TimeInterval.values
-                          .map((interval) => _buildFilterOption(
-                                label: interval.name.toUpperCase(),
-                                isSelected: receiptProvider.selectedInterval ==
-                                    interval, // Access directly from provider
-                                onSelected: (_) {
-                                  receiptProvider.updateInterval(interval);
-                                },
-                              ))
-                          .toList(),
+                  if (!isPieChart)
+                    buildCard(
+                      context: context,
+                      title: 'Expenses by Category',
+                      content:
+                          buildPieChart(context), // Uses Consumer internally
+                    )
+                  else ...[
+                    const SizedBox(height: 20),
+                    Center(
+                      child: Wrap(
+                        spacing: 8,
+                        children: TimeInterval.values
+                            .map((interval) => _buildFilterOption(
+                                  label: interval.name.toUpperCase(),
+                                  isSelected: receiptProvider
+                                          .selectedInterval ==
+                                      interval, // Access directly from provider
+                                  onSelected: (_) {
+                                    receiptProvider.updateInterval(interval);
+                                  },
+                                ))
+                            .toList(),
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 20),
-                  buildCard(
-                    context: context,
-                    title:
-                        'Expenses by ${receiptProvider.selectedInterval.name}',
-                    content: buildBarChart(
-                      context,
-                      receiptProvider.selectedInterval,
-                    ), // Uses Consumer internally
-                  ),
+                    const SizedBox(height: 20),
+                    buildCard(
+                      context: context,
+                      title:
+                          'Expenses by ${receiptProvider.selectedInterval.name}',
+                      content: buildBarChart(
+                        context,
+                        receiptProvider.selectedInterval,
+                      ), // Uses Consumer internally
+                    ),
+                  ],
                 ],
               ),
             ),
