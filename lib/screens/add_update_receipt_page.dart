@@ -99,8 +99,17 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
       _merchantController.text = widget.extract!['merchant'] ?? '';
       _dateController.text = widget.extract!['date'] ??
           DateTime.now().toLocal().toString().split(' ')[0];
-      _totalController.text = widget.extract!['amount']?.toString() ?? '';
-      _descriptionController.text = widget.extract!['description'] ?? '';
+
+      final extractCurrency = widget.extract!['currency'] ?? '';
+      final extractAmount = widget.extract!['amount'] ?? '';
+
+      if (extractCurrency != currencySymbol) {
+        _descriptionController.text =
+            'Converted from $extractCurrency $extractAmount';
+      } else {
+        _totalController.text = extractAmount.toString();
+      }
+
       _uploadedImageUrl = widget.extract!['imagePath'] ?? '';
     } else {
       // New receipt mode
