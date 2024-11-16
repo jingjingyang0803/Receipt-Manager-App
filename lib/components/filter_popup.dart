@@ -66,6 +66,7 @@ class FilterPopupState extends State<FilterPopup> {
           const SizedBox(height: 8),
           Wrap(
             spacing: 8,
+            runSpacing: 8,
             children: ['Credit Card', 'Debit Card', 'Cash', 'Others']
                 .map((filter) => _buildFilterOption(
                       label: filter,
@@ -97,6 +98,7 @@ class FilterPopupState extends State<FilterPopup> {
           const SizedBox(height: 8),
           Wrap(
             spacing: 8,
+            runSpacing: 8,
             children: ['Highest', 'Lowest', 'Newest', 'Oldest']
                 .map((sort) => _buildFilterOption(
                       label: sort,
