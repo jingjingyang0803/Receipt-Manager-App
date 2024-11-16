@@ -13,6 +13,20 @@ class CategoryProvider extends ChangeNotifier {
   List<Map<String, dynamic>> get categories => _categories;
   Map<String, dynamic>? get categoryDetails => _categoryDetails;
 
+  // Predefined colors for categories
+  final List<Color> _predefinedColors = [
+    Colors.red.shade200,
+    Colors.green.shade200,
+    Colors.blue.shade200,
+    Colors.orange.shade200,
+    Colors.purple.shade200,
+    Colors.yellow.shade200,
+    Colors.cyan.shade200,
+    Colors.pink.shade200,
+    Colors.teal.shade200,
+    Colors.indigo.shade200,
+  ];
+
   // Setter for AuthenticationProvider
   set authProvider(AuthenticationProvider authProvider) {
     _authProvider = authProvider;
@@ -22,10 +36,17 @@ class CategoryProvider extends ChangeNotifier {
   // Helper to get the user's email from AuthenticationProvider
   String? get _userEmail => _authProvider?.user?.email;
 
-  // Fetch all categories for the current user
+  // Fetch all categories for the current user and assign colors
   Future<void> loadUserCategories() async {
     if (_userEmail != null) {
       _categories = await _categoryService.fetchUserCategories(_userEmail!);
+
+      // Assign colors to categories by cycling through the predefined colors
+      for (int i = 0; i < _categories.length; i++) {
+        _categories[i]['color'] =
+            _predefinedColors[i % _predefinedColors.length];
+      }
+
       notifyListeners();
     }
   }

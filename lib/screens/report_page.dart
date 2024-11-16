@@ -120,13 +120,14 @@ class ReportPageState extends State<ReportPage> {
           child: PieChart(
             PieChartData(
               sections: groupedReceipts.entries.map((entry) {
-                final categoryId = entry.key;
                 final total = entry.value['total'] as double? ??
                     0.0; // Access the total field
                 final percentage = (total / totalAmount) * 100;
+                final categoryColor =
+                    entry.value['color'] ?? Colors.grey.shade200;
 
                 return PieChartSectionData(
-                  color: categoryColors[categoryId], // Use grey if no color
+                  color: categoryColor, // Use grey if no color
                   value: total,
                   title: '${percentage.toStringAsFixed(1)}%',
                   radius: 70,
@@ -148,7 +149,6 @@ class ReportPageState extends State<ReportPage> {
           spacing: 8,
           runSpacing: 8,
           children: groupedReceipts.entries.map((entry) {
-            final categoryId = entry.key;
             final categoryData = entry.value;
 
             final total = categoryData['total'] as double? ?? 0.0;
@@ -156,6 +156,7 @@ class ReportPageState extends State<ReportPage> {
 
             final categoryName = categoryData['name'] ?? 'Uncategorized';
             final categoryIcon = categoryData['icon'] ?? '❓';
+            final categoryColor = categoryData['color'] ?? Colors.grey.shade200;
 
             return Padding(
               padding:
@@ -171,8 +172,7 @@ class ReportPageState extends State<ReportPage> {
                           width: 30,
                           height: 30,
                           decoration: BoxDecoration(
-                            color:
-                                categoryColors[categoryId], // Background color
+                            color: categoryColor, // Background color
                             borderRadius: BorderRadius.circular(5),
                           ),
                           child: Center(
