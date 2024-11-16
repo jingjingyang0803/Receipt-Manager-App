@@ -4,6 +4,7 @@ import 'package:receipt_manager/constants/app_colors.dart';
 
 import '../screens/welcome_page.dart';
 import 'custom_button.dart';
+import 'custom_divider.dart';
 
 class LogoutPopup extends StatelessWidget {
   final VoidCallback onConfirm;
@@ -27,12 +28,7 @@ class LogoutPopup extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Divider(
-            thickness: 3,
-            color: purple40,
-            endIndent: 165,
-            indent: 165,
-          ),
+          const CustomDivider(),
           SizedBox(height: 8),
           Text(
             'Logout?',
