@@ -145,7 +145,8 @@ class ReportPageState extends State<ReportPage> {
         ),
         const SizedBox(height: 20), // Space between chart and legend
         Wrap(
-          spacing: 10,
+          spacing: 8,
+          runSpacing: 8,
           children: groupedReceipts.entries.map((entry) {
             final categoryId = entry.key;
             final categoryData = entry.value;
