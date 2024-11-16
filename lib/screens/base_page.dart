@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:receipt_manager/screens/old/add_update_receipt_screen.dart';
 import 'package:receipt_manager/screens/report_page.dart';
 import 'package:receipt_manager/screens/settings_page.dart';
 
@@ -24,11 +23,6 @@ class BasePageState extends State<BasePage> {
     });
   }
 
-  void _onFabPressed() {
-    // Handle action for FAB, navigate to add new expense page
-    Navigator.pushNamed(context, AddOrUpdateReceiptScreen.id);
-  }
-
   Widget _getSelectedPage() {
     switch (_selectedIndex) {
       case 0:
@@ -51,7 +45,6 @@ class BasePageState extends State<BasePage> {
       bottomNavigationBar: CustomBottomNavBar(
         initialIndex: _selectedIndex,
         onTabSelected: _onTabSelected,
-        onFabPressed: _onFabPressed,
       ),
     );
   }
