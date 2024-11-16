@@ -4,7 +4,6 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:receipt_manager/constants/app_colors.dart';
 import 'package:receipt_manager/providers/receipt_provider.dart';
-import 'package:receipt_manager/screens/report_page.dart';
 
 import '../components/custom_app_bar.dart';
 import '../components/expense_item_card.dart';
@@ -148,6 +147,39 @@ class ReceiptListPageState extends State<ReceiptListPage> {
     );
   }
 
+  Widget _buildSearchBar(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: purple20, // Same background color as the financial report bar
+        borderRadius: BorderRadius.circular(8.0), // Same rounded corners
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 14), // Adjust padding
+      child: Row(
+        children: [
+          Expanded(
+            child: TextField(
+              controller: _searchController,
+              focusNode: _searchFocusNode,
+              decoration: const InputDecoration(
+                hintText: 'Search...',
+                border: InputBorder.none,
+                hintStyle: TextStyle(color: purple100), // Optional: hint color
+              ),
+              style: const TextStyle(color: purple100),
+              onChanged: (query) {
+                _performSearch(query); // Call search on each text change
+              },
+            ),
+          ),
+          Icon(
+            Icons.search,
+            color: purple100, // Match the icon color with the report bar text
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -159,23 +191,7 @@ class ReceiptListPageState extends State<ReceiptListPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Column(
-              children: [
-                TextField(
-                  controller: _searchController,
-                  focusNode: _searchFocusNode,
-                  decoration: const InputDecoration(
-                    hintText: 'Search...',
-                    border: InputBorder.none,
-                  ),
-                  style: const TextStyle(color: Colors.black),
-                  onChanged: (query) {
-                    _performSearch(query); // Call search on each text change
-                  },
-                ),
-              ],
-            ),
-            _buildFinancialReportBar(context),
+            _buildSearchBar(context),
             const SizedBox(height: 16),
             Expanded(
               child: Consumer<ReceiptProvider>(
@@ -230,39 +246,4 @@ class ReceiptListPageState extends State<ReceiptListPage> {
       ),
     );
   }
-}
-
-Widget _buildFinancialReportBar(BuildContext context) {
-  return SizedBox(
-    width: double.infinity,
-    child: TextButton(
-      onPressed: () {
-        Navigator.pushNamed(context, ReportPage.id);
-      },
-      style: TextButton.styleFrom(
-        backgroundColor: purple20,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8.0),
-        ),
-        padding: const EdgeInsets.all(14),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            "See your financial report",
-            style: TextStyle(
-              color: purple100,
-              fontSize: 16,
-            ),
-          ),
-          Icon(
-            Icons.arrow_forward_ios,
-            color: purple100,
-            size: 20,
-          ),
-        ],
-      ),
-    ),
-  );
 }
