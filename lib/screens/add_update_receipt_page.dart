@@ -47,11 +47,18 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
 
   String? _uploadedImageUrl;
 
+  String currencySymbol = '€';
+
   @override
   void initState() {
     super.initState();
     _loadUserCategories();
     _initializeFormFields();
+
+    final receiptProvider =
+        Provider.of<ReceiptProvider>(context, listen: false);
+
+    currencySymbol = receiptProvider.currencySymbol ?? '€'; // Fetch the symbol
   }
 
   Future<void> _loadUserCategories() async {
@@ -360,7 +367,17 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
               SizedBox(height: 20),
               DropdownButtonFormField<String>(
                 value: _selectedPaymentMethod,
-                items: ['Credit Card', 'Debit Card', 'Cash', 'PayPal', 'Others']
+                items: [
+                  'Credit Card',
+                  'Debit Card',
+                  'Cash',
+                  'PayPal',
+                  'MobilePay',
+                  'Apple Pay',
+                  'Google Pay',
+                  'Bank Transfer',
+                  'Others'
+                ]
                     .map((method) => DropdownMenuItem(
                           value: method,
                           child: Text(method),
@@ -377,6 +394,12 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
                 decoration: InputDecoration(
                   labelText: 'Total',
                   hintText: 'e.g. 0.00',
+                  prefixText: currencySymbol, // Add your currency symbol here
+                  prefixStyle: TextStyle(
+                    color: Colors
+                        .grey, // Optional: customize the style of the prefix
+                    fontSize: 16, // Adjust font size to match your text field
+                  ),
                 ),
                 keyboardType: TextInputType.number,
                 inputFormatters: [
