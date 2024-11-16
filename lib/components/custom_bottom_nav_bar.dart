@@ -35,7 +35,7 @@ class CustomBottomNavBarState extends State<CustomBottomNavBar> {
       children: [
         // Background
         Container(
-          height: 80,
+          height: 120,
           decoration: const BoxDecoration(color: light80),
         ),
         // Bottom Navigation Bar
