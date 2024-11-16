@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:receipt_manager/screens/add_update_receipt_page.dart';
+import 'package:receipt_manager/screens/budget_page.dart';
+import 'package:receipt_manager/screens/report_page.dart';
 
 import '../constants/app_colors.dart';
 
@@ -36,7 +39,7 @@ class HomePageState extends State<HomePage> {
             const SizedBox(height: 20),
             _buildQuickActions(),
             const SizedBox(height: 20),
-            _buildRecentTransactions(),
+            _buildMonthlySummary(),
           ],
         ),
       ),
@@ -53,7 +56,7 @@ class HomePageState extends State<HomePage> {
         ),
         SizedBox(height: 8),
         Text(
-          'Here’s a quick overview of your finances today.',
+          'Here’s a quick overview of your finances this month.',
           style: TextStyle(fontSize: 16, color: Colors.grey),
         ),
       ],
@@ -69,6 +72,7 @@ class HomePageState extends State<HomePage> {
           label: "Add Expense",
           onPressed: () {
             // Handle add expense action
+            Navigator.pushNamed(context, AddOrUpdateReceiptPage.id);
           },
         ),
         _buildActionButton(
@@ -76,13 +80,19 @@ class HomePageState extends State<HomePage> {
           label: "View Reports",
           onPressed: () {
             // Handle view reports action
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ReportPage(),
+                ));
           },
         ),
         _buildActionButton(
-          icon: Icons.pie_chart,
+          icon: Icons.attach_money,
           label: "Set Budget",
           onPressed: () {
             // Handle set budget action
+            Navigator.pushNamed(context, BudgetPage.id);
           },
         ),
       ],
@@ -100,10 +110,10 @@ class HomePageState extends State<HomePage> {
           style: ElevatedButton.styleFrom(
             shape: const CircleBorder(),
             padding: const EdgeInsets.all(16),
-            backgroundColor: Colors.purple.shade100,
+            backgroundColor: purple20,
           ),
           onPressed: onPressed,
-          child: Icon(icon, color: Colors.purple),
+          child: Icon(icon, color: purple100),
         ),
         const SizedBox(height: 8),
         Text(
@@ -114,43 +124,16 @@ class HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildRecentTransactions() {
+  Widget _buildMonthlySummary() {
     return Expanded(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
-            'Recent Transactions',
+            'Spending vs. Budget',
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),
-          Expanded(
-            child: ListView(
-              children: [
-                _buildTransactionItem(
-                  icon: Icons.shopping_bag,
-                  title: "Shopping",
-                  amount: "- \$120",
-                  amountColor: Colors.red,
-                  date: "Today, 10:00 AM",
-                ),
-                _buildTransactionItem(
-                  icon: Icons.restaurant,
-                  title: "Dinner",
-                  amount: "- \$50",
-                  amountColor: Colors.red,
-                  date: "Yesterday, 08:00 PM",
-                ),
-                _buildTransactionItem(
-                  icon: Icons.monetization_on,
-                  title: "Salary",
-                  amount: "+ \$5000",
-                  amountColor: Colors.green,
-                  date: "2 days ago, 04:00 PM",
-                ),
-              ],
-            ),
-          ),
         ],
       ),
     );
