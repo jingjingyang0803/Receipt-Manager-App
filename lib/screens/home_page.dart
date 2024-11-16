@@ -1,28 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:receipt_manager/screens/add_update_receipt_page.dart';
 import 'package:receipt_manager/screens/budget_page.dart';
 import 'package:receipt_manager/screens/report_page.dart';
 import 'package:receipt_manager/screens/summary_page.dart';
 
 import '../constants/app_colors.dart';
+import '../providers/receipt_provider.dart';
 
-class HomePage extends StatefulWidget {
+class HomePage extends StatelessWidget {
   static const String id = 'home_page';
 
   const HomePage({super.key});
 
   @override
-  HomePageState createState() => HomePageState();
-}
-
-class HomePageState extends State<HomePage> {
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: light90,
       appBar: AppBar(
-        automaticallyImplyLeading:
-            false, // Removes the default back arrowbackgroundColor: Colors.white,
+        automaticallyImplyLeading: false, // Removes the default back arrow
         backgroundColor: light90,
         elevation: 0,
         title: const Text(
@@ -38,9 +35,9 @@ class HomePageState extends State<HomePage> {
           children: [
             _buildWelcomeSection(),
             const SizedBox(height: 20),
-            _buildQuickActions(),
+            _buildQuickActions(context),
             const SizedBox(height: 20),
-            _buildMonthlySummary(),
+            _buildMonthlySummary(context),
           ],
         ),
       ),
@@ -48,23 +45,36 @@ class HomePageState extends State<HomePage> {
   }
 
   Widget _buildWelcomeSection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: const [
-        Text(
-          'Welcome back!',
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-        ),
-        SizedBox(height: 8),
-        Text(
-          'Here’s a quick overview of your finances this month.',
-          style: TextStyle(fontSize: 16, color: Colors.grey),
-        ),
-      ],
+    return Consumer<ReceiptProvider>(
+      builder: (context, receiptProvider, child) {
+        final receiptCount = receiptProvider.receiptCount ?? 0;
+        final oldestDate = receiptProvider.oldestAndNewestDates?['oldestDate'];
+        final newestDate = receiptProvider.oldestAndNewestDates?['newestDate'];
+
+        print(receiptCount);
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Welcome back!',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              receiptCount > 0
+                  ? 'Here’s a quick snapshot of your finances this month:\n'
+                      '- Total Receipts: $receiptCount\n'
+                      '- Tracking Period: ${DateFormat.yMMMd().format(oldestDate ?? DateTime.now())} to ${DateFormat.yMMMd().format(newestDate ?? DateTime.now())}'
+                  : 'You haven\'t created any expenses yet.',
+              style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+            ),
+          ],
+        );
+      },
     );
   }
 
-  Widget _buildQuickActions() {
+  Widget _buildQuickActions(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
@@ -125,7 +135,7 @@ class HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildMonthlySummary() {
+  Widget _buildMonthlySummary(BuildContext context) {
     return Expanded(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -139,7 +149,7 @@ class HomePageState extends State<HomePage> {
             icon: Icons.analytics,
             label: "View Summary",
             onPressed: () {
-              // Handle view reports action
+              // Handle view summary action
               Navigator.push(
                   context,
                   MaterialPageRoute(
