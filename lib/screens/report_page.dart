@@ -148,6 +148,7 @@ class ReportPageState extends State<ReportPage> {
             final categoryData = entry.value;
 
             // Extract total, name, and icon from the category data
+            final currencySymbol = categoryData['currencySymbol'];
             final total = categoryData['total'] as double? ?? 0.0;
             final percentage = (total / totalAmount) * 100;
 
@@ -186,7 +187,7 @@ class ReportPageState extends State<ReportPage> {
                           child: SingleChildScrollView(
                             scrollDirection: Axis.horizontal,
                             child: Text(
-                              '$categoryName: ${total.toStringAsFixed(2)} (${percentage.toStringAsFixed(1)}%)',
+                              '$categoryName: $currencySymbol ${total.toStringAsFixed(2)} (${percentage.toStringAsFixed(1)}%)',
                               style: const TextStyle(fontSize: 14),
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -466,7 +467,7 @@ class ReportPageState extends State<ReportPage> {
                     ],
                   ),
                   const SizedBox(height: 10),
-                  if (!isPieChart)
+                  if (isPieChart)
                     buildCard(
                       context: context,
                       title: 'Expenses by Category',
