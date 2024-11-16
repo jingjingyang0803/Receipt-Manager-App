@@ -4,12 +4,31 @@ import 'package:provider/provider.dart';
 import '../components/date_range_container.dart';
 import '../constants/app_colors.dart';
 import '../logger.dart'; // Import the logger
+import '../providers/category_provider.dart';
 import '../providers/receipt_provider.dart';
 import 'date_roller_picker.dart';
 import 'filter_popup.dart';
 
-class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
+class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
   const CustomAppBar({super.key});
+
+  @override
+  CustomAppBarState createState() => CustomAppBarState();
+
+  @override
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+}
+
+class CustomAppBarState extends State<CustomAppBar> {
+  @override
+  void initState() {
+    super.initState();
+    // Load user categories when the app bar is initialized
+    final categoryProvider =
+        Provider.of<CategoryProvider>(context, listen: false);
+    categoryProvider.loadUserCategories();
+    logger.i('User categories loaded');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -102,7 +121,4 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       },
     );
   }
-
-  @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 }
