@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 
 import '../constants/app_colors.dart';
 import 'custom_button.dart';
+import 'custom_divider.dart';
 
 class CalendarFilterWidget extends StatefulWidget {
   final DateTime initialStartDate;
@@ -150,12 +151,7 @@ class CalendarFilterWidgetState extends State<CalendarFilterWidget> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Divider(
-            thickness: 3,
-            color: purple40,
-            endIndent: 165,
-            indent: 165,
-          ),
+          const CustomDivider(),
           SizedBox(height: 16),
           Wrap(
             spacing: 8,

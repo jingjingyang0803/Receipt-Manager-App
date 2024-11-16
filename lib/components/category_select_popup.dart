@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../constants/app_colors.dart';
 import '../providers/category_provider.dart';
 import 'custom_button.dart';
+import 'custom_divider.dart';
 
 class CategorySelectPopup extends StatefulWidget {
   const CategorySelectPopup({super.key});
@@ -39,12 +40,7 @@ class CategorySelectPopupState extends State<CategorySelectPopup> {
           return Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Divider(
-                thickness: 3,
-                color: purple40,
-                endIndent: 165,
-                indent: 165,
-              ),
+              const CustomDivider(),
               SizedBox(
                   height:
                       8), // Set a fixed height for the grid, allowing it to scroll if there are too many items

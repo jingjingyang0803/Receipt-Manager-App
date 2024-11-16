@@ -5,6 +5,7 @@ import 'package:receipt_manager/providers/receipt_provider.dart';
 
 import '../providers/category_provider.dart';
 import 'custom_button.dart';
+import 'custom_divider.dart';
 
 class CategoryDeletePopup extends StatelessWidget {
   final String categoryId;
@@ -32,12 +33,7 @@ class CategoryDeletePopup extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Divider(
-            thickness: 3,
-            color: purple40,
-            endIndent: 165,
-            indent: 165,
-          ),
+          const CustomDivider(),
           SizedBox(height: 8),
           Text(
             'Delete Category?',
