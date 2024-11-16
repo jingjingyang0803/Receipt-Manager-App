@@ -17,11 +17,13 @@ class AddOrUpdateReceiptPage extends StatefulWidget {
   static const String id = 'add_update_receipt_page';
   final Map<String, dynamic>? existingReceipt; // Store existing receipt data
   final String? receiptId; // Store the receipt ID when editing
+  final Map<String, dynamic>? extract; // New parameter to pass extracted data
 
   const AddOrUpdateReceiptPage({
     super.key,
     this.existingReceipt,
     this.receiptId,
+    this.extract,
   });
 
   @override
@@ -85,6 +87,14 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
       if (widget.existingReceipt!.containsKey('imageUrl')) {
         _uploadedImageUrl = widget.existingReceipt!['imageUrl'];
       }
+    } else if (widget.extract != null) {
+      // Populate fields if data is passed via extract
+      _merchantController.text = widget.extract!['merchant'] ?? '';
+      _dateController.text = widget.extract!['date'] ??
+          DateTime.now().toLocal().toString().split(' ')[0];
+      _totalController.text = widget.extract!['amount']?.toString() ?? '';
+      _descriptionController.text = widget.extract!['description'] ?? '';
+      _uploadedImageUrl = widget.extract!['imagePath'] ?? '';
     } else {
       // New receipt mode
       _dateController.text = DateTime.now().toLocal().toString().split(' ')[0];
