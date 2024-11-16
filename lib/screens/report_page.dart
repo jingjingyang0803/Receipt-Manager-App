@@ -60,14 +60,19 @@ class ReportPageState extends State<ReportPage> {
   }
 
   // Generate a unique color mapping for categories
-  Map<String, Color> generateTemporaryColorMapping(List<String> categoryIds) {
+  Map<String, Color> generateTemporaryColorMapping(List<String?> categoryIds) {
     Map<String, Color> tempColors = {};
     int colorIndex = 0;
 
     for (var categoryId in categoryIds) {
-      tempColors[categoryId] =
-          availableColors[colorIndex % availableColors.length];
-      colorIndex++;
+      if (categoryId == null || categoryId == 'null') {
+        // Assign gray color for null or 'null' categoryId
+        tempColors[categoryId ?? 'null'] = Colors.grey;
+      } else {
+        tempColors[categoryId] =
+            availableColors[colorIndex % availableColors.length];
+        colorIndex++;
+      }
     }
 
     return tempColors;
@@ -80,7 +85,7 @@ class ReportPageState extends State<ReportPage> {
       final total = entry.value;
 
       return PieChartSectionData(
-        color: categoryColors[categoryId] ?? Colors.grey,
+        color: categoryColors[categoryId],
         value: total,
         title: '', // Set the title to empty
         radius: 70,
@@ -118,8 +123,7 @@ class ReportPageState extends State<ReportPage> {
                 final percentage = (total / totalAmount) * 100;
 
                 return PieChartSectionData(
-                  color: categoryColors[categoryId] ??
-                      Colors.grey, // Use grey if no color
+                  color: categoryColors[categoryId], // Use grey if no color
                   value: total,
                   title: '${percentage.toStringAsFixed(1)}%',
                   radius: 70,
@@ -164,8 +168,8 @@ class ReportPageState extends State<ReportPage> {
                           width: 30,
                           height: 30,
                           decoration: BoxDecoration(
-                            color: categoryColors[categoryId] ??
-                                Colors.grey, // Background color
+                            color:
+                                categoryColors[categoryId], // Background color
                             borderRadius: BorderRadius.circular(5),
                           ),
                           child: Center(
