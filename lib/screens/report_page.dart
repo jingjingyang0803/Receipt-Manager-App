@@ -33,22 +33,29 @@ class ReportPageState extends State<ReportPage> {
       TimeInterval.day; // Default time interval (day)
 
   @override
+  @override
   void initState() {
     super.initState();
-    final receiptProvider =
-        Provider.of<ReceiptProvider>(context, listen: false);
 
-    logger.i("Initializing ReportPage...");
-    logger.i("Fetching initial data.");
+    // Safe asynchronous execution to avoid build conflicts
+    Future.microtask(() async {
+      final receiptProvider =
+          Provider.of<ReceiptProvider>(context, listen: false);
 
-    // Fetch initial receipts and grouping
-    receiptProvider.fetchReceipts();
-    receiptProvider.groupByCategory();
+      logger.i("Initializing ReportPage...");
+      logger.i("Fetching initial data.");
 
-    // Generate colors for each category
-    categoryColors = generateTemporaryColorMapping(
-      receiptProvider.groupedReceiptsByCategory?.keys.toList() ?? [],
-    );
+      // Fetch initial receipts and grouping
+      await receiptProvider.fetchReceipts();
+      receiptProvider.groupByCategory();
+
+      // Generate colors for each category
+      setState(() {
+        categoryColors = generateTemporaryColorMapping(
+          receiptProvider.groupedReceiptsByCategory?.keys.toList() ?? [],
+        );
+      });
+    });
   }
 
   // Generate a unique color mapping for categories
@@ -85,9 +92,6 @@ class ReportPageState extends State<ReportPage> {
 // Method to build the pie chart
   Widget buildPieChart(BuildContext context) {
     final receiptProvider = Provider.of<ReceiptProvider>(context);
-
-    // Ensure data is grouped before building the chart
-    receiptProvider.groupByCategory();
 
     final groupedReceipts = receiptProvider.groupedReceiptsByCategory ?? {};
 
@@ -155,7 +159,7 @@ class ReportPageState extends State<ReportPage> {
                     width: 16,
                     height: 16,
                     decoration: BoxDecoration(
-                      color: categoryColors[entry.key],
+                      color: categoryColors[entry.key] ?? Colors.grey,
                       borderRadius: BorderRadius.circular(5),
                     ),
                   ),
@@ -362,53 +366,59 @@ class ReportPageState extends State<ReportPage> {
 
   @override
   Widget build(BuildContext context) {
-    final receiptProvider = Provider.of<ReceiptProvider>(context);
-
     return Scaffold(
       backgroundColor: light90,
       appBar: CustomAppBar(),
-      body: receiptProvider.allReceipts.isEmpty
-          ? const Center(child: CircularProgressIndicator())
-          : Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 10),
-                    buildCard(
-                      context: context,
-                      title: 'Expenses by Category',
-                      content: buildPieChart(context),
+      body: Consumer<ReceiptProvider>(
+        builder: (context, receiptProvider, child) {
+          if (receiptProvider.allReceipts.isEmpty) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          return Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 10),
+                  buildCard(
+                    context: context,
+                    title: 'Expenses by Category',
+                    content: buildPieChart(context), // Uses Consumer internally
+                  ),
+                  const SizedBox(height: 20),
+                  Center(
+                    child: Wrap(
+                      spacing: 8,
+                      children: TimeInterval.values
+                          .map((interval) => _buildFilterOption(
+                                label: interval.name.toUpperCase(),
+                                isSelected: receiptProvider.selectedInterval ==
+                                    interval, // Access directly from provider
+                                onSelected: (_) {
+                                  receiptProvider.updateInterval(interval);
+                                },
+                              ))
+                          .toList(),
                     ),
-                    const SizedBox(height: 20),
-                    Center(
-                      child: Wrap(
-                        spacing: 8,
-                        children: TimeInterval.values
-                            .map((interval) => _buildFilterOption(
-                                  label: interval.name.toUpperCase(),
-                                  isSelected: selectedInterval == interval,
-                                  onSelected: (_) {
-                                    setState(() {
-                                      selectedInterval = interval;
-                                      receiptProvider.updateInterval(interval);
-                                    });
-                                  },
-                                ))
-                            .toList(),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    buildCard(
-                      context: context,
-                      title: 'Expenses by ${selectedInterval.name}',
-                      content: buildBarChart(context, selectedInterval),
-                    ),
-                  ],
-                ),
+                  ),
+                  const SizedBox(height: 20),
+                  buildCard(
+                    context: context,
+                    title:
+                        'Expenses by ${receiptProvider.selectedInterval.name}',
+                    content: buildBarChart(
+                      context,
+                      receiptProvider.selectedInterval,
+                    ), // Uses Consumer internally
+                  ),
+                ],
               ),
             ),
+          );
+        },
+      ),
     );
   }
 }
