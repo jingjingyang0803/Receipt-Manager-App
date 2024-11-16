@@ -1,9 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:receipt_manager/constants/app_colors.dart';
 import 'package:receipt_manager/providers/receipt_provider.dart';
+import 'package:receipt_manager/screens/old/scan_screen.dart';
 
 import '../components/custom_app_bar.dart';
 import '../components/expense_item_card.dart';
@@ -237,12 +239,40 @@ class ReceiptListPageState extends State<ReceiptListPage> {
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.pushNamed(context, AddOrUpdateReceiptPage.id);
-        },
+      floatingActionButton: SpeedDial(
+        icon: Icons.add, // Main FAB icon
+        activeIcon: Icons.close, // Icon when the menu is expanded
         backgroundColor: purple100,
-        child: const Icon(Icons.add, color: Colors.white),
+        foregroundColor: Colors.white,
+        activeBackgroundColor: Colors.red,
+        activeForegroundColor: Colors.white,
+        tooltip: 'Add Entry',
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        elevation: 4,
+        children: [
+          SpeedDialChild(
+            child: Icon(Icons.camera_alt), // Icon for extracting text
+            backgroundColor: Colors.blue,
+            label: 'Extract from Image',
+            labelStyle: TextStyle(fontSize: 16),
+            onTap: () {
+              // Handle extracting text from image
+              Navigator.pushNamed(context, ScanScreen.id);
+            },
+          ),
+          SpeedDialChild(
+            child: Icon(Icons.edit), // Icon for manual input
+            backgroundColor: Colors.green,
+            label: 'Manual Input',
+            labelStyle: TextStyle(fontSize: 16),
+            onTap: () {
+              // Handle manual input
+              Navigator.pushNamed(context, AddOrUpdateReceiptPage.id);
+            },
+          ),
+        ],
       ),
     );
   }
