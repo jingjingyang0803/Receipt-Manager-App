@@ -406,13 +406,11 @@ class ExtractPageState extends State<ExtractPage> {
       'imagePath': _imageFile?.path,
     };
     logger.i('Data to pass back: $data'); // Debug log
-    Navigator.pushNamed(
-      context,
-      AddOrUpdateReceiptPage.id,
-      arguments: {
-        'extract': data,
-      },
-    );
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => AddOrUpdateReceiptPage(extract: data),
+        ));
   }
 
   @override
