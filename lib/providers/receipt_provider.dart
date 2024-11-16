@@ -85,6 +85,7 @@ class ReceiptProvider extends ChangeNotifier {
   TimeInterval get selectedInterval => _selectedInterval;
 
   String? _currencySymbol;
+  String? get currencySymbol => _currencySymbol;
 
   void updateInterval(TimeInterval interval) {
     _selectedInterval = interval;
@@ -189,7 +190,6 @@ class ReceiptProvider extends ChangeNotifier {
         ...receipt,
         'categoryName': category?['name'],
         'categoryIcon': category?['icon'],
-        'currencySymbol': _currencySymbol,
       };
     }).toList();
 
@@ -239,7 +239,6 @@ class ReceiptProvider extends ChangeNotifier {
           'total': amount,
           'name': categoryName,
           'icon': categoryIcon,
-          'currencySymbol': _currencySymbol,
         };
       }
     }

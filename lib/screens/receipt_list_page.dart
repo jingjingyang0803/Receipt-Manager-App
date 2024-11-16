@@ -27,9 +27,22 @@ class ReceiptListPageState extends State<ReceiptListPage> {
   final FocusNode _searchFocusNode = FocusNode();
   List<Map<String, dynamic>> _suggestions = []; // To hold search suggestions
 
+  String currencySymbol = '€';
+
   @override
   void initState() {
     super.initState();
+
+    // Fetch the currency symbol from the ReceiptProvider
+    Future.microtask(() {
+      final receiptProvider =
+          Provider.of<ReceiptProvider>(context, listen: false);
+      final userCurrencyCode = receiptProvider.currencySymbol;
+
+      setState(() {
+        currencySymbol = userCurrencyCode ?? '€'; // Fallback to '€' if null
+      });
+    });
   }
 
   // Search method: filters receipts by matching the query
@@ -69,7 +82,7 @@ class ReceiptListPageState extends State<ReceiptListPage> {
                         ? DateFormat('MMM d, yyyy')
                             .format((receipt['date'] as Timestamp).toDate())
                         : 'Unknown',
-                    currencySymbol: receipt['currencySymbol'],
+                    currencySymbol: currencySymbol,
                     amount: receipt['amount'].toStringAsFixed(2),
                     paymentMethod:
                         receipt['paymentMethod'] ?? 'Unknown Payment Method',
