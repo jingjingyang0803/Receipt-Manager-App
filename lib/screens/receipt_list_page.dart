@@ -170,7 +170,8 @@ class ReceiptListPageState extends State<ReceiptListPage> {
   Widget _buildSearchBar(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: purple20, // Same background color as the financial report bar
+        color:
+            Colors.white, // Same background color as the financial report bar
         borderRadius: BorderRadius.circular(8.0), // Same rounded corners
       ),
       padding: const EdgeInsets.symmetric(horizontal: 14), // Adjust padding
@@ -183,9 +184,9 @@ class ReceiptListPageState extends State<ReceiptListPage> {
               decoration: const InputDecoration(
                 hintText: 'Search...',
                 border: InputBorder.none,
-                hintStyle: TextStyle(color: purple100), // Optional: hint color
+                hintStyle: TextStyle(color: purple80), // Optional: hint color
               ),
-              style: const TextStyle(color: purple100),
+              style: const TextStyle(color: purple80),
               onChanged: (query) {
                 _performSearch(query); // Call search on each text change
               },
@@ -193,7 +194,7 @@ class ReceiptListPageState extends State<ReceiptListPage> {
           ),
           Icon(
             Icons.search,
-            color: purple100, // Match the icon color with the report bar text
+            color: purple80, // Match the icon color with the report bar text
           ),
         ],
       ),

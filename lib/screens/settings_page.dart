@@ -208,7 +208,7 @@ class SettingsPageState extends State<SettingsPage> {
                         children: [
                           SettingsMenuItem(
                             icon: Icons.category_outlined,
-                            text: "Manage categories",
+                            text: "Manage Categories",
                             iconBackgroundColor: purple20,
                             iconColor: purple100,
                             onTap: () {
@@ -218,7 +218,7 @@ class SettingsPageState extends State<SettingsPage> {
                           Divider(thickness: 1, color: light90),
                           SettingsMenuItem(
                             icon: Icons.savings_outlined,
-                            text: "Manage budgets",
+                            text: "Manage Budgets",
                             iconBackgroundColor: purple20,
                             iconColor: purple100,
                             onTap: () {
@@ -228,7 +228,7 @@ class SettingsPageState extends State<SettingsPage> {
                           Divider(thickness: 1, color: light90),
                           SettingsMenuItem(
                             icon: Icons.attach_money,
-                            text: "Choose currency",
+                            text: "Choose Currency",
                             iconBackgroundColor: purple20,
                             iconColor: purple100,
                             onTap: () => _showCurrencyPicker(context),

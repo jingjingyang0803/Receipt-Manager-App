@@ -130,10 +130,10 @@ class HomePageState extends State<HomePage> {
           style: ElevatedButton.styleFrom(
             shape: const CircleBorder(),
             padding: const EdgeInsets.all(16),
-            backgroundColor: purple20,
+            backgroundColor: Colors.white,
           ),
           onPressed: onPressed,
-          child: Icon(icon, color: purple100),
+          child: Icon(icon, color: purple80),
         ),
         const SizedBox(height: 8),
         Text(
