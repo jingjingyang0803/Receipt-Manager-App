@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:receipt_manager/screens/add_update_receipt_page.dart';
 import 'package:receipt_manager/screens/budget_page.dart';
 import 'package:receipt_manager/screens/report_page.dart';
+import 'package:receipt_manager/screens/summary_page.dart';
 
 import '../constants/app_colors.dart';
 
@@ -134,38 +135,19 @@ class HomePageState extends State<HomePage> {
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTransactionItem({
-    required IconData icon,
-    required String title,
-    required String amount,
-    required Color amountColor,
-    required String date,
-  }) {
-    return Card(
-      margin: const EdgeInsets.symmetric(vertical: 8.0),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
-      child: ListTile(
-        leading: CircleAvatar(
-          backgroundColor: Colors.grey.shade200,
-          child: Icon(icon, color: Colors.black54),
-        ),
-        title: Text(
-          title,
-          style: const TextStyle(fontWeight: FontWeight.bold),
-        ),
-        subtitle: Text(date, style: const TextStyle(color: Colors.grey)),
-        trailing: Text(
-          amount,
-          style: TextStyle(
-            color: amountColor,
-            fontWeight: FontWeight.bold,
+          _buildActionButton(
+            icon: Icons.analytics,
+            label: "View Summary",
+            onPressed: () {
+              // Handle view reports action
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => SummaryPage(),
+                  ));
+            },
           ),
-        ),
+        ],
       ),
     );
   }
