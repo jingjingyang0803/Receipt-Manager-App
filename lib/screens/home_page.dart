@@ -62,7 +62,7 @@ class HomePage extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               receiptCount > 0
-                  ? 'Here’s a quick snapshot of your finances this month:\n'
+                  ? 'Here’s a quick snapshot of your finances:\n'
                       '- Total Receipts: $receiptCount\n'
                       '- Tracking Period: ${DateFormat.yMMMd().format(oldestDate ?? DateTime.now())} to ${DateFormat.yMMMd().format(newestDate ?? DateTime.now())}'
                   : 'You haven\'t created any expenses yet.',
