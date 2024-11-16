@@ -69,6 +69,7 @@ class ReceiptListPageState extends State<ReceiptListPage> {
                         ? DateFormat('MMM d, yyyy')
                             .format((receipt['date'] as Timestamp).toDate())
                         : 'Unknown',
+                    currencySymbol: receipt['currencySymbol'],
                     amount: receipt['amount'].toStringAsFixed(2),
                     paymentMethod:
                         receipt['paymentMethod'] ?? 'Unknown Payment Method',

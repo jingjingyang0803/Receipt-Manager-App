@@ -5,6 +5,7 @@ class ExpenseItem extends StatelessWidget {
   final String categoryName;
   final String merchantName;
   final String receiptDate;
+  final String currencySymbol;
   final String amount;
   final String paymentMethod;
   final VoidCallback onTap;
@@ -15,6 +16,7 @@ class ExpenseItem extends StatelessWidget {
     required this.categoryName,
     required this.merchantName,
     required this.receiptDate,
+    required this.currencySymbol,
     required this.amount,
     required this.paymentMethod,
     required this.onTap,
@@ -92,7 +94,7 @@ class ExpenseItem extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Text(
-                  amount,
+                  '$currencySymbol $amount',
                   style: TextStyle(
                     color: Colors.red,
                     fontWeight: FontWeight.bold,
