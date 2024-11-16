@@ -60,6 +60,11 @@ class ReceiptProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  set userProvider(UserProvider userProvider) {
+    _userProvider = userProvider;
+    notifyListeners();
+  }
+
   set categoryProvider(CategoryProvider categoryProvider) {
     _categoryProvider = categoryProvider;
     _selectedCategoryIds = _categoryProvider!.categories

@@ -56,11 +56,14 @@ class MyApp extends StatelessWidget {
             return userProvider;
           },
         ),
-        ChangeNotifierProxyProvider2<AuthenticationProvider, CategoryProvider,
-            ReceiptProvider>(
+        ChangeNotifierProxyProvider3<AuthenticationProvider, UserProvider,
+            CategoryProvider, ReceiptProvider>(
           create: (_) => ReceiptProvider(),
-          update: (context, authProvider, categoryProvider, receiptProvider) {
-            receiptProvider!.authProvider = authProvider;
+          update: (context, authProvider, userProvider, categoryProvider,
+              receiptProvider) {
+            receiptProvider ??= ReceiptProvider();
+            receiptProvider.authProvider = authProvider;
+            receiptProvider.userProvider = userProvider;
             receiptProvider.categoryProvider =
                 categoryProvider; // Assign CategoryProvider
             return receiptProvider;
