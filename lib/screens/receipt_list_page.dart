@@ -5,11 +5,11 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:receipt_manager/constants/app_colors.dart';
 import 'package:receipt_manager/providers/receipt_provider.dart';
-import 'package:receipt_manager/screens/old/scan_screen.dart';
 
 import '../components/custom_app_bar.dart';
 import '../components/expense_item_card.dart';
 import 'add_update_receipt_page.dart';
+import 'extract_page.dart';
 
 //implement a search bar that updates dynamically
 class ReceiptListPage extends StatefulWidget {
@@ -259,7 +259,7 @@ class ReceiptListPageState extends State<ReceiptListPage> {
             labelStyle: TextStyle(fontSize: 16),
             onTap: () {
               // Handle extracting text from image
-              Navigator.pushNamed(context, ScanScreen.id);
+              Navigator.pushNamed(context, ExtractPage.id);
             },
           ),
           SpeedDialChild(
