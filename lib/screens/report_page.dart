@@ -33,6 +33,7 @@ class ReportPageState extends State<ReportPage> {
       TimeInterval.day; // Default time interval (day)
 
   bool isPieChart = true; // Toggle state for chart
+  String currencySymbol = '€';
 
   @override
   void initState() {
@@ -52,6 +53,8 @@ class ReportPageState extends State<ReportPage> {
 
       // Generate colors for each category
       setState(() {
+        currencySymbol =
+            receiptProvider.currencySymbol ?? '€'; // Fetch the symbol
         categoryColors = generateTemporaryColorMapping(
           receiptProvider.groupedReceiptsByCategory?.keys.toList() ?? [],
         );
@@ -147,8 +150,6 @@ class ReportPageState extends State<ReportPage> {
             final categoryId = entry.key;
             final categoryData = entry.value;
 
-            // Extract total, name, and icon from the category data
-            final currencySymbol = categoryData['currencySymbol'];
             final total = categoryData['total'] as double? ?? 0.0;
             final percentage = (total / totalAmount) * 100;
 
@@ -304,7 +305,7 @@ class ReportPageState extends State<ReportPage> {
               touchTooltipData: BarTouchTooltipData(
                 getTooltipItem: (group, groupIndex, rod, rodIndex) {
                   return BarTooltipItem(
-                    rod.toY.toStringAsFixed(1), // Format the value displayed
+                    '$currencySymbol ${rod.toY.toStringAsFixed(1)}', // Add the currency symbol
                     const TextStyle(
                       color: Colors.black, // Tooltip text color
                       fontWeight: FontWeight.bold,
