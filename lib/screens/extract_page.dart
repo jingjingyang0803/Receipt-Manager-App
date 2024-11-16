@@ -252,10 +252,10 @@ class ExtractPageState extends State<ExtractPage> {
 
     if (_language == 'Finnish') {
       totalKeywords = ['yhteensä', 'summa', 'osto'];
-      assumedCurrency = 'EUR';
+      assumedCurrency = '€';
     } else if (_language == 'English') {
       totalKeywords = ['total', 'amount due', 'balance'];
-      assumedCurrency = 'USD';
+      assumedCurrency = '\$';
     } else {
       logger.w('Language detection failed or unknown language');
       _totalPrice = "Not Found";
@@ -401,7 +401,7 @@ class ExtractPageState extends State<ExtractPage> {
     final data = {
       'merchant': _merchantName,
       'date': _receiptDate,
-      'description': _currency,
+      'currency': _currency,
       'amount': _totalPrice,
       'imagePath': _imageFile?.path,
     };
