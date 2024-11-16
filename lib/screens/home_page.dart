@@ -1,25 +1,38 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:receipt_manager/screens/add_update_receipt_page.dart';
-import 'package:receipt_manager/screens/budget_page.dart';
 import 'package:receipt_manager/screens/report_page.dart';
 import 'package:receipt_manager/screens/summary_page.dart';
 
 import '../constants/app_colors.dart';
 import '../providers/receipt_provider.dart';
+import 'add_update_receipt_page.dart';
+import 'budget_page.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   static const String id = 'home_page';
 
   const HomePage({super.key});
+
+  @override
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  @override
+  void initState() {
+    super.initState();
+    final receiptProvider =
+        Provider.of<ReceiptProvider>(context, listen: false);
+    receiptProvider.fetchReceipts(); // Call once during initialization
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: light90,
       appBar: AppBar(
-        automaticallyImplyLeading: false, // Removes the default back arrow
+        automaticallyImplyLeading: false,
         backgroundColor: light90,
         elevation: 0,
         title: const Text(
@@ -51,7 +64,8 @@ class HomePage extends StatelessWidget {
         final oldestDate = receiptProvider.oldestAndNewestDates?['oldestDate'];
         final newestDate = receiptProvider.oldestAndNewestDates?['newestDate'];
 
-        print(receiptCount);
+        print('Receipt Count: $receiptCount'); // Debugging print statement
+
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -82,7 +96,6 @@ class HomePage extends StatelessWidget {
           icon: Icons.add,
           label: "Add Expense",
           onPressed: () {
-            // Handle add expense action
             Navigator.pushNamed(context, AddOrUpdateReceiptPage.id);
           },
         ),
@@ -90,7 +103,6 @@ class HomePage extends StatelessWidget {
           icon: Icons.bar_chart,
           label: "View Reports",
           onPressed: () {
-            // Handle view reports action
             Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -102,7 +114,6 @@ class HomePage extends StatelessWidget {
           icon: Icons.attach_money,
           label: "Set Budget",
           onPressed: () {
-            // Handle set budget action
             Navigator.pushNamed(context, BudgetPage.id);
           },
         ),
@@ -149,7 +160,6 @@ class HomePage extends StatelessWidget {
             icon: Icons.analytics,
             label: "View Summary",
             onPressed: () {
-              // Handle view summary action
               Navigator.push(
                   context,
                   MaterialPageRoute(
