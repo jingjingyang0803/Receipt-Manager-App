@@ -66,7 +66,7 @@ class FilterPopupState extends State<FilterPopup> {
           const SizedBox(height: 8),
           Wrap(
             spacing: 8,
-            children: ['Credit Card', 'Debit Card', 'Cash', 'Other']
+            children: ['Credit Card', 'Debit Card', 'Cash', 'Others']
                 .map((filter) => _buildFilterOption(
                       label: filter,
                       isSelected: selectedPaymentMethods.contains(filter),

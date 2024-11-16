@@ -360,7 +360,7 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
               SizedBox(height: 20),
               DropdownButtonFormField<String>(
                 value: _selectedPaymentMethod,
-                items: ['Credit Card', 'Debit Card', 'Cash', 'Other']
+                items: ['Credit Card', 'Debit Card', 'Cash', 'PayPal', 'Others']
                     .map((method) => DropdownMenuItem(
                           value: method,
                           child: Text(method),
