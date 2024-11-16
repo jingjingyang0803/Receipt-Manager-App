@@ -62,6 +62,10 @@ class ReceiptProvider extends ChangeNotifier {
 
   set userProvider(UserProvider userProvider) {
     _userProvider = userProvider;
+    final currencyCode = _userProvider?.userProfile?.data()?['currencyCode'];
+    // Get the currency symbol using intl
+    _currencySymbol =
+        NumberFormat.simpleCurrency(name: currencyCode).currencySymbol;
     notifyListeners();
   }
 
@@ -79,6 +83,8 @@ class ReceiptProvider extends ChangeNotifier {
   TimeInterval _selectedInterval = TimeInterval.month;
 
   TimeInterval get selectedInterval => _selectedInterval;
+
+  String? _currencySymbol;
 
   void updateInterval(TimeInterval interval) {
     _selectedInterval = interval;
@@ -179,17 +185,11 @@ class ReceiptProvider extends ChangeNotifier {
         orElse: () => {'name': 'Unknown', 'icon': '❓'},
       );
 
-      final currencyCode = _userProvider?.userProfile?.data()?['currencyCode'];
-
-      // Get the currency symbol using intl
-      final currencySymbol =
-          NumberFormat.simpleCurrency(name: currencyCode).currencySymbol;
-
       return {
         ...receipt,
         'categoryName': category?['name'],
         'categoryIcon': category?['icon'],
-        'currencySymbol': currencySymbol,
+        'currencySymbol': _currencySymbol,
       };
     }).toList();
 
@@ -226,6 +226,7 @@ class ReceiptProvider extends ChangeNotifier {
     _groupedReceiptsByCategory = {};
     for (var receipt in _filteredReceipts) {
       final categoryId = receipt['categoryId'] ?? 'null';
+
       final amount = (receipt['amount'] as num?)?.toDouble() ?? 0.0;
       final categoryName = receipt['categoryName'];
       final categoryIcon = receipt['categoryIcon'];
@@ -238,6 +239,7 @@ class ReceiptProvider extends ChangeNotifier {
           'total': amount,
           'name': categoryName,
           'icon': categoryIcon,
+          'currencySymbol': _currencySymbol,
         };
       }
     }
