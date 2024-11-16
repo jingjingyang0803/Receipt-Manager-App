@@ -62,57 +62,75 @@ To get a copy of the project up and running on your local machine, follow these 
 
 ## Dependencies
 
+### Core
+
 - **flutter**: Core SDK for building the app.
 
+### Firebase Services
+
 - **firebase_core**: Initializes Firebase services.
-
 - **firebase_auth**: Manages user authentication.
-
 - **cloud_firestore**: Stores and retrieves receipt data, supporting real-time syncing.
-
 - **firebase_storage**: Handles storage for images and other files.
-
 - **firebase_remote_config**: Enables dynamic fetching of remote configuration values.
-
 - **cloud_functions**: Calls Firebase Cloud Functions to process OCR requests.
 
-- **shared_preferences**: Stores local key-value pairs for user preferences and settings.
+### Local Data Management
 
+- **shared_preferences**: Stores local key-value pairs for user preferences and settings.
 - **path_provider**: Locates directories on the device, useful for accessing file storage locations.
 
+### Device Permissions and Features
+
 - **permission_handler**: Requests and manages permissions for accessing device features like the camera and gallery.
-
 - **camera**: Provides direct access to the device's camera for capturing receipts.
-
 - **image_picker**: Allows users to select images from the gallery or take new photos.
+
+### Image Processing
 
 - **image**: Offers image manipulation capabilities such as resizing and formatting.
 
+### Data Visualization
+
 - **fl_chart**: Visualizes data with various types of customizable charts, ideal for spending analysis.
+
+### Internationalization and Formatting
 
 - **intl**: Handles internationalization and formats dates, times, and currencies.
 
+### Network Communication
+
 - **http**: Facilitates HTTP requests for communication with external APIs and services.
 
+### User Experience Enhancements
+
 - **emoji_picker_flutter**: Allows users to categorize expenses with emojis, adding an expressive layer to spending data.
+- **smooth_page_indicator**: Useful for creating smooth and visually appealing page indicators.
+- **flutter_speed_dial**: Enables a floating action button with multiple child actions, ideal for enhancing UI functionality.
+
+### Utilities and Debugging
 
 - **logger**: Provides structured logging for debugging and tracking app activities.
+- **provider**: Added for managing state and dependencies within the app.
 
 ## Receipt OCR (Optical Character Recognition) Feature
+
 This project includes an OCR (Optical Character Recognition) feature designed to extract and analyze text from receipts. By leveraging Google Cloud Vision and Firebase Cloud Functions, the app enables users to scan receipts, parse essential information like merchant name, date, currency, and total amount, and store this data for further processing.
 
 ### How It Works
+
 1. **Image Capture**: Users can upload an image of a receipt either by capturing it from the camera or selecting it from their gallery.
 
 2. **Image Processing**: The captured image is resized and converted to Base64 format, ensuring that the image is optimized for fast and accurate text recognition.
 
 3. **Cloud Processing**: The Base64 image data is sent to a Firebase Cloud Function, which calls Google Cloud Vision’s OCR API.
-The OCR service processes the image and extracts text content, returning it to the app.
+   The OCR service processes the image and extracts text content, returning it to the app.
 4. **Text Extraction & Analysis**: Custom regex patterns are applied to the extracted text to parse specific details such as: **Merchant Name**, **Date**, **Currency**, **Total Amount**. This information is displayed to the user and can be saved for future reference and financial tracking.
 
 5. **Error Handling**: The app is designed to handle errors in text extraction (such as missing fields or incomplete information), ensuring that only valid data is saved.
 
 ### Key Technologies Used
+
 - **Google Cloud Vision API**: Powers the OCR functionality.
 - **Firebase Cloud Functions**: Hosts the serverless functions that process and retrieve OCR data.
 - **Regex Parsing**: Identifies specific fields within the extracted text.
@@ -130,6 +148,7 @@ The application uses the [Open Exchange Rates API](https://openexchangerates.org
 This project is licensed under the MIT License - see the LICENSE file for details.
 
 ## UI Design
+
 This app's user interface draws inspiration from a mix of Figma templates, incorporating key elements from multiple sources to create a cohesive and user-friendly experience. The design combines various layouts, styling, and interactive components from the following Figma templates:
 
 - **Template 1**: [Monex - Expense Management (UI Kit)](https://www.figma.com/community/file/1335908056135868735)
