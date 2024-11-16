@@ -18,6 +18,8 @@ class SummaryPage extends StatefulWidget {
 class SummaryPageState extends State<SummaryPage> {
   DateTime selectedDate = DateTime(DateTime.now().year, DateTime.now().month);
 
+  String currencySymbol = '€';
+
   final List<String> months = [
     'January',
     'February',
@@ -57,6 +59,9 @@ class SummaryPageState extends State<SummaryPage> {
         paymentMethods: receiptProvider.selectedPaymentMethods,
       );
       receiptProvider.groupByCategory();
+
+      currencySymbol =
+          receiptProvider.currencySymbol ?? '€'; // Fetch the symbol
     });
   }
 
@@ -270,7 +275,7 @@ class SummaryPageState extends State<SummaryPage> {
                                 style: TextStyle(
                                     fontSize: 14, color: Colors.grey[700])),
                             Text(
-                              '${budget['currency']} ${budgetAmount.toStringAsFixed(2)}',
+                              '$currencySymbol ${budgetAmount.toStringAsFixed(2)}',
                               style: TextStyle(
                                   fontSize: 15, color: Colors.grey[800]),
                             ),
@@ -284,7 +289,7 @@ class SummaryPageState extends State<SummaryPage> {
                                 style: TextStyle(
                                     fontSize: 14, color: Colors.grey[700])),
                             Text(
-                              '${budget['currency']} ${spent.toStringAsFixed(2)}',
+                              '$currencySymbol ${spent.toStringAsFixed(2)}',
                               style: TextStyle(
                                 fontSize: 15,
                                 color: getColor(ratio),
