@@ -30,12 +30,17 @@ class CustomBottomNavBarState extends State<CustomBottomNavBar> {
 
   @override
   Widget build(BuildContext context) {
+    // Calculate heights based on screen size
+    final screenHeight = MediaQuery.of(context).size.height;
+    final bottomBarHeight = screenHeight * 0.13; // Adjust percentage as needed
+    final iconSize = screenHeight * 0.035; // Icon size relative to screen
+
     return Stack(
       alignment: Alignment.bottomCenter,
       children: [
         // Background
         Container(
-          height: 120,
+          height: bottomBarHeight,
           decoration: const BoxDecoration(color: light80),
         ),
         // Bottom Navigation Bar
@@ -44,7 +49,7 @@ class CustomBottomNavBarState extends State<CustomBottomNavBar> {
           shape: const CircularNotchedRectangle(),
           notchMargin: 8.0,
           child: Container(
-            height: 80,
+            height: bottomBarHeight,
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -58,8 +63,8 @@ class CustomBottomNavBarState extends State<CustomBottomNavBar> {
                 return GestureDetector(
                   onTap: () => _onItemTapped(index),
                   child: Container(
-                    width: 52,
-                    height: 52,
+                    width: iconSize * 1.8,
+                    height: iconSize * 1.8,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       color: _currentIndex == index
@@ -68,7 +73,7 @@ class CustomBottomNavBarState extends State<CustomBottomNavBar> {
                     ),
                     child: Icon(
                       icons[index],
-                      size: 28,
+                      size: iconSize,
                       color: _currentIndex == index ? Colors.white : dark50,
                     ),
                   ),
