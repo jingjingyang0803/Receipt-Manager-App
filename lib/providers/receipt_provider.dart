@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:receipt_manager/providers/user_provider.dart';
 
 import '../logger.dart';
 import '../services/receipt_service.dart';
@@ -12,6 +13,7 @@ enum TimeInterval { day, week, month, year }
 class ReceiptProvider extends ChangeNotifier {
   final ReceiptService _receiptService = ReceiptService();
   AuthenticationProvider? _authProvider;
+  UserProvider? _userProvider;
   CategoryProvider? _categoryProvider;
 
   // State properties
@@ -92,15 +94,6 @@ class ReceiptProvider extends ChangeNotifier {
     _selectedCategoryIds = categoryIds;
     _startDate = startDate;
     _endDate = endDate;
-
-    // Log updated filters
-    print('Updated Filters:');
-    print('Sort Option: $_sortOption');
-    print('Payment Methods: $_selectedPaymentMethods');
-    print('Category IDs: $_selectedCategoryIds');
-    print('Start Date: $_startDate');
-    print('End Date: $_endDate');
-
     notifyListeners();
   }
 
@@ -181,10 +174,17 @@ class ReceiptProvider extends ChangeNotifier {
         orElse: () => {'name': 'Unknown', 'icon': '❓'},
       );
 
+      final currencyCode = _userProvider?.userProfile?.data()?['currencyCode'];
+
+      // Get the currency symbol using intl
+      final currencySymbol =
+          NumberFormat.simpleCurrency(name: currencyCode).currencySymbol;
+
       return {
         ...receipt,
         'categoryName': category?['name'],
         'categoryIcon': category?['icon'],
+        'currencySymbol': currencySymbol,
       };
     }).toList();
 
