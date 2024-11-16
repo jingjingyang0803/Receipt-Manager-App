@@ -115,6 +115,8 @@ class ReceiptProvider extends ChangeNotifier {
 
 // Fetch and filter receipts
   Stream<List<Map<String, dynamic>>> fetchReceipts() async* {
+    _categoryProvider?.loadUserCategories();
+
     try {
       final userDoc =
           FirebaseFirestore.instance.collection('receipts').doc(_userEmail);
