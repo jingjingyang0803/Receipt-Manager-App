@@ -37,22 +37,26 @@ class ReceiptProvider extends ChangeNotifier {
   List<Map<String, dynamic>> _allReceipts = [];
   List<Map<String, dynamic>> _filteredReceipts = [];
   int? _receiptCount;
-  Map<String, DateTime>? _oldestAndNewestDates;
+  DateTime? _oldestDate;
+  DateTime? _newestDate;
 
   List<Map<String, dynamic>> get allReceipts => _allReceipts;
   int? get receiptCount => _receiptCount;
-  Map<String, DateTime>? get oldestAndNewestDates => _oldestAndNewestDates;
+  DateTime? get oldestDate => _oldestDate;
+  DateTime? get newestDate => _newestDate;
+
   DateTime? get startDate => _startDate;
   DateTime? get endDate => _endDate;
   List<String> get selectedPaymentMethods => _selectedPaymentMethods;
   List<String> get selectedCategoryIds => _selectedCategoryIds;
+  String get sortOption => _sortOption;
+
   Map<String, Map<String, dynamic>>? get groupedReceiptsByCategory =>
       _groupedReceiptsByCategory;
   Map<String, double>? get groupedReceiptsByDate => _groupedReceiptsByDate;
   Map<String, double>? get groupedReceiptsByInterval =>
       _groupedReceiptsByInterval;
   List<Map<String, dynamic>> get filteredReceipts => _filteredReceipts;
-  String get sortOption => _sortOption;
 
   // Inject AuthenticationProvider and CategoryProvider
   set authProvider(AuthenticationProvider authProvider) {
@@ -123,6 +127,23 @@ class ReceiptProvider extends ChangeNotifier {
 
         _allReceipts = (snapshot.data()?['receiptlist'] ?? [])
             .cast<Map<String, dynamic>>();
+
+        _receiptCount = _allReceipts.length;
+
+        // Get oldest and newest dates of receipts
+        for (var receipt in _allReceipts) {
+          DateTime receiptDate = (receipt['date'] as Timestamp).toDate();
+
+          // Check for the oldest date
+          if (_oldestDate == null || receiptDate.isBefore(_oldestDate!)) {
+            _oldestDate = receiptDate;
+          }
+
+          // Check for the newest date
+          if (_newestDate == null || receiptDate.isAfter(_newestDate!)) {
+            _newestDate = receiptDate;
+          }
+        }
 
         // Apply filters
         _filteredReceipts = _applyFilters(_allReceipts);
@@ -363,41 +384,5 @@ class ReceiptProvider extends ChangeNotifier {
       await _receiptService.setReceiptsCategoryToNull(_userEmail!, categoryId);
       notifyListeners();
     }
-  }
-
-  // Fetch receipt count
-  Future<void> loadReceiptCount() async {
-    if (_userEmail != null) {
-      _receiptCount = _allReceipts.length;
-      notifyListeners();
-    }
-  }
-
-  // Get oldest and newest dates of receipts
-  Future<void> loadOldestAndNewestDates() async {
-    DateTime? oldestDate;
-    DateTime? newestDate;
-
-    for (var receipt in _allReceipts) {
-      DateTime receiptDate = (receipt['date'] as Timestamp).toDate();
-
-      // Check for the oldest date
-      if (oldestDate == null || receiptDate.isBefore(oldestDate)) {
-        oldestDate = receiptDate;
-      }
-
-      // Check for the newest date
-      if (newestDate == null || receiptDate.isAfter(newestDate)) {
-        newestDate = receiptDate;
-      }
-    }
-
-    // Update the provider's state with the oldest and newest dates
-    _oldestAndNewestDates = {
-      'oldestDate': oldestDate ?? DateTime.now(),
-      'newestDate': newestDate ?? DateTime.now(),
-    };
-
-    notifyListeners();
   }
 }

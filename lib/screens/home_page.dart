@@ -15,10 +15,10 @@ class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
   @override
-  _HomePageState createState() => _HomePageState();
+  HomePageState createState() => HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
@@ -61,10 +61,8 @@ class _HomePageState extends State<HomePage> {
     return Consumer<ReceiptProvider>(
       builder: (context, receiptProvider, child) {
         final receiptCount = receiptProvider.receiptCount ?? 0;
-        final oldestDate = receiptProvider.oldestAndNewestDates?['oldestDate'];
-        final newestDate = receiptProvider.oldestAndNewestDates?['newestDate'];
-
-        print('Receipt Count: $receiptCount'); // Debugging print statement
+        final oldestDate = receiptProvider.oldestDate;
+        final newestDate = receiptProvider.newestDate;
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
