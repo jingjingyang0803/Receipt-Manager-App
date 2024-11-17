@@ -581,34 +581,32 @@ class ExtractPageState extends State<ExtractPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   // Cancel Button
-                  Expanded(
+                  Flexible(
                     child: SizedBox(
-                      height: 50, // Set uniform button height
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8.0), // Add spacing
-                        child: CustomButton(
-                          text: 'Cancel',
-                          backgroundColor: purple100,
-                          textColor: light80,
-                          onPressed: () {
-                            Navigator.pop(context); // Close ScanScreen
-                          },
-                        ),
+                      width: 120, // Control button width
+                      height: 40, // Control button height
+                      child: CustomButton(
+                        text: 'Cancel',
+                        backgroundColor: purple100,
+                        textColor: light80,
+                        onPressed: () {
+                          Navigator.pop(context); // Close ScanScreen
+                        },
                       ),
                     ),
                   ),
+                  // Add spacing between buttons
+                  const SizedBox(width: 16),
                   // OK Button
-                  Expanded(
+                  Flexible(
                     child: SizedBox(
-                      height: 50, // Set uniform button height
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8.0), // Add spacing
-                        child: CustomButton(
-                          text: 'OK',
-                          backgroundColor: purple100,
-                          textColor: light80,
-                          onPressed: _confirmDataAndNavigate, // Confirm and navigate
-                        ),
+                      width: 120, // Control button width
+                      height: 40, // Control button height
+                      child: CustomButton(
+                        text: 'OK',
+                        backgroundColor: purple100,
+                        textColor: light80,
+                        onPressed: _confirmDataAndNavigate, // Confirm and navigate
                       ),
                     ),
                   ),
