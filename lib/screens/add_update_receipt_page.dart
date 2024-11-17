@@ -186,7 +186,9 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
     double? amount =
         double.tryParse(_totalController.text.replaceAll(',', '.'));
 
-    if (_dateController.text.isEmpty || amount == null) {
+    if (_dateController.text.isEmpty ||
+        amount == null ||
+        _selectedPaymentMethod == null) {
       messenger.showSnackBar(
         SnackBar(content: Text('Please fill in all required fields')),
       );
@@ -210,11 +212,13 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
           receiptId: widget.receiptId!,
           updatedData: receiptData,
         );
+        await receiptProvider.fetchAllReceipts(); // Refresh the list
         messenger.showSnackBar(
           SnackBar(content: Text('Receipt updated successfully')),
         );
       } else {
         await receiptProvider.addReceipt(receiptData: receiptData);
+        await receiptProvider.fetchAllReceipts(); // Refresh the list
         messenger.showSnackBar(
           SnackBar(content: Text('Receipt saved successfully')),
         );

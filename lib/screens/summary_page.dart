@@ -37,38 +37,43 @@ class SummaryPageState extends State<SummaryPage> {
   final List<int> years =
       List<int>.generate(20, (index) => 2020 + index); // From 2020 to 2039
 
+  late ReceiptProvider receiptProvider; // Declare as late
+  late BudgetProvider budgetProvider;
+
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final receiptProvider =
-          Provider.of<ReceiptProvider>(context, listen: false);
-      receiptProvider.fetchAllReceipts();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      // Initialize the providers using context
+      receiptProvider = Provider.of<ReceiptProvider>(context, listen: false);
+      budgetProvider = Provider.of<BudgetProvider>(context, listen: false);
 
+      // Fetch receipts and budgets
+      print("Before fetching receipts and budgets");
+      await receiptProvider.fetchAllReceipts();
+      await budgetProvider.loadUserBudgets();
+      print("Receipts: ${receiptProvider.allReceipts}");
+
+      // Group receipts for the selected month and year
+      receiptProvider.groupReceiptsByCategoryOneMonth(_month, _year);
+
+      // Update UI
       setState(() {
-        receiptProvider.currencySymbol ?? '€'; // Fetch the symbol
+        currencySymbol = receiptProvider.currencySymbol ?? '€';
       });
     });
   }
 
-  void _loadDataForSelectedDate() async {
-    final receiptProvider =
-        Provider.of<ReceiptProvider>(context, listen: false);
-
+  void _loadDataForSelectedDate() {
     print("Loading data for Month: $_month, Year: $_year");
-
-    // Fetch all receipts (ensures _allReceipts is up to date)
-    await receiptProvider.fetchAllReceipts();
-
-    // Group receipts by category for the selected month and year
-    receiptProvider.groupReceiptsByCategoryOneMonth(_month, _year);
-    // Access grouped data from the provider state
-    final data = receiptProvider.groupedReceiptsByCategoryOneMonth ?? {};
-
+    receiptProvider.fetchAllReceipts();
+    receiptProvider.groupReceiptsByCategoryOneMonth(
+      _month,
+      _year,
+    );
+    final data = receiptProvider.groupedReceiptsByCategoryOneMonth;
     print("Fetched Data: $data");
-
-    // Trigger UI update
-    setState(() {});
+    setState(() {}); // Trigger UI update after month/year change
   }
 
   void _showMonthPicker() {
@@ -76,6 +81,7 @@ class SummaryPageState extends State<SummaryPage> {
       context: context,
       builder: (BuildContext context) {
         int tempSelectedMonth = _month;
+
         return Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -160,21 +166,8 @@ class SummaryPageState extends State<SummaryPage> {
 
   @override
   Widget build(BuildContext context) {
-    final budgetProvider = Provider.of<BudgetProvider>(context);
-    final receiptProvider = Provider.of<ReceiptProvider>(context);
-
-    // Get budgets and expenses
     final budgets = budgetProvider.budgets;
-
-    // Group receipts by category for one month
-    receiptProvider.groupReceiptsByCategoryOneMonth(_month, _year);
-    // Access grouped receipts from the state
-    final expenses = receiptProvider.groupedReceiptsByCategoryOneMonth ?? {};
-
-    // Calculate total spending for the grouped data
-    receiptProvider.calculateTotalSpending(expenses);
-    // Access the total spending from the state
-    final totalSpending = receiptProvider.totalSpending;
+    final expenses = receiptProvider.groupedReceiptsByCategoryOneMonth;
 
     return Scaffold(
       appBar: AppBar(
@@ -185,7 +178,7 @@ class SummaryPageState extends State<SummaryPage> {
         children: [
           // Month and Year Picker
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 24),
+            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -219,34 +212,6 @@ class SummaryPageState extends State<SummaryPage> {
               ],
             ),
           ),
-
-          // Display total spending
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      'Total Spending: ',
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                    Text(
-                      '$currencySymbol ${totalSpending.toStringAsFixed(2)}',
-                      style: TextStyle(fontSize: 18, color: Colors.red),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  'Note: Total includes uncategorized expenses.',
-                  style: TextStyle(fontSize: 14, color: Colors.grey[700]),
-                ),
-              ],
-            ),
-          ),
           // Budget and Expense List
           Expanded(
             child: ListView.builder(
@@ -257,7 +222,13 @@ class SummaryPageState extends State<SummaryPage> {
                 final categoryName = budget['categoryName'];
                 final categoryIcon = budget['categoryIcon'];
                 final budgetAmount = budget['amount'];
-                final spent = expenses[categoryId]?['total'] ?? 0.0;
+
+                final spent = expenses?[categoryId]?['total'] ?? 0.0;
+
+                print("Budget: $budget");
+                print("expenses: $expenses");
+                print(
+                    "CategoryId: $categoryId, Spent: ${expenses?[categoryId]?['total']}");
 
                 double ratio = budgetAmount == 0
                     ? (spent > 0 ? 1.0 : 0.0)

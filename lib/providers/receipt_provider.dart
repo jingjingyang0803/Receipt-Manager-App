@@ -317,6 +317,7 @@ class ReceiptProvider extends ChangeNotifier {
         );
 
         groupedByCategory[categoryId] = {
+          'categoryId': categoryId,
           'name': category?['name'] ?? 'Unknown',
           'icon': category?['icon'] ?? '❓',
           'total': amount,
