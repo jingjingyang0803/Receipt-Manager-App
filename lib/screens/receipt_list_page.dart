@@ -26,31 +26,30 @@ class ReceiptListPageState extends State<ReceiptListPage> {
   final TextEditingController _searchController = TextEditingController();
   final FocusNode _searchFocusNode = FocusNode();
   // Inside ReceiptListPageState
-  List<Map<String, dynamic>> _searchedReceipts = []; // Local list for search results
+  List<Map<String, dynamic>> _searchedReceipts =
+      []; // Local list for search results
 
   List<Map<String, dynamic>> _suggestions = []; // To hold search suggestions
 
   String currencySymbol = '€';
-  bool _isLoading = true; // Track if data is being loaded
 
   @override
   void initState() {
     super.initState();
     Future.microtask(() {
       final receiptProvider =
-      Provider.of<ReceiptProvider>(context, listen: false);
+          Provider.of<ReceiptProvider>(context, listen: false);
       receiptProvider.fetchAllReceipts();
       receiptProvider.applyFilters();
       print("Calling fetchReceipts");
 
       setState(() {
         currencySymbol = receiptProvider.currencySymbol ?? '€';
-        _searchedReceipts = receiptProvider.filteredReceipts; // Initialize search results
-        _isLoading = false; // Data fetching complete
+        _searchedReceipts =
+            receiptProvider.filteredReceipts; // Initialize search results
       });
     });
   }
-
 
   // Builds each receipt section
   Widget _buildReceiptSection(
@@ -127,12 +126,10 @@ class ReceiptListPageState extends State<ReceiptListPage> {
         });
         print("Receipt matches: $matches");
         return matches;
-      })
-          .toList();
+      }).toList();
       print("Search results: $_searchedReceipts");
     });
   }
-
 
   Widget buildNoResultsFound() {
     return Center(
@@ -206,15 +203,6 @@ class ReceiptListPageState extends State<ReceiptListPage> {
 
   @override
   Widget build(BuildContext context) {
-    // Show a loading indicator if the data is still being loaded
-    if (_isLoading) {
-      return Scaffold(
-        body: Center(
-          child: CircularProgressIndicator(), // Show a spinner
-        ),
-      );
-    }
-
     return Scaffold(
       resizeToAvoidBottomInset: true,
       backgroundColor: light90,
@@ -239,7 +227,8 @@ class ReceiptListPageState extends State<ReceiptListPage> {
                       _buildReceiptSection(
                         context,
                         sectionTitle: 'Receipts',
-                        receipts: _searchedReceipts, // Use the local searched list
+                        receipts:
+                            _searchedReceipts, // Use the local searched list
                       ),
                     ],
                   );
