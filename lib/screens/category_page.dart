@@ -94,11 +94,26 @@ class CategoryPageState extends State<CategoryPage> {
                       String categoryId = categories[index]['id'] ?? '';
                       String categoryName =
                           categories[index]['name']?.trim() ?? '';
+                      Color categoryColor =
+                          categories[index]['color'] ?? Colors.grey.shade200;
 
                       return ListTile(
-                        leading: Text(
-                          categories[index]['icon'] ?? '',
-                          style: TextStyle(fontSize: 24),
+                        leading: Container(
+                          width: 40, // Set the width of the container
+                          height: 40, // Set the height of the container
+                          decoration: BoxDecoration(
+                            color: categoryColor, // Set the background color
+                            borderRadius: BorderRadius.circular(
+                                8), // Set the border radius to 8
+                          ),
+
+                          alignment: Alignment
+                              .center, // Center the text inside the container
+                          child: Text(
+                            categories[index]['icon'] ?? '',
+                            style: TextStyle(
+                                fontSize: 24), // Set text color and size
+                          ),
                         ),
                         title: Text(
                           categoryName,
