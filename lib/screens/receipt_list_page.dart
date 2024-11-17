@@ -195,11 +195,13 @@ class ReceiptListPageState extends State<ReceiptListPage> {
                     return buildNoResultsFound();
                   }
 
+                  // Get the sortOption from ReceiptProvider
+                  String sectionTitle = receiptProvider.sortOption;
                   return ListView(
                     children: [
                       _buildReceiptSection(
                         context,
-                        sectionTitle: 'Receipts',
+                        sectionTitle: 'Receipts $sectionTitle',
                         receipts: receipts,
                       ),
                     ],
