@@ -16,7 +16,6 @@ class SummaryPage extends StatefulWidget {
 
 class SummaryPageState extends State<SummaryPage> {
   String currencySymbol = '€';
-  bool _isLoading = true; // Track if data is being loaded
 
   int _month = DateTime.now().month;
   int _year = DateTime.now().year;
@@ -49,20 +48,20 @@ class SummaryPageState extends State<SummaryPage> {
       final budgetProvider =
           Provider.of<BudgetProvider>(context, listen: false);
 
-      // Fetch receipts and budgets
-      print("Before fetching receipts and budgets");
-      await receiptProvider.fetchAllReceipts();
-      await budgetProvider.loadUserBudgets();
-      print("Receipts: ${receiptProvider.allReceipts}");
+      try {
+        await receiptProvider.fetchAllReceipts();
+        await budgetProvider.loadUserBudgets();
+        print("All Receipts: ${receiptProvider.allReceipts}");
 
-      // Group receipts for the selected month and year
-      receiptProvider.groupReceiptsByCategoryOneMonth(_month, _year);
-      print("Receipts: ${receiptProvider.groupedReceiptsByCategoryOneMonth}");
+        receiptProvider.groupReceiptsByCategoryOneMonth(_month, _year);
+      } catch (e, stackTrace) {
+        print("Error in data fetching: $e");
+        print("StackTrace: $stackTrace");
+      }
 
       // Update UI
       setState(() {
         currencySymbol = receiptProvider.currencySymbol!;
-        _isLoading = false; // Data fetching complete
       });
     });
   }
@@ -176,15 +175,6 @@ class SummaryPageState extends State<SummaryPage> {
 
   @override
   Widget build(BuildContext context) {
-    // Show a loading indicator if the data is still being loaded
-    if (_isLoading) {
-      return Scaffold(
-        body: Center(
-          child: CircularProgressIndicator(), // Show a spinner
-        ),
-      );
-    }
-
     // Initialize the providers using context
     final receiptProvider =
         Provider.of<ReceiptProvider>(context, listen: false);
