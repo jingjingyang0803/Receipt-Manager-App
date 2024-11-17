@@ -25,6 +25,9 @@ class ReceiptListPageState extends State<ReceiptListPage> {
   // Added State Variables for Search
   final TextEditingController _searchController = TextEditingController();
   final FocusNode _searchFocusNode = FocusNode();
+  // Inside ReceiptListPageState
+  List<Map<String, dynamic>> _searchedReceipts = []; // Local list for search results
+
   List<Map<String, dynamic>> _suggestions = []; // To hold search suggestions
 
   String currencySymbol = '€';
@@ -35,17 +38,19 @@ class ReceiptListPageState extends State<ReceiptListPage> {
     super.initState();
     Future.microtask(() {
       final receiptProvider =
-          Provider.of<ReceiptProvider>(context, listen: false);
+      Provider.of<ReceiptProvider>(context, listen: false);
       receiptProvider.fetchAllReceipts();
       receiptProvider.applyFilters();
       print("Calling fetchReceipts");
 
       setState(() {
         currencySymbol = receiptProvider.currencySymbol ?? '€';
+        _searchedReceipts = receiptProvider.filteredReceipts; // Initialize search results
         _isLoading = false; // Data fetching complete
       });
     });
   }
+
 
   // Builds each receipt section
   Widget _buildReceiptSection(
@@ -105,7 +110,29 @@ class ReceiptListPageState extends State<ReceiptListPage> {
   }
 
   // Method to filter receipts and provide suggestions
-  void _performSearch(String query) {}
+  // Inside ReceiptListPageState
+  void _performSearch(String query) {
+    final lowerCaseQuery = query.toLowerCase();
+
+    setState(() {
+      _searchedReceipts = Provider.of<ReceiptProvider>(context, listen: false)
+          .filteredReceipts
+          .where((receipt) {
+        print("Checking receipt: $receipt");
+        final matches = receipt.entries.any((entry) {
+          final value = entry.value?.toString().toLowerCase() ?? '';
+          print(
+              "Field: ${entry.key}, Value: $value, Matches: ${value.contains(lowerCaseQuery)}");
+          return value.contains(lowerCaseQuery);
+        });
+        print("Receipt matches: $matches");
+        return matches;
+      })
+          .toList();
+      print("Search results: $_searchedReceipts");
+    });
+  }
+
 
   Widget buildNoResultsFound() {
     return Center(
@@ -197,26 +224,22 @@ class ReceiptListPageState extends State<ReceiptListPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildSearchBar(context),
-            const SizedBox(height: 16),
+            _buildSearchBar(context), // The search bar at the top
+            const SizedBox(height: 16), // Add space after the search bar
             Expanded(
               child: Consumer<ReceiptProvider>(
                 builder: (context, receiptProvider, _) {
-                  List<Map<String, dynamic>> receipts =
-                      receiptProvider.filteredReceipts;
-
-                  if (receipts.isEmpty) {
-                    return buildNoResultsFound();
+                  if (_searchedReceipts.isEmpty) {
+                    return buildNoResultsFound(); // Show "No results" message if empty
                   }
 
-                  // Get the sortOption from ReceiptProvider
-                  String sectionTitle = receiptProvider.sortOption;
+                  // Display the filtered receipts
                   return ListView(
                     children: [
                       _buildReceiptSection(
                         context,
-                        sectionTitle: 'Receipts $sectionTitle',
-                        receipts: receipts,
+                        sectionTitle: 'Receipts',
+                        receipts: _searchedReceipts, // Use the local searched list
                       ),
                     ],
                   );
