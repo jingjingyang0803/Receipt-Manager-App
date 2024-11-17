@@ -28,6 +28,7 @@ class ReceiptListPageState extends State<ReceiptListPage> {
   List<Map<String, dynamic>> _suggestions = []; // To hold search suggestions
 
   String currencySymbol = '€';
+  bool _isLoading = true; // Track if data is being loaded
 
   @override
   void initState() {
@@ -41,6 +42,7 @@ class ReceiptListPageState extends State<ReceiptListPage> {
 
       setState(() {
         currencySymbol = receiptProvider.currencySymbol ?? '€';
+        _isLoading = false; // Data fetching complete
       });
     });
   }
@@ -177,6 +179,15 @@ class ReceiptListPageState extends State<ReceiptListPage> {
 
   @override
   Widget build(BuildContext context) {
+    // Show a loading indicator if the data is still being loaded
+    if (_isLoading) {
+      return Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(), // Show a spinner
+        ),
+      );
+    }
+
     return Scaffold(
       resizeToAvoidBottomInset: true,
       backgroundColor: light90,

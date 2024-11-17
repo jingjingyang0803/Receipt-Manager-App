@@ -20,6 +20,7 @@ class ReportPage extends StatefulWidget {
 class ReportPageState extends State<ReportPage> {
   bool isPieChart = true; // Toggle state for chart
   String currencySymbol = '€';
+  bool _isLoading = true; // Track if data is being loaded
 
   TimeInterval selectedInterval =
       TimeInterval.day; // Default time interval (day)
@@ -36,16 +37,18 @@ class ReportPageState extends State<ReportPage> {
       logger.i("Initializing ReportPage...");
       logger.i("Fetching initial data.");
 
-      setState(() {
-        selectedInterval = receiptProvider.selectedInterval;
-        receiptProvider.currencySymbol ?? '€'; // Fetch the symbol
-      });
-
       // Fetch initial receipts and grouping
       await receiptProvider.fetchAllReceipts();
       receiptProvider.applyFilters();
       receiptProvider.groupByCategory();
       receiptProvider.groupByInterval(selectedInterval);
+
+      setState(() {
+        selectedInterval = receiptProvider.selectedInterval;
+        currencySymbol =
+            receiptProvider.currencySymbol ?? '€'; // Fetch the symbol
+        _isLoading = false; // Data fetching complete
+      });
     });
   }
 
@@ -341,6 +344,15 @@ class ReportPageState extends State<ReportPage> {
 
   @override
   Widget build(BuildContext context) {
+    // Show a loading indicator if the data is still being loaded
+    if (_isLoading) {
+      return Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(), // Show a spinner
+        ),
+      );
+    }
+
     return Scaffold(
       backgroundColor: light90,
       appBar: CustomAppBar(),

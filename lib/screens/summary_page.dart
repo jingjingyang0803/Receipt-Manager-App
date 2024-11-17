@@ -16,6 +16,8 @@ class SummaryPage extends StatefulWidget {
 
 class SummaryPageState extends State<SummaryPage> {
   String currencySymbol = '€';
+  bool _isLoading = true; // Track if data is being loaded
+
   int _month = DateTime.now().month;
   int _year = DateTime.now().year;
 
@@ -37,16 +39,15 @@ class SummaryPageState extends State<SummaryPage> {
   final List<int> years =
       List<int>.generate(20, (index) => 2020 + index); // From 2020 to 2039
 
-  late ReceiptProvider receiptProvider; // Declare as late
-  late BudgetProvider budgetProvider;
-
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       // Initialize the providers using context
-      receiptProvider = Provider.of<ReceiptProvider>(context, listen: false);
-      budgetProvider = Provider.of<BudgetProvider>(context, listen: false);
+      final receiptProvider =
+          Provider.of<ReceiptProvider>(context, listen: false);
+      final budgetProvider =
+          Provider.of<BudgetProvider>(context, listen: false);
 
       // Fetch receipts and budgets
       print("Before fetching receipts and budgets");
@@ -56,15 +57,22 @@ class SummaryPageState extends State<SummaryPage> {
 
       // Group receipts for the selected month and year
       receiptProvider.groupReceiptsByCategoryOneMonth(_month, _year);
+      print("Receipts: ${receiptProvider.groupedReceiptsByCategoryOneMonth}");
 
       // Update UI
       setState(() {
-        currencySymbol = receiptProvider.currencySymbol ?? '€';
+        currencySymbol = receiptProvider.currencySymbol!;
+        _isLoading = false; // Data fetching complete
       });
     });
   }
 
   void _loadDataForSelectedDate() {
+    // Initialize the providers using context
+    final receiptProvider =
+        Provider.of<ReceiptProvider>(context, listen: false);
+    final budgetProvider = Provider.of<BudgetProvider>(context, listen: false);
+
     print("Loading data for Month: $_month, Year: $_year");
     receiptProvider.fetchAllReceipts();
     receiptProvider.groupReceiptsByCategoryOneMonth(
@@ -73,7 +81,9 @@ class SummaryPageState extends State<SummaryPage> {
     );
     final data = receiptProvider.groupedReceiptsByCategoryOneMonth;
     print("Fetched Data: $data");
-    setState(() {}); // Trigger UI update after month/year change
+
+    // Update currency and UI
+    setState(() {});
   }
 
   void _showMonthPicker() {
@@ -166,6 +176,20 @@ class SummaryPageState extends State<SummaryPage> {
 
   @override
   Widget build(BuildContext context) {
+    // Show a loading indicator if the data is still being loaded
+    if (_isLoading) {
+      return Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(), // Show a spinner
+        ),
+      );
+    }
+
+    // Initialize the providers using context
+    final receiptProvider =
+        Provider.of<ReceiptProvider>(context, listen: false);
+    final budgetProvider = Provider.of<BudgetProvider>(context, listen: false);
+
     final budgets = budgetProvider.budgets;
     receiptProvider.fetchAllReceipts();
     final expenses = receiptProvider.groupedReceiptsByCategoryOneMonth;
