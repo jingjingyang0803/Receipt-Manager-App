@@ -15,16 +15,14 @@ class CategoryProvider extends ChangeNotifier {
 
   // Predefined colors for categories
   final List<Color> _predefinedColors = [
-    Colors.red.shade200,
-    Colors.green.shade200,
-    Colors.blue.shade200,
-    Colors.orange.shade200,
-    Colors.purple.shade200,
-    Colors.yellow.shade200,
-    Colors.cyan.shade200,
-    Colors.pink.shade200,
-    Colors.teal.shade200,
-    Colors.indigo.shade200,
+    Color(0xFF42A5F5), // Soft Blue
+    Color(0xFF66BB6A), // Soft Green
+    Color(0xFFEF5350), // Soft Red
+    Color(0xFFFFCA28), // Soft Yellow
+    Color(0xFFAB47BC), // Soft Purple
+    Color(0xFFFF7043), // Soft Orange
+    Color(0xFF26C6DA), // Soft Cyan
+    Color(0xFF8D6E63), // Soft Brown
   ];
 
   // Setter for AuthenticationProvider
