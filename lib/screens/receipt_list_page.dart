@@ -219,40 +219,21 @@ class ReceiptListPageState extends State<ReceiptListPage> {
             Expanded(
               child: Consumer<ReceiptProvider>(
                 builder: (context, receiptProvider, _) {
-                  return StreamBuilder<List<Map<String, dynamic>>>(
-                    stream: _receiptStream,
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Center(child: CircularProgressIndicator());
-                      }
+                  List<Map<String, dynamic>> receipts =
+                      receiptProvider.filteredReceipts;
 
-                      if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                        return buildNoResultsFound();
-                      }
+                  if (receipts.isEmpty) {
+                    return buildNoResultsFound();
+                  }
 
-                      String query = _searchController.text.toLowerCase();
-                      List<Map<String, dynamic>> receipts =
-                          _filterReceipts(snapshot.data!, query);
-
-                      debugPrint(
-                          "Building receipt section with ${receipts.length} receipts.");
-
-                      // Get the sortOption from ReceiptProvider
-                      String sectionTitle = receiptProvider.sortOption;
-
-                      return SingleChildScrollView(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            _buildReceiptSection(
-                              context,
-                              sectionTitle: 'Receipts $sectionTitle',
-                              receipts: receipts,
-                            ),
-                          ],
-                        ),
-                      );
-                    },
+                  return ListView(
+                    children: [
+                      _buildReceiptSection(
+                        context,
+                        sectionTitle: 'Receipts',
+                        receipts: receipts,
+                      ),
+                    ],
                   );
                 },
               ),
