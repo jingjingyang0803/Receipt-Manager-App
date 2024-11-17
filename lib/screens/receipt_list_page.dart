@@ -82,7 +82,10 @@ class ReceiptListPageState extends State<ReceiptListPage> {
                             receiptId: receipt['id'],
                           ),
                         ),
-                      );
+                      ).then((_) {
+                        Provider.of<ReceiptProvider>(context, listen: false)
+                            .fetchAllReceipts();
+                      });
                     },
                   )),
               const SizedBox(height: 16),
