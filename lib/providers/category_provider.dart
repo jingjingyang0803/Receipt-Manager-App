@@ -15,12 +15,12 @@ class CategoryProvider extends ChangeNotifier {
 
   // Predefined colors for categories
   final List<Color> _predefinedColors = [
-    Color(0xFFB2EBF2), // Light Blue
-    Color(0xFFC8E6C9), // Light Green
-    Color(0xFFE1BEE7), // Light Purple
-    Color(0xFFF8BBD0), // Light Pink
-    Color(0xFFFFCDD2), // Soft Red
-    Color(0xFFFFECB3), // Light Yellow
+    // Color(0xFFB2EBF2), // Light Blue
+    // Color(0xFFC8E6C9), // Light Green
+    // Color(0xFFE1BEE7), // Light Purple
+    // Color(0xFFF8BBD0), // Light Pink
+    // Color(0xFFFFCDD2), // Soft Red
+    // Color(0xFFFFECB3), // Light Yellow
     Color(0xFF42A5F5), // Soft Blue
     Color(0xFF66BB6A), // Soft Green
     Color(0xFFEF5350), // Soft Red
