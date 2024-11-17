@@ -213,6 +213,7 @@ class ReceiptProvider extends ChangeNotifier {
         ...receipt,
         'categoryName': category?['name'],
         'categoryIcon': category?['icon'],
+        'categoryColor': category?['color']
       };
     }).toList();
 
@@ -253,6 +254,7 @@ class ReceiptProvider extends ChangeNotifier {
       final amount = (receipt['amount'] as num?)?.toDouble() ?? 0.0;
       final categoryName = receipt['categoryName'];
       final categoryIcon = receipt['categoryIcon'];
+      final categoryColor = receipt['categoryColor'];
       // If the categoryId already exists, update the amount
       if (_groupedReceiptsByCategory!.containsKey(categoryId)) {
         _groupedReceiptsByCategory![categoryId]!['total'] += amount;
@@ -262,6 +264,7 @@ class ReceiptProvider extends ChangeNotifier {
           'total': amount,
           'name': categoryName,
           'icon': categoryIcon,
+          'color': categoryColor,
         };
       }
     }
