@@ -580,25 +580,36 @@ class ExtractPageState extends State<ExtractPage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  SizedBox(
-                    width: 100,
-                    child: CustomButton(
-                      text: 'Cancel',
-                      backgroundColor: purple100,
-                      textColor: light80,
-                      onPressed: () {
-                        Navigator.pop(context); // Close ScanScreen
-                      },
+                  // Cancel Button
+                  Expanded(
+                    child: SizedBox(
+                      height: 50, // Set uniform button height
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0), // Add spacing
+                        child: CustomButton(
+                          text: 'Cancel',
+                          backgroundColor: purple100,
+                          textColor: light80,
+                          onPressed: () {
+                            Navigator.pop(context); // Close ScanScreen
+                          },
+                        ),
+                      ),
                     ),
                   ),
-                  SizedBox(
-                    width: 100,
-                    child: CustomButton(
-                      text: 'OK',
-                      backgroundColor: purple100,
-                      textColor: light80,
-                      onPressed:
-                          _confirmDataAndNavigate, // Confirm and navigate
+                  // OK Button
+                  Expanded(
+                    child: SizedBox(
+                      height: 50, // Set uniform button height
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0), // Add spacing
+                        child: CustomButton(
+                          text: 'OK',
+                          backgroundColor: purple100,
+                          textColor: light80,
+                          onPressed: _confirmDataAndNavigate, // Confirm and navigate
+                        ),
+                      ),
                     ),
                   ),
                 ],
