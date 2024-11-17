@@ -154,8 +154,13 @@ class ReceiptProvider extends ChangeNotifier {
           }
         }
 
+        logger.i(
+            "Receipts before filtering(${_allReceipts.length}): $_allReceipts");
+
         // Apply filters
         _filteredReceipts = _applyFilters(_allReceipts);
+        logger.i(
+            "Receipts after filtering (${_filteredReceipts.length}): $_filteredReceipts");
 
         // Log filtered receipts
         print('Filtered Receipts (${_filteredReceipts.length}):');
@@ -175,42 +180,29 @@ class ReceiptProvider extends ChangeNotifier {
   List<Map<String, dynamic>> _applyFilters(
       List<Map<String, dynamic>> receipts) {
     const primaryMethods = ['Credit Card', 'Debit Card', 'Cash'];
+    logger.i("Applying filters on Receipts (${receipts.length}): $receipts");
 
-    // Apply filters
     final filteredReceipts = receipts.where((receipt) {
-      // Handle default values for missing fields
-      final categoryId = receipt['categoryId'] ?? 'null';
-      final paymentMethod = receipt['paymentMethod'] ?? '';
-      final date = (receipt['date'] as Timestamp?)?.toDate() ?? DateTime.now();
+      final categoryId = receipt['categoryId'] ?? 'unknown';
+      final paymentMethod = receipt['paymentMethod'] ?? 'unknown';
+      final date = (receipt['date'] as Timestamp?)?.toDate() ?? DateTime(2000);
 
-      // Check if the category matches
-      final matchesCategory = _selectedCategoryIds.contains(categoryId);
+      final matchesCategory = _selectedCategoryIds.isEmpty ||
+          _selectedCategoryIds.contains(categoryId);
 
-      // Check if the payment method matches
-      bool matchesPaymentMethod;
-      if (_selectedPaymentMethods.isEmpty ||
-          _selectedPaymentMethods.contains(paymentMethod)) {
-        matchesPaymentMethod = true;
-      } else if (_selectedPaymentMethods.contains('Others')) {
-        // If "Others" is selected, match any method not in primaryMethods
-        matchesPaymentMethod = !primaryMethods.contains(paymentMethod);
-      } else {
-        matchesPaymentMethod = false;
-      }
+      bool matchesPaymentMethod = _selectedPaymentMethods.isEmpty ||
+          _selectedPaymentMethods.contains(paymentMethod) ||
+          (_selectedPaymentMethods.contains('Others') &&
+              !primaryMethods.contains(paymentMethod));
 
-      // Check if the date falls within the selected range
-      final matchesDate = (_startDate == null || date.isAfter(_startDate!)) &&
-          (_endDate == null || date.isBefore(_endDate!));
+      final matchesDate = (_startDate == null || !date.isBefore(_startDate!)) &&
+          (_endDate == null || !date.isAfter(_endDate!));
 
-      // Log for debugging
-      logger.i("Category ID: $categoryId, Matches Category: $matchesCategory");
       logger.i(
-          "Payment Method: $paymentMethod, Matches Payment: $matchesPaymentMethod");
-      logger.i("Date: $date, Matches Date Range: $matchesDate");
+          "Receipt: $receipt, Matches - Category: $matchesCategory, Payment: $matchesPaymentMethod, Date: $matchesDate");
 
       return matchesCategory && matchesPaymentMethod && matchesDate;
     }).map((receipt) {
-      // Map category details if available
       final category = _categoryProvider?.categories.firstWhere(
         (cat) => cat['id'] == receipt['categoryId'],
         orElse: () => {'name': 'Unknown', 'icon': '❓'},
@@ -220,34 +212,25 @@ class ReceiptProvider extends ChangeNotifier {
         ...receipt,
         'categoryName': category?['name'],
         'categoryIcon': category?['icon'],
-        'categoryColor': category?['color']
+        'categoryColor': category?['color'],
       };
     }).toList();
 
-    // Add sorting logic for Newest and Oldest
     filteredReceipts.sort((a, b) {
       final dateA = (a['date'] as Timestamp).toDate();
       final dateB = (b['date'] as Timestamp).toDate();
       final amountA = (a['amount'] as num?)?.toDouble() ?? 0.0;
       final amountB = (b['amount'] as num?)?.toDouble() ?? 0.0;
 
-      if (_sortOption == 'Newest') {
-        return dateB.compareTo(dateA); // Descending by date
-      } else if (_sortOption == 'Oldest') {
-        return dateA.compareTo(dateB); // Ascending by date
-      } else if (_sortOption == 'Highest') {
-        return amountB.compareTo(amountA); // Descending by amount
-      } else if (_sortOption == 'Lowest') {
-        return amountA.compareTo(amountB); // Ascending by amount
-      }
-      return 0; // Default: no sorting
+      if (_sortOption == 'Newest') return dateB.compareTo(dateA);
+      if (_sortOption == 'Oldest') return dateA.compareTo(dateB);
+      if (_sortOption == 'Highest') return amountB.compareTo(amountA);
+      if (_sortOption == 'Lowest') return amountA.compareTo(amountB);
+      return 0;
     });
 
-    // Log sorted receipts
-    logger.i("Sorted Receipts (${filteredReceipts.length}):");
-    for (var receipt in filteredReceipts) {
-      logger.i(receipt);
-    }
+    logger.i(
+        "Filtered and Sorted Receipts (${filteredReceipts.length}): $filteredReceipts");
 
     return filteredReceipts;
   }
