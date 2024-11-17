@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import '../../logger.dart';
 import '../../providers/receipt_provider.dart';
 import '../components/custom_app_bar.dart';
+import '../components/custom_option_widget.dart';
 import '../constants/app_colors.dart';
 
 class ReportPage extends StatefulWidget {
@@ -336,32 +337,6 @@ class ReportPageState extends State<ReportPage> {
     );
   }
 
-  Widget _buildFilterOption({
-    required String label,
-    required bool isSelected,
-    required Function(bool) onSelected,
-  }) {
-    return GestureDetector(
-      onTap: () {
-        onSelected(!isSelected);
-      },
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        decoration: BoxDecoration(
-          color: isSelected ? purple100 : Colors.grey.shade200,
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Text(
-          label,
-          style: TextStyle(
-            color: isSelected ? Colors.white : Colors.black,
-            fontSize: 14,
-          ),
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -456,7 +431,7 @@ class ReportPageState extends State<ReportPage> {
                       child: Wrap(
                         spacing: 8,
                         children: TimeInterval.values
-                            .map((interval) => _buildFilterOption(
+                            .map((interval) => CustomOptionWidget(
                                   label: interval.name.toUpperCase(),
                                   isSelected: receiptProvider
                                           .selectedInterval ==

@@ -5,6 +5,7 @@ import 'package:receipt_manager/components/custom_divider.dart';
 import '../constants/app_colors.dart';
 import '../providers/category_provider.dart';
 import 'custom_button.dart';
+import 'custom_option_widget.dart';
 
 class FilterPopup extends StatefulWidget {
   final String initialSortOption;
@@ -69,7 +70,7 @@ class FilterPopupState extends State<FilterPopup> {
             spacing: 8,
             runSpacing: 8,
             children: ['Credit Card', 'Debit Card', 'Cash', 'Others']
-                .map((filter) => _buildFilterOption(
+                .map((filter) => CustomOptionWidget(
                       label: filter,
                       isSelected: selectedPaymentMethods.contains(filter),
                       onSelected: (_) {
@@ -101,7 +102,7 @@ class FilterPopupState extends State<FilterPopup> {
             spacing: 8,
             runSpacing: 8,
             children: ['Highest', 'Lowest', 'Newest', 'Oldest']
-                .map((sort) => _buildFilterOption(
+                .map((sort) => CustomOptionWidget(
                       label: sort,
                       isSelected: selectedSort == sort,
                       onSelected: (_) {
@@ -152,7 +153,7 @@ class FilterPopupState extends State<FilterPopup> {
                 ...userCategories.map((category) {
                   final categoryId = category['id'] ?? 'null';
                   final categoryName = category['name'] ?? 'Unknown';
-                  return _buildFilterOption(
+                  return CustomOptionWidget(
                     label: categoryName,
                     isSelected: selectedCategoryIds.contains(categoryId),
                     onSelected: (_) {
@@ -172,7 +173,7 @@ class FilterPopupState extends State<FilterPopup> {
                     },
                   );
                 }),
-                _buildFilterOption(
+                CustomOptionWidget(
                   label: 'Uncategorized',
                   isSelected: selectedCategoryIds.contains('null'),
                   onSelected: (_) {
@@ -238,33 +239,6 @@ class FilterPopupState extends State<FilterPopup> {
             ],
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildFilterOption({
-    required String label,
-    required bool isSelected,
-    required Function(bool) onSelected,
-  }) {
-    return GestureDetector(
-      onTap: () {
-        // Properly toggle the selection state
-        onSelected(!isSelected);
-      },
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        decoration: BoxDecoration(
-          color: isSelected ? purple100 : Colors.grey.shade200,
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Text(
-          label,
-          style: TextStyle(
-            color: isSelected ? Colors.white : Colors.black,
-            fontSize: 14,
-          ),
-        ),
       ),
     );
   }

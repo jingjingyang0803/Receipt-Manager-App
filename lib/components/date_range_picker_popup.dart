@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import '../constants/app_colors.dart';
 import 'custom_button.dart';
 import 'custom_divider.dart';
+import 'custom_option_widget.dart';
 
 class CalendarFilterWidget extends StatefulWidget {
   final DateTime initialStartDate;
@@ -111,32 +112,6 @@ class CalendarFilterWidgetState extends State<CalendarFilterWidget> {
     );
   }
 
-  Widget _buildOptionRow({
-    required String label,
-    required bool isSelected,
-    required Function(bool) onSelected,
-  }) {
-    return GestureDetector(
-      onTap: () {
-        onSelected(!isSelected); // Toggle selection state
-      },
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        decoration: BoxDecoration(
-          color: isSelected ? purple100 : Colors.grey.shade200,
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Text(
-          label,
-          style: TextStyle(
-            color: isSelected ? Colors.white : Colors.black,
-            fontSize: 14,
-          ),
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -161,7 +136,7 @@ class CalendarFilterWidgetState extends State<CalendarFilterWidget> {
               {'label': '90D', 'days': 90},
               {'label': 'Year', 'days': 365}
             ]
-                .map((item) => _buildOptionRow(
+                .map((item) => CustomOptionWidget(
                       label: item['label'] as String,
                       isSelected: _selectedDays == item['days'],
                       onSelected: (_) => _updateRange(item['days'] as int),
