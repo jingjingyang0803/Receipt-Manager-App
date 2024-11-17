@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/budget_provider.dart';
@@ -16,9 +15,9 @@ class SummaryPage extends StatefulWidget {
 }
 
 class SummaryPageState extends State<SummaryPage> {
-  DateTime selectedDate = DateTime(DateTime.now().year, DateTime.now().month);
-
   String currencySymbol = '€';
+  int _month = DateTime.now().month;
+  int _year = DateTime.now().year;
 
   final List<String> months = [
     'January',
@@ -41,36 +40,31 @@ class SummaryPageState extends State<SummaryPage> {
   @override
   void initState() {
     super.initState();
-    // Load initial data when the screen is loaded
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final budgetProvider =
-          Provider.of<BudgetProvider>(context, listen: false);
       final receiptProvider =
           Provider.of<ReceiptProvider>(context, listen: false);
-
-      budgetProvider.loadUserBudgets();
-      receiptProvider.updateFilters(
-        sortOption: "Newest",
-        categoryIds: budgetProvider.budgets
-            .map((e) => e['categoryId'] as String)
-            .toList(),
-        startDate: DateTime(selectedDate.year, selectedDate.month, 1),
-        endDate: DateTime(selectedDate.year, selectedDate.month + 1, 0),
-        paymentMethods: receiptProvider.selectedPaymentMethods,
-      );
-      receiptProvider.groupByCategory();
-
       currencySymbol =
           receiptProvider.currencySymbol ?? '€'; // Fetch the symbol
     });
   }
 
+  void _loadDataForSelectedDate() {
+    final receiptProvider =
+        Provider.of<ReceiptProvider>(context, listen: false);
+    print("Loading data for Month: $_month, Year: $_year");
+    final data = receiptProvider.getReceiptsByMonthYearGroupedByCategory(
+      _month,
+      _year,
+    );
+    print("Fetched Data: $data");
+    setState(() {}); // Trigger UI update after month/year change
+  }
+
   void _showMonthPicker() {
-    int initialMonthIndex = selectedDate.month - 1;
     showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {
-        int tempSelectedMonth = initialMonthIndex + 1;
+        int tempSelectedMonth = _month;
         return Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -78,7 +72,7 @@ class SummaryPageState extends State<SummaryPage> {
               height: 200,
               child: CupertinoPicker(
                 scrollController:
-                    FixedExtentScrollController(initialItem: initialMonthIndex),
+                    FixedExtentScrollController(initialItem: _month - 1),
                 itemExtent: 36.0,
                 onSelectedItemChanged: (int index) {
                   tempSelectedMonth = index + 1;
@@ -92,8 +86,7 @@ class SummaryPageState extends State<SummaryPage> {
               child: TextButton(
                 onPressed: () {
                   setState(() {
-                    selectedDate =
-                        DateTime(selectedDate.year, tempSelectedMonth);
+                    _month = tempSelectedMonth;
                   });
                   _loadDataForSelectedDate();
                   Navigator.pop(context);
@@ -108,19 +101,18 @@ class SummaryPageState extends State<SummaryPage> {
   }
 
   void _showYearPicker() {
-    int initialYearIndex = years.indexOf(selectedDate.year);
     showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {
-        int tempSelectedYear = selectedDate.year;
+        int tempSelectedYear = _year;
         return Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             SizedBox(
               height: 200,
               child: CupertinoPicker(
-                scrollController:
-                    FixedExtentScrollController(initialItem: initialYearIndex),
+                scrollController: FixedExtentScrollController(
+                    initialItem: years.indexOf(_year)),
                 itemExtent: 36.0,
                 onSelectedItemChanged: (int index) {
                   tempSelectedYear = years[index];
@@ -135,8 +127,7 @@ class SummaryPageState extends State<SummaryPage> {
               child: TextButton(
                 onPressed: () {
                   setState(() {
-                    selectedDate =
-                        DateTime(tempSelectedYear, selectedDate.month);
+                    _year = tempSelectedYear;
                   });
                   _loadDataForSelectedDate();
                   Navigator.pop(context);
@@ -148,19 +139,6 @@ class SummaryPageState extends State<SummaryPage> {
         );
       },
     );
-  }
-
-  void _loadDataForSelectedDate() {
-    final receiptProvider =
-        Provider.of<ReceiptProvider>(context, listen: false);
-    receiptProvider.updateFilters(
-      sortOption: "Newest",
-      startDate: DateTime(selectedDate.year, selectedDate.month, 1),
-      endDate: DateTime(selectedDate.year, selectedDate.month + 1, 0),
-      categoryIds: receiptProvider.selectedCategoryIds,
-      paymentMethods: receiptProvider.selectedPaymentMethods,
-    );
-    receiptProvider.groupByCategory();
   }
 
   Color getColor(double ratio) {
@@ -175,7 +153,10 @@ class SummaryPageState extends State<SummaryPage> {
     final receiptProvider = Provider.of<ReceiptProvider>(context);
 
     final budgets = budgetProvider.budgets;
-    final expenses = receiptProvider.groupedReceiptsByCategory ?? {};
+    final expenses = receiptProvider.getReceiptsByMonthYearGroupedByCategory(
+      _month,
+      _year,
+    );
 
     return Scaffold(
       appBar: AppBar(
@@ -190,7 +171,6 @@ class SummaryPageState extends State<SummaryPage> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // Month Picker Button
                 TextButton(
                   style: TextButton.styleFrom(
                     shape: RoundedRectangleBorder(
@@ -200,12 +180,11 @@ class SummaryPageState extends State<SummaryPage> {
                   ),
                   onPressed: _showMonthPicker,
                   child: Text(
-                    DateFormat.MMMM().format(selectedDate),
+                    months[_month - 1],
                     style: TextStyle(fontSize: 16, color: Colors.lightBlue),
                   ),
                 ),
                 SizedBox(width: 16),
-                // Year Picker Button
                 TextButton(
                   style: TextButton.styleFrom(
                     shape: RoundedRectangleBorder(
@@ -215,7 +194,7 @@ class SummaryPageState extends State<SummaryPage> {
                   ),
                   onPressed: _showYearPicker,
                   child: Text(
-                    selectedDate.year.toString(),
+                    _year.toString(),
                     style: TextStyle(fontSize: 16, color: Colors.lightBlue),
                   ),
                 ),
