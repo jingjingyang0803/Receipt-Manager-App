@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:receipt_manager/providers/category_provider.dart';
 import 'package:receipt_manager/screens/report_page.dart';
 import 'package:receipt_manager/screens/summary_page.dart';
 
@@ -22,9 +23,14 @@ class HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
+
+    final categoryProvider =
+        Provider.of<CategoryProvider>(context, listen: false);
+    categoryProvider.loadUserCategories();
+
     final receiptProvider =
         Provider.of<ReceiptProvider>(context, listen: false);
-    receiptProvider.fetchReceipts(); // Call once during initialization
+    receiptProvider.fetchAllReceipts(); // Call once during initialization
   }
 
   @override

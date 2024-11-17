@@ -11,16 +11,21 @@ import 'category_provider.dart';
 enum TimeInterval { day, week, month, year }
 
 class ReceiptProvider extends ChangeNotifier {
+  // Services and Providers
   final ReceiptService _receiptService = ReceiptService();
   AuthenticationProvider? _authProvider;
   UserProvider? _userProvider;
   CategoryProvider? _categoryProvider;
 
-  // State properties
-  // Default date range: start date is one year ago, end date is today
+  // Date Range
   DateTime? _startDate = DateTime(
       DateTime.now().year - 1, DateTime.now().month, DateTime.now().day);
   DateTime? _endDate = DateTime.now();
+
+  DateTime? get startDate => _startDate;
+  DateTime? get endDate => _endDate;
+
+  // Sorting and Filtering Options
   String _sortOption = "Newest";
   List<String> _selectedPaymentMethods = [
     'Credit Card',
@@ -30,10 +35,11 @@ class ReceiptProvider extends ChangeNotifier {
   ];
   List<String> _selectedCategoryIds = [];
 
-  Map<String, Map<String, dynamic>>? _groupedReceiptsByCategory;
-  Map<String, double>? _groupedReceiptsByDate;
-  Map<String, double>? _groupedReceiptsByInterval;
+  String get sortOption => _sortOption;
+  List<String> get selectedPaymentMethods => _selectedPaymentMethods;
+  List<String> get selectedCategoryIds => _selectedCategoryIds;
 
+  // Receipts Data
   List<Map<String, dynamic>> _allReceipts = [];
   List<Map<String, dynamic>> _filteredReceipts = [];
   int? _receiptCount;
@@ -41,22 +47,39 @@ class ReceiptProvider extends ChangeNotifier {
   DateTime? _newestDate;
 
   List<Map<String, dynamic>> get allReceipts => _allReceipts;
+  List<Map<String, dynamic>> get filteredReceipts => _filteredReceipts;
   int? get receiptCount => _receiptCount;
   DateTime? get oldestDate => _oldestDate;
   DateTime? get newestDate => _newestDate;
 
-  DateTime? get startDate => _startDate;
-  DateTime? get endDate => _endDate;
-  List<String> get selectedPaymentMethods => _selectedPaymentMethods;
-  List<String> get selectedCategoryIds => _selectedCategoryIds;
-  String get sortOption => _sortOption;
+  // Grouped Receipts
+  Map<String, Map<String, dynamic>>? _groupedReceiptsByCategory;
+  Map<String, double>? _groupedReceiptsByDate;
+  Map<String, double>? _groupedReceiptsByInterval;
+  Map<String, Map<String, dynamic>>? _groupedReceiptsByCategoryOneMonth;
 
   Map<String, Map<String, dynamic>>? get groupedReceiptsByCategory =>
       _groupedReceiptsByCategory;
   Map<String, double>? get groupedReceiptsByDate => _groupedReceiptsByDate;
   Map<String, double>? get groupedReceiptsByInterval =>
       _groupedReceiptsByInterval;
-  List<Map<String, dynamic>> get filteredReceipts => _filteredReceipts;
+  Map<String, Map<String, dynamic>>? get groupedReceiptsByCategoryOneMonth =>
+      _groupedReceiptsByCategoryOneMonth;
+
+  // Spending and Currency
+  double _totalSpending = 0.0;
+  String? _currencySymbol;
+
+  double get totalSpending => _totalSpending;
+  String? get currencySymbol => _currencySymbol;
+
+  // Time Interval
+  TimeInterval _selectedInterval = TimeInterval.month;
+
+  TimeInterval get selectedInterval => _selectedInterval;
+
+  // User Email
+  String? get _userEmail => _authProvider?.user?.email;
 
   // Inject AuthenticationProvider and CategoryProvider
   set authProvider(AuthenticationProvider authProvider) {
@@ -82,87 +105,47 @@ class ReceiptProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  String? get _userEmail => _authProvider?.user?.email;
-
-  TimeInterval _selectedInterval = TimeInterval.month;
-
-  TimeInterval get selectedInterval => _selectedInterval;
-
-  String? _currencySymbol;
-  String? get currencySymbol => _currencySymbol;
-
-  void updateInterval(TimeInterval interval) {
-    _selectedInterval = interval;
-    groupByInterval(interval); // Regroup receipts based on the new interval
-    notifyListeners();
-  }
-
-  // Update filters
-  void updateFilters({
-    required String sortOption,
-    required List<String> paymentMethods,
-    required List<String> categoryIds,
-    DateTime? startDate,
-    DateTime? endDate,
-  }) {
-    _sortOption = sortOption;
-    _selectedPaymentMethods = paymentMethods;
-    _selectedCategoryIds = categoryIds;
-    _startDate = startDate;
-    _endDate = endDate;
-
-    // Update filtered receipts
-    _filteredReceipts = _applyFilters(_allReceipts);
-
-    // Group by category after applying filters
-    groupByCategory();
-
-    notifyListeners();
-  }
-
-// Fetch and filter receipts
-  Stream<List<Map<String, dynamic>>> fetchReceipts() async* {
-    print("fetchReceipts called");
+  // Fetch all receipts
+  Future<void> fetchAllReceipts() async {
+    print("fetchAllReceipts called");
     _categoryProvider?.loadUserCategories();
 
     try {
       final userDoc =
           FirebaseFirestore.instance.collection('receipts').doc(_userEmail);
-      await for (var snapshot in userDoc.snapshots()) {
-        print('Fetched Snapshot Data: ${snapshot.data()}');
 
-        if (snapshot.data() == null) {
-          print('No receipts found.');
-          yield [];
-          continue;
-        }
+      final snapshot = await userDoc.get();
+      print('Fetched Snapshot Data: ${snapshot.data()}');
 
-        _allReceipts = (snapshot.data()?['receiptlist'] ?? [])
-            .cast<Map<String, dynamic>>();
-
-        print(
-            "Receipts before filtering(${_allReceipts.length}): $_allReceipts");
-
-        // Apply filters
-        _filteredReceipts = _applyFilters(_allReceipts);
-        print(
-            "Receipts after filtering (${_filteredReceipts.length}): $_filteredReceipts");
-
-        yield _filteredReceipts;
+      if (snapshot.data() == null) {
+        print('No receipts found.');
+        _allReceipts = [];
+        notifyListeners();
+        return;
       }
+
+      // Update _allReceipts
+      _allReceipts =
+          (snapshot.data()?['receiptlist'] ?? []).cast<Map<String, dynamic>>();
+
+      print("Receipts fetched (${_allReceipts.length}): $_allReceipts");
+
+      // Notify listeners
+      notifyListeners();
     } catch (e) {
       logger.e("Error fetching receipts: $e");
-      yield [];
     }
   }
 
-  // Apply filters to receipts
-  List<Map<String, dynamic>> _applyFilters(
-      List<Map<String, dynamic>> receipts) {
-    const primaryMethods = ['Credit Card', 'Debit Card', 'Cash'];
-    logger.i("Applying filters on Receipts (${receipts.length}): $receipts");
+  void applyFilters() {
+    print("applyFilters called");
 
-    final filteredReceipts = receipts.where((receipt) {
+    const primaryMethods = ['Credit Card', 'Debit Card', 'Cash'];
+    logger.i(
+        "Applying filters on Receipts (${_allReceipts.length}): $_allReceipts");
+
+    // Apply filtering logic
+    _filteredReceipts = _allReceipts.where((receipt) {
       final categoryId = receipt['categoryId'] ?? 'unknown';
       final paymentMethod = receipt['paymentMethod'] ?? 'unknown';
       final date = (receipt['date'] as Timestamp?)?.toDate() ?? DateTime(2000);
@@ -196,7 +179,8 @@ class ReceiptProvider extends ChangeNotifier {
       };
     }).toList();
 
-    filteredReceipts.sort((a, b) {
+    // Sort the filtered receipts
+    _filteredReceipts.sort((a, b) {
       final dateA = (a['date'] as Timestamp).toDate();
       final dateB = (b['date'] as Timestamp).toDate();
       final amountA = (a['amount'] as num?)?.toDouble() ?? 0.0;
@@ -210,9 +194,28 @@ class ReceiptProvider extends ChangeNotifier {
     });
 
     logger.i(
-        "Filtered and Sorted Receipts (${filteredReceipts.length}): $filteredReceipts");
+        "Filtered and Sorted Receipts (${_filteredReceipts.length}): $_filteredReceipts");
 
-    return filteredReceipts;
+    // Notify listeners
+    notifyListeners();
+  }
+
+  // Update filters
+  void updateFilters({
+    required String sortOption,
+    required List<String> paymentMethods,
+    required List<String> categoryIds,
+    DateTime? startDate,
+    DateTime? endDate,
+  }) {
+    _sortOption = sortOption;
+    _selectedPaymentMethods = paymentMethods;
+    _selectedCategoryIds = categoryIds;
+    _startDate = startDate;
+    _endDate = endDate;
+
+    // Apply filters after updating the filter criteria
+    applyFilters();
   }
 
   // Group receipts by category
@@ -239,6 +242,12 @@ class ReceiptProvider extends ChangeNotifier {
       }
     }
 
+    notifyListeners();
+  }
+
+  void updateInterval(TimeInterval interval) {
+    _selectedInterval = interval;
+    groupByInterval(interval); // Regroup receipts based on the new interval
     notifyListeners();
   }
 
@@ -281,8 +290,7 @@ class ReceiptProvider extends ChangeNotifier {
     return (daysSinceFirstDay / 7).ceil();
   }
 
-  Map<String, Map<String, dynamic>> getReceiptsByMonthYearGroupedByCategory(
-      int month, int year) {
+  void groupReceiptsByCategoryOneMonth(int month, int year) {
     final groupedByCategory = <String, Map<String, dynamic>>{};
 
     // Filter receipts for the selected month and year
@@ -319,17 +327,21 @@ class ReceiptProvider extends ChangeNotifier {
     // Log grouped data
     print("Grouped Receipts by Category: $groupedByCategory");
 
-    return groupedByCategory;
+    // Update state and notify listeners
+    _groupedReceiptsByCategory = groupedByCategory;
+    notifyListeners();
   }
 
-  double calculateTotalSpending(Map<String, Map<String, dynamic>> groupedData) {
+  void calculateTotalSpending(Map<String, Map<String, dynamic>> groupedData) {
     double totalSpending = 0.0;
 
     groupedData.forEach((_, value) {
       totalSpending += value['total'] ?? 0.0;
     });
 
-    return totalSpending;
+    // Update state and notify listeners
+    _totalSpending = totalSpending;
+    notifyListeners();
   }
 
   // Add receipt

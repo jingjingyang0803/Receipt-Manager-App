@@ -18,11 +18,11 @@ class ReportPage extends StatefulWidget {
 }
 
 class ReportPageState extends State<ReportPage> {
-  TimeInterval selectedInterval =
-      TimeInterval.day; // Default time interval (day)
-
   bool isPieChart = true; // Toggle state for chart
   String currencySymbol = '€';
+
+  TimeInterval selectedInterval =
+      TimeInterval.day; // Default time interval (day)
 
   @override
   void initState() {
@@ -36,15 +36,16 @@ class ReportPageState extends State<ReportPage> {
       logger.i("Initializing ReportPage...");
       logger.i("Fetching initial data.");
 
-      // Fetch initial receipts and grouping
-      await receiptProvider.fetchReceipts();
-      receiptProvider.groupByCategory();
-
-      // Generate colors for each category
       setState(() {
-        currencySymbol =
-            receiptProvider.currencySymbol ?? '€'; // Fetch the symbol
+        selectedInterval = receiptProvider.selectedInterval;
+        receiptProvider.currencySymbol ?? '€'; // Fetch the symbol
       });
+
+      // Fetch initial receipts and grouping
+      await receiptProvider.fetchAllReceipts();
+      receiptProvider.applyFilters();
+      receiptProvider.groupByCategory();
+      receiptProvider.groupByInterval(selectedInterval);
     });
   }
 
@@ -72,6 +73,7 @@ class ReportPageState extends State<ReportPage> {
   Widget buildPieChart(BuildContext context) {
     final receiptProvider = Provider.of<ReceiptProvider>(context);
 
+    receiptProvider.groupByCategory();
     // Get the grouped receipts by category
     final groupedReceipts = receiptProvider.groupedReceiptsByCategory ?? {};
 

@@ -43,21 +43,32 @@ class SummaryPageState extends State<SummaryPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final receiptProvider =
           Provider.of<ReceiptProvider>(context, listen: false);
-      currencySymbol =
-          receiptProvider.currencySymbol ?? '€'; // Fetch the symbol
+      receiptProvider.fetchAllReceipts();
+
+      setState(() {
+        receiptProvider.currencySymbol ?? '€'; // Fetch the symbol
+      });
     });
   }
 
-  void _loadDataForSelectedDate() {
+  void _loadDataForSelectedDate() async {
     final receiptProvider =
         Provider.of<ReceiptProvider>(context, listen: false);
+
     print("Loading data for Month: $_month, Year: $_year");
-    final data = receiptProvider.getReceiptsByMonthYearGroupedByCategory(
-      _month,
-      _year,
-    );
+
+    // Fetch all receipts (ensures _allReceipts is up to date)
+    await receiptProvider.fetchAllReceipts();
+
+    // Group receipts by category for the selected month and year
+    receiptProvider.groupReceiptsByCategoryOneMonth(_month, _year);
+    // Access grouped data from the provider state
+    final data = receiptProvider.groupedReceiptsByCategoryOneMonth ?? {};
+
     print("Fetched Data: $data");
-    setState(() {}); // Trigger UI update after month/year change
+
+    // Trigger UI update
+    setState(() {});
   }
 
   void _showMonthPicker() {
@@ -154,11 +165,16 @@ class SummaryPageState extends State<SummaryPage> {
 
     // Get budgets and expenses
     final budgets = budgetProvider.budgets;
-    final expenses =
-        receiptProvider.getReceiptsByMonthYearGroupedByCategory(_month, _year);
 
-    // Calculate total spending
-    final totalSpending = receiptProvider.calculateTotalSpending(expenses);
+    // Group receipts by category for one month
+    receiptProvider.groupReceiptsByCategoryOneMonth(_month, _year);
+    // Access grouped receipts from the state
+    final expenses = receiptProvider.groupedReceiptsByCategoryOneMonth ?? {};
+
+    // Calculate total spending for the grouped data
+    receiptProvider.calculateTotalSpending(expenses);
+    // Access the total spending from the state
+    final totalSpending = receiptProvider.totalSpending;
 
     return Scaffold(
       appBar: AppBar(
