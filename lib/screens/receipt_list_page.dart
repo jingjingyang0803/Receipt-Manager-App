@@ -124,10 +124,12 @@ class ReceiptListPageState extends State<ReceiptListPage> {
     final receiptProvider =
         Provider.of<ReceiptProvider>(context, listen: false);
 
+    receiptProvider.searchReceipts(query); // Update provider logic
+
+    // Update stream to reflect new results
     setState(() {
-      receiptProvider
-          .searchReceipts(query); // Delegate the search to the provider
-      _suggestions = receiptProvider.filteredReceipts; // Get filtered results
+      _receiptStream =
+          receiptProvider.fetchReceipts(); // Ensure the stream updates
     });
   }
 
