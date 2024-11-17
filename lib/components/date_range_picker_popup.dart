@@ -161,6 +161,7 @@ class CalendarFilterWidgetState extends State<CalendarFilterWidget> {
           SizedBox(height: 16),
           Wrap(
             spacing: 8,
+            runSpacing: 8,
             children: ['Current Year', 'Current Month', 'All History']
                 .map(
                   (option) => CustomOptionWidget(
