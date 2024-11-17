@@ -122,12 +122,15 @@ class ReceiptProvider extends ChangeNotifier {
 
 // Fetch and filter receipts
   Stream<List<Map<String, dynamic>>> fetchReceipts() async* {
+    print("fetchReceipts called");
     _categoryProvider?.loadUserCategories();
 
     try {
       final userDoc =
           FirebaseFirestore.instance.collection('receipts').doc(_userEmail);
       await for (var snapshot in userDoc.snapshots()) {
+        print('Fetched Snapshot Data: ${snapshot.data()}');
+
         if (snapshot.data() == null) {
           print('No receipts found.');
           yield [];
@@ -137,36 +140,13 @@ class ReceiptProvider extends ChangeNotifier {
         _allReceipts = (snapshot.data()?['receiptlist'] ?? [])
             .cast<Map<String, dynamic>>();
 
-        _receiptCount = _allReceipts.length;
-
-        // Get oldest and newest dates of receipts
-        for (var receipt in _allReceipts) {
-          DateTime receiptDate = (receipt['date'] as Timestamp).toDate();
-
-          // Check for the oldest date
-          if (_oldestDate == null || receiptDate.isBefore(_oldestDate!)) {
-            _oldestDate = receiptDate;
-          }
-
-          // Check for the newest date
-          if (_newestDate == null || receiptDate.isAfter(_newestDate!)) {
-            _newestDate = receiptDate;
-          }
-        }
-
-        logger.i(
+        print(
             "Receipts before filtering(${_allReceipts.length}): $_allReceipts");
 
         // Apply filters
         _filteredReceipts = _applyFilters(_allReceipts);
-        logger.i(
+        print(
             "Receipts after filtering (${_filteredReceipts.length}): $_filteredReceipts");
-
-        // Log filtered receipts
-        print('Filtered Receipts (${_filteredReceipts.length}):');
-        for (var receipt in _filteredReceipts) {
-          print(receipt);
-        }
 
         yield _filteredReceipts;
       }
@@ -340,33 +320,6 @@ class ReceiptProvider extends ChangeNotifier {
     print("Grouped Receipts by Category: $groupedByCategory");
 
     return groupedByCategory;
-  }
-
-  // Search receipts by query
-  void searchReceipts(String query) {
-    if (_allReceipts.isEmpty) return;
-
-    if (query.isEmpty) {
-      _filteredReceipts = List.from(_allReceipts);
-    } else {
-      final lowerCaseQuery = query.toLowerCase();
-      print("Search query: $query");
-
-      _filteredReceipts = _allReceipts.where((receipt) {
-        print("Checking receipt: $receipt");
-        final matches = receipt.entries.any((entry) {
-          final value = entry.value?.toString().toLowerCase() ?? '';
-          print(
-              "Field: ${entry.key}, Value: $value, Matches: ${value.contains(lowerCaseQuery)}");
-          return value.contains(lowerCaseQuery);
-        });
-        print("Receipt matches: $matches");
-        return matches;
-      }).toList();
-    }
-
-    print("Filtered Receipts: $_filteredReceipts");
-    notifyListeners();
   }
 
   double calculateTotalSpending(Map<String, Map<String, dynamic>> groupedData) {
