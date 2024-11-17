@@ -33,6 +33,21 @@ class CalendarFilterWidgetState extends State<CalendarFilterWidget> {
     super.initState();
     _endDate = widget.initialEndDate;
     _startDate = widget.initialStartDate;
+
+    // Calculate _selectedDays based on the initial dates
+    if (_startDate == DateTime(2000)) {
+      _selectedDays = -1; // All History
+    } else if (_startDate?.month == 1 &&
+        _startDate?.year == DateTime.now().year) {
+      _selectedDays = -1; // Current Year
+    } else if (_startDate?.month == DateTime.now().month &&
+        _startDate?.year == DateTime.now().year) {
+      _selectedDays = -1; // Current Month
+    } else if (_endDate != null && _startDate != null) {
+      _selectedDays = _endDate!.difference(_startDate!).inDays;
+    } else {
+      _selectedDays = 90; // Default to 90 days if no specific range is provided
+    }
   }
 
   void _updateRange(int days) {
