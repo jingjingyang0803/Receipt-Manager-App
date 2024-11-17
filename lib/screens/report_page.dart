@@ -17,18 +17,6 @@ class ReportPage extends StatefulWidget {
 }
 
 class ReportPageState extends State<ReportPage> {
-  final List<Color> availableColors = [
-    Color(0xFF42A5F5), // Soft Blue
-    Color(0xFF66BB6A), // Soft Green
-    Color(0xFFEF5350), // Soft Red
-    Color(0xFFFFCA28), // Soft Yellow
-    Color(0xFFAB47BC), // Soft Purple
-    Color(0xFFFF7043), // Soft Orange
-    Color(0xFF26C6DA), // Soft Cyan
-    Color(0xFF8D6E63), // Soft Brown
-  ];
-  Map<String, Color> categoryColors = {};
-
   TimeInterval selectedInterval =
       TimeInterval.day; // Default time interval (day)
 
@@ -55,40 +43,21 @@ class ReportPageState extends State<ReportPage> {
       setState(() {
         currencySymbol =
             receiptProvider.currencySymbol ?? '€'; // Fetch the symbol
-        categoryColors = generateTemporaryColorMapping(
-          receiptProvider.groupedReceiptsByCategory?.keys.toList() ?? [],
-        );
       });
     });
   }
 
-  // Generate a unique color mapping for categories
-  Map<String, Color> generateTemporaryColorMapping(List<String?> categoryIds) {
-    Map<String, Color> tempColors = {};
-    int colorIndex = 0;
-
-    for (var categoryId in categoryIds) {
-      if (categoryId == null || categoryId == 'null') {
-        // Assign gray color for null or 'null' categoryId
-        tempColors[categoryId ?? 'null'] = Colors.grey;
-      } else {
-        tempColors[categoryId] =
-            availableColors[colorIndex % availableColors.length];
-        colorIndex++;
-      }
-    }
-
-    return tempColors;
-  }
-
   List<PieChartSectionData> getPieSections(
-      Map<String, double>? groupedReceiptsByCategory) {
-    return groupedReceiptsByCategory!.entries.map((entry) {
-      final categoryId = entry.key;
-      final total = entry.value;
+      Map<String, Map<String, dynamic>> groupedReceiptsByCategory) {
+    if (groupedReceiptsByCategory.isEmpty) return [];
+
+    return groupedReceiptsByCategory.entries.map((entry) {
+      final total = entry.value['total'] as double? ?? 0.0;
+      final categoryColor =
+          entry.value['color'] as Color? ?? Colors.grey.shade200;
 
       return PieChartSectionData(
-        color: categoryColors[categoryId],
+        color: categoryColor,
         value: total,
         title: '', // Set the title to empty
         radius: 70,
@@ -102,18 +71,24 @@ class ReportPageState extends State<ReportPage> {
   Widget buildPieChart(BuildContext context) {
     final receiptProvider = Provider.of<ReceiptProvider>(context);
 
+    // Get the grouped receipts by category
     final groupedReceipts = receiptProvider.groupedReceiptsByCategory ?? {};
 
+    // Debug print for grouped receipts
     print(groupedReceipts);
+
+    // Check if groupedReceipts is empty
     if (groupedReceipts.isEmpty) {
       return const Center(child: Text('No data available.'));
     }
 
+    // Calculate the total amount
     final totalAmount = groupedReceipts.values.fold(
       0.0,
-      (sum, item) => sum + (item['total'] as double? ?? 0.0),
+      (sum, item) => sum + (item['total'] as double? ?? 0.0), // Access 'total'
     );
 
+    // Build the pie chart
     return Column(
       children: [
         SizedBox(
@@ -121,11 +96,11 @@ class ReportPageState extends State<ReportPage> {
           child: PieChart(
             PieChartData(
               sections: groupedReceipts.entries.map((entry) {
-                final total = entry.value['total'] as double? ??
-                    0.0; // Access the total field
+                // Extract fields for each category
+                final total = entry.value['total'] as double? ?? 0.0;
                 final percentage = (total / totalAmount) * 100;
                 final categoryColor =
-                    entry.value['color'] ?? Colors.grey.shade200;
+                    entry.value['color'] as Color? ?? Colors.grey.shade200;
 
                 return PieChartSectionData(
                   color: categoryColor, // Use grey if no color
@@ -216,9 +191,7 @@ class ReportPageState extends State<ReportPage> {
     return groupedReceipts.entries.map((entry) {
       final index = groupedReceipts.keys.toList().indexOf(entry.key);
       final total = entry.value;
-
-      // Cycle through available colors for each bar
-      final color = availableColors[index % availableColors.length];
+      final color = Color(0xFF66BB6A);
 
       return BarChartGroupData(
         x: index,
