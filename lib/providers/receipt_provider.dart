@@ -269,19 +269,6 @@ class ReceiptProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Group receipts by date
-  void groupByDate() {
-    _groupedReceiptsByDate = {};
-    for (var receipt in _filteredReceipts) {
-      final date = (receipt['date'] as Timestamp?)?.toDate() ?? DateTime.now();
-      final dateKey = "${date.year}-${date.month}-${date.day}";
-      final amount = (receipt['amount'] as num?)?.toDouble() ?? 0.0;
-      _groupedReceiptsByDate![dateKey] =
-          (_groupedReceiptsByDate![dateKey] ?? 0.0) + amount;
-    }
-    notifyListeners();
-  }
-
   // Group receipts by interval
   void groupByInterval(TimeInterval interval) {
     _groupedReceiptsByInterval = {};
@@ -319,6 +306,47 @@ class ReceiptProvider extends ChangeNotifier {
     final firstDayOfYear = DateTime(date.year, 1, 1);
     final daysSinceFirstDay = date.difference(firstDayOfYear).inDays;
     return (daysSinceFirstDay / 7).ceil();
+  }
+
+  Map<String, Map<String, dynamic>> getReceiptsByMonthYearGroupedByCategory(
+      int month, int year) {
+    final groupedByCategory = <String, Map<String, dynamic>>{};
+
+    // Filter receipts for the selected month and year
+    final filteredReceipts = _allReceipts.where((receipt) {
+      final date = (receipt['date'] as Timestamp?)?.toDate();
+      return date?.month == month && date?.year == year;
+    }).toList();
+
+    // Log the selected month, year, and filtered receipts
+    print("Selected Month: $month, Year: $year");
+    print("Filtered Receipts for Month and Year: $filteredReceipts");
+
+    // Group receipts by category
+    for (var receipt in filteredReceipts) {
+      final categoryId = receipt['categoryId'] ?? 'null';
+      final amount = (receipt['amount'] as num?)?.toDouble() ?? 0.0;
+
+      if (groupedByCategory.containsKey(categoryId)) {
+        groupedByCategory[categoryId]!['total'] += amount;
+      } else {
+        final category = _categoryProvider?.categories.firstWhere(
+          (cat) => cat['id'] == categoryId,
+          orElse: () => {'name': 'Unknown', 'icon': '❓'},
+        );
+
+        groupedByCategory[categoryId] = {
+          'name': category?['name'] ?? 'Unknown',
+          'icon': category?['icon'] ?? '❓',
+          'total': amount,
+        };
+      }
+    }
+
+    // Log grouped data
+    print("Grouped Receipts by Category: $groupedByCategory");
+
+    return groupedByCategory;
   }
 
   // Search receipts by query
