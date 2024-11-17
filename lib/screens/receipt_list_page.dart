@@ -125,7 +125,7 @@ class ReceiptListPageState extends State<ReceiptListPage> {
           const Padding(
             padding: EdgeInsets.symmetric(horizontal: 20),
             child: Text(
-              'Try adjusting your search to find what you are looking for.',
+              'Try adjusting your search and filters to find what you are looking for.',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 16,
