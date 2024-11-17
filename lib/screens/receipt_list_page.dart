@@ -22,8 +22,6 @@ class ReceiptListPage extends StatefulWidget {
 }
 
 class ReceiptListPageState extends State<ReceiptListPage> {
-  late Stream<List<Map<String, dynamic>>> _receiptStream;
-
   // Added State Variables for Search
   final TextEditingController _searchController = TextEditingController();
   final FocusNode _searchFocusNode = FocusNode();
@@ -34,32 +32,17 @@ class ReceiptListPageState extends State<ReceiptListPage> {
   @override
   void initState() {
     super.initState();
-
-    // Fetch the currency symbol from the ReceiptProvider
     Future.microtask(() {
       final receiptProvider =
           Provider.of<ReceiptProvider>(context, listen: false);
-      final userCurrencyCode = receiptProvider.currencySymbol;
-
-      _receiptStream = receiptProvider.fetchReceipts();
+      receiptProvider.fetchAllReceipts();
+      receiptProvider.applyFilters();
+      print("Calling fetchReceipts");
 
       setState(() {
-        currencySymbol = userCurrencyCode ?? '€'; // Fallback to '€' if null
+        currencySymbol = receiptProvider.currencySymbol ?? '€';
       });
     });
-  }
-
-  // Search method: filters receipts by matching the query
-  List<Map<String, dynamic>> _filterReceipts(
-      List<Map<String, dynamic>> receipts, String query) {
-    if (query.isEmpty) return receipts;
-    return receipts
-        .where((receipt) =>
-            (receipt['merchantName']?.toLowerCase().contains(query) ?? false) ||
-            (receipt['itemName']?.toLowerCase().contains(query) ?? false) ||
-            (receipt['description']?.toLowerCase().contains(query) ?? false) ||
-            (receipt['amount']?.toString().contains(query) ?? false))
-        .toList();
   }
 
   // Builds each receipt section
@@ -99,10 +82,7 @@ class ReceiptListPageState extends State<ReceiptListPage> {
                             receiptId: receipt['id'],
                           ),
                         ),
-                      ).then((_) {
-                        Provider.of<ReceiptProvider>(context, listen: false)
-                            .fetchReceipts();
-                      });
+                      );
                     },
                   )),
               const SizedBox(height: 16),
@@ -120,18 +100,7 @@ class ReceiptListPageState extends State<ReceiptListPage> {
   }
 
   // Method to filter receipts and provide suggestions
-  void _performSearch(String query) {
-    final receiptProvider =
-        Provider.of<ReceiptProvider>(context, listen: false);
-
-    receiptProvider.searchReceipts(query); // Update provider logic
-
-    // Update stream to reflect new results
-    setState(() {
-      _receiptStream =
-          receiptProvider.fetchReceipts(); // Ensure the stream updates
-    });
-  }
+  void _performSearch(String query) {}
 
   Widget buildNoResultsFound() {
     return Center(
