@@ -166,13 +166,23 @@ class CalendarFilterWidgetState extends State<CalendarFilterWidget> {
                 .map(
                   (option) => CustomOptionWidget(
                     label: option,
-                    isSelected: _selectedDays == -1 &&
-                        ((_startDate == DateTime(2000) &&
-                                option == 'All History') ||
-                            (_startDate?.month == 1 &&
-                                option == 'Current Year') ||
-                            (_startDate?.month == DateTime.now().month &&
-                                option == 'Current Month')),
+                    isSelected: () {
+                      if (option == 'All History') {
+                        return _selectedDays == -1 &&
+                            _startDate == DateTime(2000);
+                      }
+                      if (option == 'Current Year') {
+                        return _selectedDays == -1 &&
+                            _startDate?.month == 1 &&
+                            _startDate?.year == DateTime.now().year;
+                      }
+                      if (option == 'Current Month') {
+                        return _selectedDays == -1 &&
+                            _startDate?.month == DateTime.now().month &&
+                            _startDate?.year == DateTime.now().year;
+                      }
+                      return false; // Default to not selected for any other case
+                    }(),
                     onSelected: (_) => _updateSpecialRange(option),
                   ),
                 )
