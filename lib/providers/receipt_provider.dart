@@ -110,6 +110,13 @@ class ReceiptProvider extends ChangeNotifier {
     _selectedCategoryIds = categoryIds;
     _startDate = startDate;
     _endDate = endDate;
+
+    // Update filtered receipts
+    _filteredReceipts = _applyFilters(_allReceipts);
+
+    // Group by category after applying filters
+    groupByCategory();
+
     notifyListeners();
   }
 
