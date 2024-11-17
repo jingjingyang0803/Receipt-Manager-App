@@ -31,14 +31,8 @@ class CalendarFilterWidgetState extends State<CalendarFilterWidget> {
   @override
   void initState() {
     super.initState();
-    // Ensure _endDate is not null before calculating _startDate
-    if (_endDate != null) {
-      _startDate = _endDate!.subtract(Duration(days: _selectedDays));
-    } else {
-      // Provide a default end date if it's null
-      _endDate = DateTime.now();
-      _startDate = _endDate!.subtract(Duration(days: _selectedDays));
-    }
+    _endDate = widget.initialEndDate;
+    _startDate = widget.initialStartDate;
   }
 
   void _updateRange(int days) {
@@ -49,6 +43,27 @@ class CalendarFilterWidgetState extends State<CalendarFilterWidget> {
       } else if (_startDate != null) {
         _endDate = _startDate!.add(Duration(days: days));
       }
+    });
+  }
+
+  void _updateSpecialRange(String option) {
+    setState(() {
+      final now = DateTime.now();
+      switch (option) {
+        case 'Current Year':
+          _startDate = DateTime(now.year, 1, 1);
+          _endDate = DateTime(now.year, now.month, now.day);
+          break;
+        case 'Current Month':
+          _startDate = DateTime(now.year, now.month, 1);
+          _endDate = DateTime(now.year, now.month, now.day);
+          break;
+        case 'All History':
+          _startDate = DateTime(2000); // Set a very early start date
+          _endDate = DateTime.now(); // Set to current date
+          break;
+      }
+      _selectedDays = -1; // Indicate no fixed range for these special options
     });
   }
 
@@ -141,6 +156,25 @@ class CalendarFilterWidgetState extends State<CalendarFilterWidget> {
                       isSelected: _selectedDays == item['days'],
                       onSelected: (_) => _updateRange(item['days'] as int),
                     ))
+                .toList(),
+          ),
+          SizedBox(height: 16),
+          Wrap(
+            spacing: 8,
+            children: ['Current Year', 'Current Month', 'All History']
+                .map(
+                  (option) => CustomOptionWidget(
+                    label: option,
+                    isSelected: _selectedDays == -1 &&
+                        ((_startDate == DateTime(2000) &&
+                                option == 'All History') ||
+                            (_startDate?.month == 1 &&
+                                option == 'Current Year') ||
+                            (_startDate?.month == DateTime.now().month &&
+                                option == 'Current Month')),
+                    onSelected: (_) => _updateSpecialRange(option),
+                  ),
+                )
                 .toList(),
           ),
           SizedBox(height: 16),
