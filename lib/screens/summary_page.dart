@@ -152,11 +152,13 @@ class SummaryPageState extends State<SummaryPage> {
     final budgetProvider = Provider.of<BudgetProvider>(context);
     final receiptProvider = Provider.of<ReceiptProvider>(context);
 
+    // Get budgets and expenses
     final budgets = budgetProvider.budgets;
-    final expenses = receiptProvider.getReceiptsByMonthYearGroupedByCategory(
-      _month,
-      _year,
-    );
+    final expenses =
+        receiptProvider.getReceiptsByMonthYearGroupedByCategory(_month, _year);
+
+    // Calculate total spending
+    final totalSpending = receiptProvider.calculateTotalSpending(expenses);
 
     return Scaffold(
       appBar: AppBar(
@@ -167,7 +169,7 @@ class SummaryPageState extends State<SummaryPage> {
         children: [
           // Month and Year Picker
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+            padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 24),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -197,6 +199,34 @@ class SummaryPageState extends State<SummaryPage> {
                     _year.toString(),
                     style: TextStyle(fontSize: 16, color: Colors.lightBlue),
                   ),
+                ),
+              ],
+            ),
+          ),
+
+          // Display total spending
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Total Spending: ',
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                    Text(
+                      '$currencySymbol ${totalSpending.toStringAsFixed(2)}',
+                      style: TextStyle(fontSize: 18, color: Colors.red),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Note: Total includes uncategorized expenses.',
+                  style: TextStyle(fontSize: 14, color: Colors.grey[700]),
                 ),
               ],
             ),

@@ -376,6 +376,16 @@ class ReceiptProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  double calculateTotalSpending(Map<String, Map<String, dynamic>> groupedData) {
+    double totalSpending = 0.0;
+
+    groupedData.forEach((_, value) {
+      totalSpending += value['total'] ?? 0.0;
+    });
+
+    return totalSpending;
+  }
+
   // Add receipt
   Future<void> addReceipt({required Map<String, dynamic> receiptData}) async {
     if (_userEmail != null) {
