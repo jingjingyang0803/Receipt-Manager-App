@@ -9,7 +9,8 @@ import 'package:receipt_manager/providers/category_provider.dart';
 import 'package:receipt_manager/providers/receipt_provider.dart';
 
 import '../components/category_select_popup.dart';
-import '../components/old/rounded_button.dart';
+import '../components/custom_button.dart';
+import '../constants/app_colors.dart';
 import '../services/storage_service.dart';
 import 'base_page.dart';
 
@@ -276,7 +277,7 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
         Provider.of<ReceiptProvider>(context, listen: false);
     if (widget.receiptId != null) {
       await receiptProvider.deleteReceipt(widget.receiptId!);
-      Navigator.pop(context);
+      Navigator.pushReplacementNamed(context, BasePage.id);
     }
   }
 
@@ -466,27 +467,32 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Expanded(
-                    child: RoundedButton(
-                      color: Colors.lightBlueAccent,
-                      title: 'Cancel',
+                  SizedBox(
+                    width: 100,
+                    child: CustomButton(
+                      text: 'Cancel',
+                      backgroundColor: purple100,
+                      textColor: light80,
                       onPressed: () => Navigator.pop(context),
                     ),
                   ),
                   SizedBox(width: 10),
-                  Expanded(
-                    child: RoundedButton(
-                      color: Colors.blueAccent,
-                      title: widget.receiptId != null ? 'Update' : 'Save',
+                  SizedBox(
+                    width: 100,
+                    child: CustomButton(
+                      text: widget.receiptId != null ? 'Update' : 'Save',
+                      backgroundColor: purple100,
+                      textColor: light80,
                       onPressed: _saveReceipt,
                     ),
                   ),
                 ],
               ),
               if (widget.receiptId != null)
-                RoundedButton(
-                  color: Colors.redAccent,
-                  title: 'Delete',
+                CustomButton(
+                  text: 'Delete',
+                  backgroundColor: purple100,
+                  textColor: light80,
                   onPressed: _confirmDelete,
                 ),
             ],

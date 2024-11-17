@@ -167,6 +167,7 @@ class SummaryPageState extends State<SummaryPage> {
   @override
   Widget build(BuildContext context) {
     final budgets = budgetProvider.budgets;
+    receiptProvider.fetchAllReceipts();
     final expenses = receiptProvider.groupedReceiptsByCategoryOneMonth;
 
     return Scaffold(

@@ -7,10 +7,11 @@ import 'package:image/image.dart' as img;
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:receipt_manager/components/old/rounded_button.dart';
 import 'package:receipt_manager/screens/add_update_receipt_page.dart';
 
 import '../../logger.dart';
+import '../components/custom_button.dart';
+import '../constants/app_colors.dart';
 
 class ExtractPage extends StatefulWidget {
   static const String id = 'extract_page';
@@ -434,15 +435,17 @@ class ExtractPageState extends State<ExtractPage> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    RoundedButton(
-                      color: Colors.lightBlueAccent,
-                      title: 'Capture from Camera',
+                    CustomButton(
+                      text: 'Capture from Camera',
+                      backgroundColor: purple100,
+                      textColor: light80,
                       onPressed: _captureFromCamera,
                     ),
                     SizedBox(height: 10), // Space between buttons
-                    RoundedButton(
-                      color: Colors.lightBlue,
-                      title: 'Pick from Gallery',
+                    CustomButton(
+                      text: 'Pick from Gallery',
+                      backgroundColor: purple100,
+                      textColor: light80,
                       onPressed: _pickFromGallery,
                     ),
                   ],
@@ -579,9 +582,10 @@ class ExtractPageState extends State<ExtractPage> {
                 children: [
                   SizedBox(
                     width: 100,
-                    child: RoundedButton(
-                      color: Colors.red,
-                      title: 'Cancel',
+                    child: CustomButton(
+                      text: 'Cancel',
+                      backgroundColor: purple100,
+                      textColor: light80,
                       onPressed: () {
                         Navigator.pop(context); // Close ScanScreen
                       },
@@ -589,9 +593,10 @@ class ExtractPageState extends State<ExtractPage> {
                   ),
                   SizedBox(
                     width: 100,
-                    child: RoundedButton(
-                      color: Colors.green,
-                      title: 'OK',
+                    child: CustomButton(
+                      text: 'OK',
+                      backgroundColor: purple100,
+                      textColor: light80,
                       onPressed:
                           _confirmDataAndNavigate, // Confirm and navigate
                     ),
