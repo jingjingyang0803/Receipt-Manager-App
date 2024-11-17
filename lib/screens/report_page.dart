@@ -104,6 +104,7 @@ class ReportPageState extends State<ReportPage> {
 
     final groupedReceipts = receiptProvider.groupedReceiptsByCategory ?? {};
 
+    print(groupedReceipts);
     if (groupedReceipts.isEmpty) {
       return const Center(child: Text('No data available.'));
     }
