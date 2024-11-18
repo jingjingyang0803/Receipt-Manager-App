@@ -550,6 +550,23 @@ class ReceiptProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  // Filter receipts by a specific category
+  List<Map<String, dynamic>> filterReceiptsByCategory(String categoryId) {
+    // Ensure categoryId is valid
+    if (categoryId.isEmpty) {
+      print("Invalid categoryId provided.");
+      return [];
+    }
+
+    // Filter receipts by the given categoryId
+    final filteredByCategory = _filteredReceipts.where((receipt) {
+      return receipt['categoryId'] == categoryId;
+    }).toList();
+
+    print("Filtered Receipts for Category ($categoryId): $filteredByCategory");
+    return filteredByCategory;
+  }
+
   // Add receipt
   Future<void> addReceipt({required Map<String, dynamic> receiptData}) async {
     if (_userEmail != null) {
