@@ -19,7 +19,7 @@ class ReportPage extends StatefulWidget {
 
 class ReportPageState extends State<ReportPage> {
   bool isPieChart = true; // Toggle state for chart
-  String currencySymbol = '€';
+  String currencySymbol = ' ';
 
   TimeInterval selectedInterval =
       TimeInterval.day; // Default time interval (day)

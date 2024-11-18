@@ -15,7 +15,7 @@ class SummaryPage extends StatefulWidget {
 }
 
 class SummaryPageState extends State<SummaryPage> {
-  String currencySymbol = '€';
+  String currencySymbol = ' ';
 
   int _month = DateTime.now().month;
   int _year = DateTime.now().year;
