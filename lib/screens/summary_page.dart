@@ -288,6 +288,7 @@ class SummaryPageState extends State<SummaryPage> {
                     : '${(ratio * 100).toStringAsFixed(1)}%';
 
                 return Card(
+                  color: Colors.white,
                   margin:
                       const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
                   elevation: 2,
