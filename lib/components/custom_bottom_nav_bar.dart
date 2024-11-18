@@ -63,8 +63,8 @@ class CustomBottomNavBarState extends State<CustomBottomNavBar> {
                 return GestureDetector(
                   onTap: () => _onItemTapped(index),
                   child: Container(
-                    width: iconSize * 1.8,
-                    height: iconSize * 1.8,
+                    width: iconSize * 2.2,
+                    height: iconSize * 2.2,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       color: _currentIndex == index
@@ -73,7 +73,7 @@ class CustomBottomNavBarState extends State<CustomBottomNavBar> {
                     ),
                     child: Icon(
                       icons[index],
-                      size: iconSize,
+                      size: _currentIndex == index ? iconSize * 1.5 : iconSize,
                       color: _currentIndex == index ? Colors.white : dark50,
                     ),
                   ),
