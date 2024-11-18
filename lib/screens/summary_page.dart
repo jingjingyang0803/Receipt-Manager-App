@@ -16,8 +16,6 @@ class SummaryPage extends StatefulWidget {
 }
 
 class SummaryPageState extends State<SummaryPage> {
-  String currencySymbol = ' ';
-
   int _month = DateTime.now().month;
   int _year = DateTime.now().year;
 
@@ -176,12 +174,19 @@ class SummaryPageState extends State<SummaryPage> {
     receiptProvider.fetchAllReceipts();
     receiptProvider.groupReceiptsByCategoryOneMonth(_month, _year);
     final expenses = receiptProvider.groupedReceiptsByCategoryOneMonth;
+    print("Expenses: $expenses");
 
     receiptProvider.calculateTotalSpending(expenses!);
     // Calculate total spending
     final totalSpending = receiptProvider.totalSpending;
+    print("totalSpending: $totalSpending");
 
-    print("Expenses: $expenses");
+    // Access 'currencySymbolToDisplay' from the first entry, assuming all entries share the same currency
+    final currencySymbol = expenses.isNotEmpty
+        ? expenses.values.first['currencySymbolToDisplay']
+        : null; // Handle empty map case receiptProvider.calculateTotalSpending(expenses);
+    print("currencySymbol: $currencySymbol");
+
     return Scaffold(
       resizeToAvoidBottomInset: true,
       backgroundColor: light90,
@@ -273,12 +278,14 @@ class SummaryPageState extends State<SummaryPage> {
                 final categoryIcon = budget['categoryIcon'];
                 final budgetAmount = budget['amount'];
 
-                final spent = expenses?[categoryId]?['total'] ?? 0.0;
+                print("expenses: $expenses");
+                final spent = expenses[categoryId]?['total'] ?? 0.0;
+                final currencySymbol =
+                    expenses[categoryId]?['currencySymbolToDisplay'] ?? ' ';
 
                 print("Budget: $budget");
-                print("expenses: $expenses");
                 print(
-                    "CategoryId: $categoryId, Spent: ${expenses?[categoryId]?['total']}");
+                    "CategoryId: $categoryId, Spent: ${expenses[categoryId]?['totalToDisplay']}");
 
                 double ratio = budgetAmount == 0
                     ? (spent > 0 ? 1.0 : 0.0)

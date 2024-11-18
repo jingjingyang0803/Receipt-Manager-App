@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:receipt_manager/providers/category_provider.dart';
 import 'package:receipt_manager/providers/receipt_provider.dart';
@@ -12,7 +11,6 @@ import '../components/category_select_popup.dart';
 import '../components/currency_roller_picker_popup.dart';
 import '../components/custom_button.dart';
 import '../constants/app_colors.dart';
-import '../logger.dart';
 import '../services/storage_service.dart';
 import 'base_page.dart';
 
@@ -51,8 +49,6 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
 
   String? _uploadedImageUrl;
 
-  String currencySymbol = ' ';
-
   get userProvider => null;
 
   @override
@@ -63,8 +59,6 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
 
     final receiptProvider =
         Provider.of<ReceiptProvider>(context, listen: false);
-
-    currencySymbol = receiptProvider.currencySymbol ?? '€'; // Fetch the symbol
   }
 
   Future<void> _loadUserCategories() async {
@@ -92,7 +86,7 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
 
       _selectedCurrencyCode = widget.existingReceipt!['currencyCode'];
       _totalController.text =
-          widget.existingReceipt!['amount']?.toString() ?? '';
+          widget.existingReceipt!['amountToDisplay']?.toString() ?? '';
 
       _selectedCategoryId = widget.existingReceipt!['categoryId'];
       _selectedCategoryName = widget.existingReceipt!['categoryName'];
@@ -102,7 +96,7 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
       _descriptionController.text =
           widget.existingReceipt!['description'] ?? '';
 
-      if (widget.existingReceipt!.containsKey('imageUrl')) {
+      if (widget.existingReceipt!['imageUrl'] != null) {
         _uploadedImageUrl = widget.existingReceipt!['imageUrl'];
       }
     } else if (widget.extract != null) {
@@ -117,11 +111,10 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
       _selectedCurrencyCode = extractCurrencyCode;
       _totalController.text = extractAmount.toString();
 
-      _uploadedImageUrl = widget.extract!['imagePath'] ?? '';
+      _uploadedImageUrl = widget.extract!['imagePath'];
     } else {
       // New receipt mode
       _dateController.text = DateTime.now().toLocal().toString().split(' ')[0];
-      _selectedCurrencyCode = 'EUR';
     }
 
     // Fetch categories through CategoryProvider
@@ -331,19 +324,10 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
         return CurrencyPicker(
           selectedCurrencyCode: 'EUR', // Provide a default,
           onCurrencyCodeSelected: (String newCurrencyCode) async {
-            // Proceed with the update if the new name is different from the current name, even if empty
-            if (newCurrencyCode != userProvider.currencyCode) {
-              logger.i("Updating currency to $newCurrencyCode");
-              await userProvider.updateUserProfile(
-                  currencyCode: newCurrencyCode);
-              // Update the state to reflect the new currency immediately
-              setState(() {
-                _selectedCurrencyCode = newCurrencyCode;
-                currencySymbol =
-                    NumberFormat.simpleCurrency(name: newCurrencyCode)
-                        .currencySymbol;
-              });
-            }
+            // Update the state to reflect the new currency immediately
+            setState(() {
+              _selectedCurrencyCode = newCurrencyCode;
+            });
           },
         );
       },
@@ -500,7 +484,8 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
                   child: Text('Upload Receipt Image'),
                 ),
               ),
-              if (_uploadedImageUrl != null) ...[
+              if (_uploadedImageUrl != null &&
+                  _uploadedImageUrl!.isNotEmpty) ...[
                 SizedBox(height: 20),
                 Stack(
                   alignment: Alignment.topRight,
