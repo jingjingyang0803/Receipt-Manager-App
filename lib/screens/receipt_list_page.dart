@@ -44,7 +44,6 @@ class ReceiptListPageState extends State<ReceiptListPage> {
       print("Calling fetchReceipts");
 
       setState(() {
-        currencySymbol = receiptProvider.currencySymbol ?? '€';
         _searchedReceipts =
             receiptProvider.filteredReceipts; // Initialize search results
       });
@@ -75,8 +74,8 @@ class ReceiptListPageState extends State<ReceiptListPage> {
                         ? DateFormat('MMM d, yyyy')
                             .format((receipt['date'] as Timestamp).toDate())
                         : 'Unknown',
-                    currencySymbol: currencySymbol,
-                    amount: receipt['amount'].toStringAsFixed(2),
+                    currencySymbol: receipt['currencySymbolToDisplay'],
+                    amount: receipt['amountToDisplay'].toStringAsFixed(2),
                     paymentMethod:
                         receipt['paymentMethod'] ?? 'Unknown Payment Method',
                     onTap: () {

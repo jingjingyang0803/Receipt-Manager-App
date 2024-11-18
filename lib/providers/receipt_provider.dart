@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:receipt_manager/providers/user_provider.dart';
+import 'package:receipt_manager/services/currency_service.dart';
 
 import '../logger.dart';
 import '../services/receipt_service.dart';
@@ -16,6 +17,7 @@ class ReceiptProvider extends ChangeNotifier {
   AuthenticationProvider? _authProvider;
   UserProvider? _userProvider;
   CategoryProvider? _categoryProvider;
+  final CurrencyService _currencyService = CurrencyService();
 
   // Date Range
   DateTime? _startDate = DateTime(
@@ -54,24 +56,20 @@ class ReceiptProvider extends ChangeNotifier {
 
   // Grouped Receipts
   Map<String, Map<String, dynamic>>? _groupedReceiptsByCategory;
-  Map<String, double>? _groupedReceiptsByDate;
-  Map<String, double>? _groupedReceiptsByInterval;
-  Map<String, Map<String, dynamic>>? _groupedReceiptsByCategoryOneMonth;
+  late Map<String, Map<String, dynamic>>? _groupedReceiptsByInterval;
+  late Map<String, Map<String, dynamic>>? _groupedReceiptsByCategoryOneMonth;
 
   Map<String, Map<String, dynamic>>? get groupedReceiptsByCategory =>
       _groupedReceiptsByCategory;
-  Map<String, double>? get groupedReceiptsByDate => _groupedReceiptsByDate;
-  Map<String, double>? get groupedReceiptsByInterval =>
+  Map<String, Map<String, dynamic>>? get groupedReceiptsByInterval =>
       _groupedReceiptsByInterval;
   Map<String, Map<String, dynamic>>? get groupedReceiptsByCategoryOneMonth =>
       _groupedReceiptsByCategoryOneMonth;
 
   // Spending and Currency
   double _totalSpending = 0.0;
-  String? _currencySymbol;
 
   double get totalSpending => _totalSpending;
-  String? get currencySymbol => _currencySymbol;
 
   // Time Interval
   TimeInterval _selectedInterval = TimeInterval.month;
@@ -89,10 +87,6 @@ class ReceiptProvider extends ChangeNotifier {
 
   set userProvider(UserProvider userProvider) {
     _userProvider = userProvider;
-    final currencyCode = _userProvider?.userProfile?.data()?['currencyCode'];
-    // Get the currency symbol using intl
-    _currencySymbol =
-        NumberFormat.simpleCurrency(name: currencyCode).currencySymbol;
     notifyListeners();
   }
 
@@ -105,7 +99,7 @@ class ReceiptProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Fetch all receipts
+// Fetch all receipts
   Future<void> fetchAllReceipts() async {
     print("fetchAllReceipts called");
     _categoryProvider?.loadUserCategories();
@@ -124,11 +118,35 @@ class ReceiptProvider extends ChangeNotifier {
         return;
       }
 
-      // Update _allReceipts
+      // Update _allReceipts and enrich with category data
       _allReceipts =
           (snapshot.data()?['receiptlist'] ?? []).cast<Map<String, dynamic>>();
 
-      print("Receipts fetched (${_allReceipts.length}): $_allReceipts");
+      _allReceipts = _allReceipts.map((receipt) {
+        final category = _categoryProvider?.categories.firstWhere(
+          (cat) => cat['id'] == receipt['categoryId'],
+          orElse: () => {'name': 'Unknown', 'icon': '❓'},
+        );
+
+        final currencyCode =
+            _userProvider?.userProfile?.data()?['currencyCode'];
+        // Get the currency symbol using intl
+        final currencySymbol =
+            NumberFormat.simpleCurrency(name: currencyCode).currencySymbol;
+
+        return {
+          ...receipt,
+          'categoryName': category?['name'],
+          'categoryIcon': category?['icon'],
+          'categoryColor': category?['color'],
+          'currencySymbolToDisplay': currencySymbol,
+          'amountToDisplay': 5,
+          // 'amountToDisplay': receipt['amount'], //TODO: convert using rate
+        };
+      }).toList();
+
+      print(
+          "Receipts fetched and enriched (${_allReceipts.length}): $_allReceipts");
 
       // Notify listeners
       notifyListeners();
@@ -165,18 +183,6 @@ class ReceiptProvider extends ChangeNotifier {
           "Receipt: $receipt, Matches - Category: $matchesCategory, Payment: $matchesPaymentMethod, Date: $matchesDate");
 
       return matchesCategory && matchesPaymentMethod && matchesDate;
-    }).map((receipt) {
-      final category = _categoryProvider?.categories.firstWhere(
-        (cat) => cat['id'] == receipt['categoryId'],
-        orElse: () => {'name': 'Unknown', 'icon': '❓'},
-      );
-
-      return {
-        ...receipt,
-        'categoryName': category?['name'],
-        'categoryIcon': category?['icon'],
-        'categoryColor': category?['color'],
-      };
     }).toList();
 
     // Sort the filtered receipts
@@ -224,10 +230,7 @@ class ReceiptProvider extends ChangeNotifier {
     for (var receipt in _filteredReceipts) {
       final categoryId = receipt['categoryId'] ?? 'null';
 
-      final amount = (receipt['amount'] as num?)?.toDouble() ?? 0.0;
-      final categoryName = receipt['categoryName'];
-      final categoryIcon = receipt['categoryIcon'];
-      final categoryColor = receipt['categoryColor'];
+      final amount = (receipt['amountToDisplay'] as num?)?.toDouble() ?? 0.0;
       // If the categoryId already exists, update the amount
       if (_groupedReceiptsByCategory!.containsKey(categoryId)) {
         _groupedReceiptsByCategory![categoryId]!['total'] += amount;
@@ -235,9 +238,10 @@ class ReceiptProvider extends ChangeNotifier {
         // If the categoryId does not exist, initialize with name, icon, and amount
         _groupedReceiptsByCategory![categoryId] = {
           'total': amount,
-          'name': categoryName,
-          'icon': categoryIcon,
-          'color': categoryColor,
+          'categoryName': receipt['categoryName'],
+          'categoryIcon': receipt['categoryIcon'],
+          'categoryColor': receipt['categoryColor'],
+          'currencySymbolToDisplay': receipt['currencySymbolToDisplay'],
         };
       }
     }
@@ -256,7 +260,7 @@ class ReceiptProvider extends ChangeNotifier {
     _groupedReceiptsByInterval = {};
     for (var receipt in _filteredReceipts) {
       final date = (receipt['date'] as Timestamp?)?.toDate() ?? DateTime.now();
-      final amount = (receipt['amount'] as num?)?.toDouble() ?? 0.0;
+      final amount = (receipt['amountToDisplay'] as num?)?.toDouble() ?? 0.0;
 
       // Generate group key based on interval
       String groupKey;
@@ -275,9 +279,14 @@ class ReceiptProvider extends ChangeNotifier {
           break;
       }
 
-      // Add the amount to the appropriate group
-      _groupedReceiptsByInterval![groupKey] =
-          (_groupedReceiptsByInterval![groupKey] ?? 0.0) + amount;
+      _groupedReceiptsByInterval![groupKey] = {
+        'total':
+            ((_groupedReceiptsByInterval![groupKey]?['total'] ?? 0.0) + amount),
+        'categoryName': receipt['categoryName'],
+        'categoryIcon': receipt['categoryIcon'],
+        'categoryColor': receipt['categoryColor'],
+        'currencySymbolToDisplay': receipt['currencySymbolToDisplay'],
+      };
     }
 
     notifyListeners();
@@ -291,7 +300,7 @@ class ReceiptProvider extends ChangeNotifier {
   }
 
   void groupReceiptsByCategoryOneMonth(int month, int year) {
-    final groupedByCategory = <String, Map<String, dynamic>>{};
+    final groupedReceiptsByCategoryOneMonth = <String, Map<String, dynamic>>{};
 
     // Filter receipts for the selected month and year
     final filteredReceipts = _allReceipts.where((receipt) {
@@ -306,33 +315,36 @@ class ReceiptProvider extends ChangeNotifier {
     // Group receipts by category
     for (var receipt in filteredReceipts) {
       final categoryId = receipt['categoryId'] ?? 'null';
-      final amount = (receipt['amount'] as num?)?.toDouble() ?? 0.0;
+      final amount = (receipt['amountToDisplay'] as num?)?.toDouble() ?? 0.0;
 
-      if (groupedByCategory.containsKey(categoryId)) {
-        groupedByCategory[categoryId]!['total'] += amount;
+      if (groupedReceiptsByCategoryOneMonth.containsKey(categoryId)) {
+        groupedReceiptsByCategoryOneMonth[categoryId]!['total'] += amount;
+        // Update other fields if needed (e.g., overwrite or ensure they are set correctly)
+        groupedReceiptsByCategoryOneMonth[categoryId]!['categoryName'] =
+            receipt['categoryName'];
+        groupedReceiptsByCategoryOneMonth[categoryId]!['categoryIcon'] =
+            receipt['categoryIcon'];
+        groupedReceiptsByCategoryOneMonth[categoryId]!['categoryColor'] =
+            receipt['categoryColor'];
+        groupedReceiptsByCategoryOneMonth[categoryId]![
+            'currencySymbolToDisplay'] = receipt['currencySymbolToDisplay'];
       } else {
-        final category = _categoryProvider?.categories.firstWhere(
-          (cat) => cat['id'] == categoryId,
-          orElse: () => {'name': 'Unknown', 'icon': '❓'},
-        );
-
-        groupedByCategory[categoryId] = {
-          'categoryId': categoryId,
-          'name': category?['name'] ?? 'Unknown',
-          'icon': category?['icon'] ?? '❓',
+        groupedReceiptsByCategoryOneMonth[categoryId] = {
+          'categoryId': receipt['categoryId'],
           'total': amount,
+          'categoryName': receipt['categoryName'],
+          'categoryIcon': receipt['categoryIcon'],
+          'categoryColor': receipt['categoryColor'],
+          'currencySymbolToDisplay': receipt['currencySymbolToDisplay'],
         };
       }
     }
 
     // Log grouped data
-    print("Grouped Receipts by Category: $groupedByCategory");
+    print("Grouped Receipts by Category: $groupedReceiptsByCategoryOneMonth");
 
-    // Update state asynchronously to prevent conflicts
-    Future.microtask(() {
-      _groupedReceiptsByCategoryOneMonth = groupedByCategory;
-      notifyListeners();
-    });
+    _groupedReceiptsByCategoryOneMonth = groupedReceiptsByCategoryOneMonth;
+    notifyListeners();
   }
 
   void calculateTotalSpending(Map<String, Map<String, dynamic>> groupedData) {

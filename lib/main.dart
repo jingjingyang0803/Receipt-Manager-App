@@ -28,7 +28,13 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AuthenticationProvider()),
-
+        ChangeNotifierProxyProvider<AuthenticationProvider, UserProvider>(
+          create: (_) => UserProvider(),
+          update: (context, authProvider, userProvider) {
+            userProvider!.authProvider = authProvider;
+            return userProvider;
+          },
+        ),
         // Make sure CategoryProvider comes before BudgetProvider
         ChangeNotifierProxyProvider<AuthenticationProvider, CategoryProvider>(
           create: (_) => CategoryProvider(),
@@ -46,14 +52,6 @@ class MyApp extends StatelessWidget {
             budgetProvider
                 .updateCategories(); // Call a method to update categories in BudgetProvider
             return budgetProvider;
-          },
-        ),
-
-        ChangeNotifierProxyProvider<AuthenticationProvider, UserProvider>(
-          create: (_) => UserProvider(),
-          update: (context, authProvider, userProvider) {
-            userProvider!.authProvider = authProvider;
-            return userProvider;
           },
         ),
         ChangeNotifierProxyProvider3<AuthenticationProvider, UserProvider,

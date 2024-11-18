@@ -19,7 +19,6 @@ class ReportPage extends StatefulWidget {
 
 class ReportPageState extends State<ReportPage> {
   bool isPieChart = true; // Toggle state for chart
-  String currencySymbol = ' ';
 
   TimeInterval selectedInterval =
       TimeInterval.day; // Default time interval (day)
@@ -44,8 +43,6 @@ class ReportPageState extends State<ReportPage> {
 
       setState(() {
         selectedInterval = receiptProvider.selectedInterval;
-        currencySymbol =
-            receiptProvider.currencySymbol ?? '€'; // Fetch the symbol
       });
     });
   }
@@ -57,7 +54,7 @@ class ReportPageState extends State<ReportPage> {
     return groupedReceiptsByCategory.entries.map((entry) {
       final total = entry.value['total'] as double? ?? 0.0;
       final categoryColor =
-          entry.value['color'] as Color? ?? Colors.grey.shade200;
+          entry.value['categoryColor'] as Color? ?? Colors.grey.shade200;
 
       return PieChartSectionData(
         color: categoryColor,
@@ -103,8 +100,8 @@ class ReportPageState extends State<ReportPage> {
                 // Extract fields for each category
                 final total = entry.value['total'] as double? ?? 0.0;
                 final percentage = (total / totalAmount) * 100;
-                final categoryColor =
-                    entry.value['color'] as Color? ?? Colors.grey.shade200;
+                final categoryColor = entry.value['categoryColor'] as Color? ??
+                    Colors.grey.shade200;
 
                 return PieChartSectionData(
                   color: categoryColor, // Use grey if no color
@@ -134,9 +131,13 @@ class ReportPageState extends State<ReportPage> {
             final total = categoryData['total'] as double? ?? 0.0;
             final percentage = (total / totalAmount) * 100;
 
-            final categoryName = categoryData['name'] ?? 'Uncategorized';
-            final categoryIcon = categoryData['icon'] ?? '❓';
-            final categoryColor = categoryData['color'] ?? Colors.grey.shade200;
+            final categoryName =
+                categoryData['categoryName'] ?? 'Uncategorized';
+            final categoryIcon = categoryData['categoryIcon'] ?? '❓';
+            final categoryColor =
+                categoryData['categoryColor'] ?? Colors.grey.shade200;
+            final currencySymbol =
+                categoryData['currencySymbolToDisplay'] ?? ' ';
 
             return Padding(
               padding:
@@ -194,7 +195,7 @@ class ReportPageState extends State<ReportPage> {
 
     return groupedReceipts.entries.map((entry) {
       final index = groupedReceipts.keys.toList().indexOf(entry.key);
-      final total = entry.value;
+      final total = entry.value['total'];
       final color = Color(0xFF66BB6A);
 
       return BarChartGroupData(
@@ -224,6 +225,8 @@ class ReportPageState extends State<ReportPage> {
     receiptProvider.groupByInterval(interval);
 
     final groupedReceipts = receiptProvider.groupedReceiptsByInterval ?? {};
+    final currencySymbol =
+        groupedReceipts.values.first['currencySymbolToDisplay'];
 
     if (groupedReceipts.isEmpty) {
       return const Center(child: Text('No data available.'));
@@ -231,8 +234,10 @@ class ReportPageState extends State<ReportPage> {
 
     final chartWidth = groupedReceipts.length * 100.0;
     final maxY = groupedReceipts.values
+            .map((entry) =>
+                entry['total'] as double) // Extract the 'total' field
             .fold(0.0, (prev, next) => prev > next ? prev : next) *
-        1.1;
+        1.1; // Find max and add 10%
 
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
