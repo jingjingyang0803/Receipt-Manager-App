@@ -90,13 +90,15 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
               .split(' ')[0] ??
           '';
 
+      _selectedCurrencyCode = widget.existingReceipt!['currencyCode'];
+      _totalController.text =
+          widget.existingReceipt!['amount']?.toString() ?? '';
+
       _selectedCategoryId = widget.existingReceipt!['categoryId'];
       _selectedCategoryName = widget.existingReceipt!['categoryName'];
       _selectedCategoryIcon = widget.existingReceipt!['categoryIcon'];
       _itemNameController.text = widget.existingReceipt!['itemName'] ?? '';
 
-      _totalController.text =
-          widget.existingReceipt!['amount']?.toString() ?? '';
       _descriptionController.text =
           widget.existingReceipt!['description'] ?? '';
 
@@ -109,20 +111,17 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
       _dateController.text = widget.extract!['date'] ??
           DateTime.now().toLocal().toString().split(' ')[0];
 
-      final extractCurrency = widget.extract!['currency'] ?? '';
+      final extractCurrencyCode = widget.extract!['currency'] ?? '';
       final extractAmount = widget.extract!['amount'] ?? '';
 
-      if (extractCurrency != currencySymbol) {
-        _descriptionController.text =
-            'Converted from $extractCurrency $extractAmount';
-      } else {
-        _totalController.text = extractAmount.toString();
-      }
+      _selectedCurrencyCode = extractCurrencyCode;
+      _totalController.text = extractAmount.toString();
 
       _uploadedImageUrl = widget.extract!['imagePath'] ?? '';
     } else {
       // New receipt mode
       _dateController.text = DateTime.now().toLocal().toString().split(' ')[0];
+      _selectedCurrencyCode = 'EUR';
     }
 
     // Fetch categories through CategoryProvider
@@ -362,227 +361,220 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
         elevation: 0,
         iconTheme: IconThemeData(color: Colors.black),
       ),
-      body: Column(
-        children: [
-          Divider(
-            color: Colors.grey.shade300,
-            thickness: 1,
-            height: 1,
-          ),
-          SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Divider(
+                color: Colors.grey.shade300,
+                thickness: 1,
+                height: 1,
+              ),
+              SizedBox(height: 20),
+              TextField(
+                controller: _merchantController,
+                decoration: InputDecoration(labelText: 'Merchant'),
+              ),
+              SizedBox(width: 40),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  TextField(
-                    controller: _merchantController,
-                    decoration: InputDecoration(labelText: 'Merchant'),
+                  Expanded(
+                    child: DropdownButtonFormField<String>(
+                      value: _selectedPaymentMethod,
+                      items: [
+                        'Credit Card',
+                        'Debit Card',
+                        'Cash',
+                        'PayPal',
+                        'MobilePay',
+                        'Apple Pay',
+                        'Google Pay',
+                        'Bank Transfer',
+                        'Others'
+                      ]
+                          .map((method) => DropdownMenuItem(
+                                value: method,
+                                child: Text(method),
+                              ))
+                          .toList(),
+                      onChanged: (value) => setState(() {
+                        _selectedPaymentMethod = value;
+                      }),
+                      decoration: InputDecoration(labelText: 'Payment Method'),
+                    ),
                   ),
-                  SizedBox(width: 40),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: DropdownButtonFormField<String>(
-                          value: _selectedPaymentMethod,
-                          items: [
-                            'Credit Card',
-                            'Debit Card',
-                            'Cash',
-                            'PayPal',
-                            'MobilePay',
-                            'Apple Pay',
-                            'Google Pay',
-                            'Bank Transfer',
-                            'Others'
-                          ]
-                              .map((method) => DropdownMenuItem(
-                                    value: method,
-                                    child: Text(method),
-                                  ))
-                              .toList(),
-                          onChanged: (value) => setState(() {
-                            _selectedPaymentMethod = value;
-                          }),
-                          decoration:
-                              InputDecoration(labelText: 'Payment Method'),
+                  SizedBox(width: 20),
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () => _selectDate(context),
+                      child: AbsorbPointer(
+                        child: TextField(
+                          controller: _dateController,
+                          decoration: InputDecoration(labelText: 'Date'),
                         ),
                       ),
-                      SizedBox(width: 20),
-                      Expanded(
-                        child: GestureDetector(
-                          onTap: () => _selectDate(context),
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        GestureDetector(
+                          onTap: () => _showCurrencyPicker(context),
                           child: AbsorbPointer(
                             child: TextField(
-                              controller: _dateController,
-                              decoration: InputDecoration(labelText: 'Date'),
+                              decoration: InputDecoration(
+                                labelText:
+                                    _selectedCurrencyCode?.isNotEmpty == true
+                                        ? _selectedCurrencyCode
+                                        : 'Select Currency',
+                                border: OutlineInputBorder(),
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 20),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            GestureDetector(
-                              onTap: () => _showCurrencyPicker(context),
-                              child: AbsorbPointer(
-                                child: TextField(
-                                  decoration: InputDecoration(
-                                    labelText: _selectedCurrencyCode
-                                                ?.isNotEmpty ==
-                                            true
-                                        ? '$_selectedCurrencyCode $_selectedCategoryName'
-                                        : 'Select Currency',
-                                    border: OutlineInputBorder(),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      SizedBox(width: 20),
-                      Expanded(
-                        child: TextField(
-                          controller: _totalController,
-                          decoration: InputDecoration(labelText: 'Total'),
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 20),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            GestureDetector(
-                              onTap: () => _showCategoryBottomSheet(context),
-                              child: AbsorbPointer(
-                                child: TextField(
-                                  decoration: InputDecoration(
-                                    labelText: _selectedCategoryId
-                                                ?.isNotEmpty ==
-                                            true
-                                        ? '$_selectedCategoryIcon $_selectedCategoryName'
-                                        : 'Select Category',
-                                    border: OutlineInputBorder(),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      SizedBox(width: 20),
-                      Expanded(
-                        child: TextField(
-                          controller: _itemNameController,
-                          decoration: InputDecoration(labelText: 'Item Name'),
-                        ),
-                      ),
-                    ],
-                  ),
-                  TextField(
-                    controller: _descriptionController,
-                    decoration: InputDecoration(labelText: 'Description'),
-                  ),
-                  SizedBox(height: 20),
-                  Center(
-                    child: ElevatedButton(
-                      onPressed: uploadReceiptImage,
-                      child: Text('Upload Receipt Image'),
+                      ],
                     ),
                   ),
-                  if (_uploadedImageUrl != null) ...[
-                    SizedBox(height: 20),
-                    Stack(
-                      alignment: Alignment.topRight,
+                  SizedBox(width: 20),
+                  Expanded(
+                    child: TextField(
+                      controller: _totalController,
+                      decoration: InputDecoration(labelText: 'Total'),
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Column(
-                          children: [
-                            Align(
-                              alignment: Alignment.topRight,
-                              child: GestureDetector(
-                                onTap: () => setState(() {
-                                  _uploadedImageUrl = null;
-                                }),
-                                child: Icon(
-                                  Icons.close,
-                                  color: Colors.red,
-                                  size: 24,
-                                ),
+                        GestureDetector(
+                          onTap: () => _showCategoryBottomSheet(context),
+                          child: AbsorbPointer(
+                            child: TextField(
+                              decoration: InputDecoration(
+                                labelText: _selectedCategoryId?.isNotEmpty ==
+                                        true
+                                    ? '$_selectedCategoryIcon $_selectedCategoryName'
+                                    : 'Select Category',
+                                border: OutlineInputBorder(),
                               ),
                             ),
-                            SizedBox(height: 8),
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(8.0),
-                              child: _uploadedImageUrl!.startsWith('http')
-                                  ? Image.network(_uploadedImageUrl!.trim())
-                                  : Image.file(File(_uploadedImageUrl!)),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(width: 20),
+                  Expanded(
+                    child: TextField(
+                      controller: _itemNameController,
+                      decoration: InputDecoration(labelText: 'Item Name'),
+                    ),
+                  ),
+                ],
+              ),
+              TextField(
+                controller: _descriptionController,
+                decoration: InputDecoration(labelText: 'Description'),
+              ),
+              SizedBox(height: 20),
+              Center(
+                child: ElevatedButton(
+                  onPressed: uploadReceiptImage,
+                  child: Text('Upload Receipt Image'),
+                ),
+              ),
+              if (_uploadedImageUrl != null) ...[
+                SizedBox(height: 20),
+                Stack(
+                  alignment: Alignment.topRight,
+                  children: [
+                    Column(
+                      children: [
+                        Align(
+                          alignment: Alignment.topRight,
+                          child: GestureDetector(
+                            onTap: () => setState(() {
+                              _uploadedImageUrl = null;
+                            }),
+                            child: Icon(
+                              Icons.close,
+                              color: Colors.red,
+                              size: 24,
                             ),
-                          ],
+                          ),
+                        ),
+                        SizedBox(height: 8),
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(8.0),
+                          child: _uploadedImageUrl!.startsWith('http')
+                              ? Image.network(_uploadedImageUrl!.trim())
+                              : Image.file(File(_uploadedImageUrl!)),
                         ),
                       ],
                     ),
                   ],
-                  SizedBox(height: 20),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                          child: CustomButton(
-                            text: "Cancel",
-                            backgroundColor: purple20,
-                            textColor: purple100,
-                            onPressed: () => Navigator.pop(context),
-                          ),
-                        ),
+                ),
+              ],
+              SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: CustomButton(
+                        text: "Cancel",
+                        backgroundColor: purple20,
+                        textColor: purple100,
+                        onPressed: () => Navigator.pop(context),
                       ),
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                          child: CustomButton(
-                            text: widget.receiptId != null ? 'Update' : 'Save',
-                            backgroundColor: purple100,
-                            textColor: light80,
-                            onPressed: _saveReceipt,
-                          ),
-                        ),
-                      ),
-                      if (widget.receiptId != null) ...[
-                        Expanded(
-                          child: Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 8.0),
-                            child: CustomButton(
-                              text: 'Delete',
-                              backgroundColor: red100,
-                              textColor: light80,
-                              onPressed: _confirmDelete,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ],
+                    ),
                   ),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: CustomButton(
+                        text: widget.receiptId != null ? 'Update' : 'Save',
+                        backgroundColor: purple100,
+                        textColor: light80,
+                        onPressed: _saveReceipt,
+                      ),
+                    ),
+                  ),
+                  if (widget.receiptId != null) ...[
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: CustomButton(
+                          text: 'Delete',
+                          backgroundColor: red100,
+                          textColor: light80,
+                          onPressed: _confirmDelete,
+                        ),
+                      ),
+                    ),
+                  ],
                 ],
               ),
-            ),
-          )
-        ],
+            ],
+          ),
+        ),
       ),
     );
   }
