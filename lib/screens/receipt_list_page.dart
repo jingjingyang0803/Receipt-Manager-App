@@ -114,19 +114,67 @@ class ReceiptListPageState extends State<ReceiptListPage> {
     final lowerCaseQuery = query.toLowerCase();
 
     setState(() {
-      _searchedReceipts = Provider.of<ReceiptProvider>(context, listen: false)
-          .filteredReceipts
-          .where((receipt) {
+      final receiptProvider =
+          Provider.of<ReceiptProvider>(context, listen: false);
+      final lowerCaseQuery = query
+          .toLowerCase(); // Replace `searchQuery` with your actual query variable.
+
+      _searchedReceipts = receiptProvider.filteredReceipts.where((receipt) {
         print("Checking receipt: $receipt");
+
         final matches = receipt.entries.any((entry) {
-          final value = entry.value?.toString().toLowerCase() ?? '';
-          print(
-              "Field: ${entry.key}, Value: $value, Matches: ${value.contains(lowerCaseQuery)}");
-          return value.contains(lowerCaseQuery);
+          final key = entry.key;
+          final value = entry.value;
+
+          // Handle specific keys together
+          const relevantKeys = {
+            'amount',
+            'merchant',
+            'itemName',
+            'paymentMethod',
+            'categoryName',
+            'categoryIcon',
+            'description'
+          };
+
+          if (relevantKeys.contains(key)) {
+            var stringValue = value?.toString().toLowerCase() ?? '';
+            if (key == 'amount') {
+              // Format numeric value to two decimal places
+              stringValue = value.toStringAsFixed(2);
+            }
+            print(
+                "Key: $key, Value: $stringValue, Matches: ${stringValue.contains(lowerCaseQuery)}");
+            return stringValue.contains(lowerCaseQuery);
+          }
+
+          // Special case for date
+          if (key == 'date' && value is Timestamp) {
+            final date = value.toDate();
+            final formattedDate =
+                "${date.day} ${DateFormat.MMMM().format(date)} ${date.year}";
+            final formattedMonthNumber =
+                "${date.month}"; // Get numeric month representation
+
+            print(
+                "Formatted Date: $formattedDate (${formattedMonthNumber}), Query: $lowerCaseQuery");
+            return formattedDate.toLowerCase().contains(lowerCaseQuery) ||
+                formattedMonthNumber
+                    .contains(lowerCaseQuery); // Match both formats
+          }
+
+          // Ignore other fields:
+          // - id: Unique identifier, not relevant for searching.
+          // - imageUrl: Typically contains a URL, not text to match user queries.
+          // - categoryId: Internal identifier, not meaningful to users.
+          // - categoryColor: A Color object, not searchable by text.
+          return false;
         });
+
         print("Receipt matches: $matches");
         return matches;
       }).toList();
+
       print("Search results: $_searchedReceipts");
     });
   }
