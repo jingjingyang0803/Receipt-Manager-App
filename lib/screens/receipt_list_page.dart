@@ -171,19 +171,19 @@ class ReceiptListPageState extends State<ReceiptListPage> {
     },
     {
       'key': 'itemName',
-      'label': 'Item Name',
+      'label': 'Item',
       'icon': Icons.label,
       'isSelected': true
     },
     {
       'key': 'paymentMethod',
-      'label': 'Payment Method',
+      'label': 'Payment',
       'icon': Icons.credit_card,
       'isSelected': true
     },
     {
       'key': 'categoryName',
-      'label': 'Category Name',
+      'label': 'Category',
       'icon': Icons.category,
       'isSelected': true
     },
@@ -209,6 +209,12 @@ class ReceiptListPageState extends State<ReceiptListPage> {
           padding: const EdgeInsets.symmetric(horizontal: 14), // Adjust padding
           child: Row(
             children: [
+              Icon(
+                Icons.search,
+                color:
+                    purple80, // Match the icon color with the report bar text
+              ),
+              SizedBox(width: 8),
               Expanded(
                 child: TextField(
                   controller: _searchController,
@@ -225,11 +231,6 @@ class ReceiptListPageState extends State<ReceiptListPage> {
                   },
                 ),
               ),
-              Icon(
-                Icons.search,
-                color:
-                    purple80, // Match the icon color with the report bar text
-              ),
             ],
           ),
         ),
@@ -238,46 +239,63 @@ class ReceiptListPageState extends State<ReceiptListPage> {
         // Chips for Filters in a Single Horizontal Row
         SingleChildScrollView(
           scrollDirection: Axis.horizontal, // Enable horizontal scrolling
-          child: Row(
-            children: _filterOptions.map((option) {
-              return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                child: ChoiceChip(
-                  label: Row(
-                    children: [
-                      Icon(
-                        option['icon'],
-                        size: 18,
-                        color: option['isSelected'] ? dark25 : purple200,
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        option['label'],
-                        style: TextStyle(
-                          color: option['isSelected']
-                              ? dark25
-                              : purple200, // Text color for selected/unselected
+          child: Padding(
+            padding: const EdgeInsets.only(left: 40.0), // Add space on the left
+            child: Row(
+              children: _filterOptions.map((option) {
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                  child: ChoiceChip(
+                    label: Row(
+                      children: [
+                        if (!option[
+                            'isSelected']) // Show both Icon and SizedBox if not selected
+                          Row(
+                            children: [
+                              Icon(
+                                option['icon'],
+                                size: 18,
+                                color: purple200,
+                              ),
+                              const SizedBox(
+                                  width: 8), // Add spacing after the icon
+                            ],
+                          ),
+                        Text(
+                          option['label'],
+                          style: TextStyle(
+                            color: option['isSelected']
+                                ? dark25
+                                : purple200, // Text color for selected/unselected
+                          ),
                         ),
+                      ],
+                    ),
+                    selected: option['isSelected'],
+                    selectedColor:
+                        purple20, // Background color for selected chip
+                    backgroundColor:
+                        Colors.grey.shade200, // Background for unselected chip
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12.0),
+                      side: BorderSide(
+                        color: option['isSelected']
+                            ? purple40
+                            : Colors.grey, // Border color
+                        width: 1.5, // Border width
                       ),
-                    ],
+                    ),
+                    onSelected: (isSelected) {
+                      setState(() {
+                        option['isSelected'] = isSelected;
+                      });
+                      _performSearch(_searchController
+                          .text); // Trigger search with updated filters
+                    },
                   ),
-                  selected: option['isSelected'],
-                  selectedColor: purple20, // Background color for selected chip
-                  backgroundColor:
-                      Colors.grey.shade200, // Background for unselected chip
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12.0),
-                  ),
-                  onSelected: (isSelected) {
-                    setState(() {
-                      option['isSelected'] = isSelected;
-                    });
-                    _performSearch(_searchController
-                        .text); // Trigger search with updated filters
-                  },
-                ),
-              );
-            }).toList(),
+                );
+              }).toList(),
+            ),
           ),
         ),
       ],
