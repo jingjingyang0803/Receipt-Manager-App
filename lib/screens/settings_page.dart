@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:receipt_manager/screens/budget_page.dart';
 
@@ -28,11 +29,17 @@ class SettingsPageState extends State<SettingsPage> {
   late TextEditingController _nameController;
   late UserProvider userProvider;
 
+  String? currencyCode;
+  String? currencySymbol;
+
+  @override
   @override
   void initState() {
     super.initState();
 
+    // Access the UserProvider instance
     userProvider = Provider.of<UserProvider>(context, listen: false);
+    userProvider.fetchUserProfile();
 
     // Initialize the controller with the current user name from provider
     _nameController = TextEditingController(text: userProvider.userName);
@@ -44,7 +51,17 @@ class SettingsPageState extends State<SettingsPage> {
           XFile(profileImagePath); // Wrap the path in XFile for consistency
     }
 
-    // Fetch the user profile when the page is initialized
+    // Initialize currency code and symbol
+    currencyCode = userProvider.currencyCode;
+    if (currencyCode != null && currencyCode!.isNotEmpty) {
+      // Use the Intl package to get the currency symbol
+      currencySymbol =
+          NumberFormat.simpleCurrency(name: currencyCode).currencySymbol;
+    } else {
+      currencySymbol = '€'; // Fallback default currency symbol
+    }
+
+    // Fetch the user profile after the widget is built
     WidgetsBinding.instance.addPostFrameCallback((_) {
       userProvider.fetchUserProfile();
     });
@@ -90,13 +107,18 @@ class SettingsPageState extends State<SettingsPage> {
         return CurrencyPicker(
           selectedCurrencyCode: 'EUR', // Provide a default,
           onCurrencyCodeSelected: (String newCurrencyCode) async {
-            userProvider = Provider.of<UserProvider>(context, listen: false);
-
             // Proceed with the update if the new name is different from the current name, even if empty
             if (newCurrencyCode != userProvider.currencyCode) {
               logger.i("Updating currency to $newCurrencyCode");
               await userProvider.updateUserProfile(
                   currencyCode: newCurrencyCode);
+              // Update the state to reflect the new currency immediately
+              setState(() {
+                currencyCode = newCurrencyCode;
+                currencySymbol =
+                    NumberFormat.simpleCurrency(name: newCurrencyCode)
+                        .currencySymbol;
+              });
             }
           },
         );
@@ -232,6 +254,8 @@ class SettingsPageState extends State<SettingsPage> {
                             iconBackgroundColor: purple20,
                             iconColor: purple100,
                             onTap: () => _showCurrencyPicker(context),
+                            trailingTextBuilder: () =>
+                                "$currencyCode $currencySymbol",
                           ),
                           Divider(thickness: 1, color: light90),
                           SettingsMenuItem(
@@ -286,6 +310,7 @@ class SettingsMenuItem extends StatelessWidget {
   final Color iconBackgroundColor;
   final Color iconColor;
   final VoidCallback onTap;
+  final String Function()? trailingTextBuilder; // Callback for dynamic text
 
   const SettingsMenuItem({
     super.key,
@@ -294,6 +319,7 @@ class SettingsMenuItem extends StatelessWidget {
     required this.iconBackgroundColor,
     required this.iconColor,
     required this.onTap,
+    this.trailingTextBuilder,
   });
 
   @override
@@ -303,20 +329,31 @@ class SettingsMenuItem extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
         child: Row(
+          mainAxisAlignment:
+              MainAxisAlignment.spaceBetween, // Space between elements
           children: [
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: iconBackgroundColor,
-                borderRadius: BorderRadius.circular(8.0),
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: iconBackgroundColor,
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                  child: Icon(icon, color: iconColor, size: 32),
+                ),
+                const SizedBox(width: 16),
+                Text(
+                  text,
+                  style: TextStyle(fontSize: 18, color: Colors.black87),
+                ),
+              ],
+            ),
+            if (trailingTextBuilder != null)
+              Text(
+                trailingTextBuilder!(),
+                style: TextStyle(fontSize: 16, color: Colors.grey.shade700),
               ),
-              child: Icon(icon, color: iconColor, size: 32),
-            ),
-            const SizedBox(width: 16),
-            Text(
-              text,
-              style: TextStyle(fontSize: 18, color: dark75),
-            ),
           ],
         ),
       ),
