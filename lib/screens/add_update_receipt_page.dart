@@ -465,30 +465,22 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
               ],
               SizedBox(height: 20),
               Row(
-                mainAxisAlignment:
-                    MainAxisAlignment.spaceEvenly, // Distribute buttons evenly
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  // Cancel Button
-                  Flexible(
-                    flex: 1,
-                    child: SizedBox(
-                      height: 40, // Button height
-                      width: 90, // Button width
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
                       child: CustomButton(
-                        text: 'Cancel',
-                        backgroundColor: purple100,
-                        textColor: light80,
+                        text: "Cancel",
+                        backgroundColor: purple20,
+                        textColor: purple100,
                         onPressed: () => Navigator.pop(context),
                       ),
                     ),
                   ),
-                  SizedBox(width: 10), // Spacing between buttons
-                  // Update/Save Button
-                  Flexible(
-                    flex: 1,
-                    child: SizedBox(
-                      height: 40, // Button height
-                      width: 90, // Button width
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
                       child: CustomButton(
                         text: widget.receiptId != null ? 'Update' : 'Save',
                         backgroundColor: purple100,
@@ -498,16 +490,12 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
                     ),
                   ),
                   if (widget.receiptId != null) ...[
-                    SizedBox(width: 10), // Spacing between buttons
-                    // Delete Button
-                    Flexible(
-                      flex: 1,
-                      child: SizedBox(
-                        height: 40, // Button height
-                        width: 90, // Button width
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
                         child: CustomButton(
                           text: 'Delete',
-                          backgroundColor: purple100,
+                          backgroundColor: red100,
                           textColor: light80,
                           onPressed: _confirmDelete,
                         ),
