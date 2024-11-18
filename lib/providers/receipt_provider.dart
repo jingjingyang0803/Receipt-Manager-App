@@ -2,12 +2,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:receipt_manager/providers/user_provider.dart';
-import 'package:receipt_manager/services/currency_service.dart';
 
 import '../logger.dart';
 import '../services/receipt_service.dart';
 import 'authentication_provider.dart';
 import 'category_provider.dart';
+import 'currency_provider.dart';
 
 enum TimeInterval { day, week, month, year }
 
@@ -17,7 +17,7 @@ class ReceiptProvider extends ChangeNotifier {
   AuthenticationProvider? _authProvider;
   UserProvider? _userProvider;
   CategoryProvider? _categoryProvider;
-  final CurrencyService _currencyService = CurrencyService();
+  CurrencyProvider? _currencyProvider;
 
   // Date Range
   DateTime? _startDate = DateTime(
@@ -96,6 +96,11 @@ class ReceiptProvider extends ChangeNotifier {
         .map((cat) => cat['id'] as String)
         .toList();
     _selectedCategoryIds.add('null');
+    notifyListeners();
+  }
+
+  set currencyProvider(CurrencyProvider currencyProvider) {
+    _currencyProvider = currencyProvider;
     notifyListeners();
   }
 

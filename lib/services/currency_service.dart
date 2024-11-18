@@ -10,6 +10,9 @@ class CurrencyService {
   DateTime? _lastFetched; // To track when rates were last fetched
   static const Duration _cacheDuration = Duration(hours: 1); // Cache for 1 hour
 
+  // Getter for cache duration
+  Duration get cacheDuration => _cacheDuration;
+
   // Method to get the API key from Firebase Remote Config
   static Future<String> getApiKey() async {
     final remoteConfig = FirebaseRemoteConfig.instance;
