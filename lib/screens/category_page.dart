@@ -67,6 +67,8 @@ class CategoryPageState extends State<CategoryPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: true,
+      backgroundColor: light90,
       appBar: AppBar(
         title: Text('Manage Categories', style: TextStyle(color: Colors.black)),
         backgroundColor: Colors.white,
