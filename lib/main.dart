@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:receipt_manager/providers/currency_provider.dart';
 import 'package:receipt_manager/providers/receipt_provider.dart';
 
 import 'firebase_options.dart';
@@ -28,6 +29,9 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AuthenticationProvider()),
+        ChangeNotifierProvider(
+            create: (_) =>
+                CurrencyProvider()), // Ensure CurrencyProvider is initialized before ReceiptProvider
         ChangeNotifierProxyProvider<AuthenticationProvider, UserProvider>(
           create: (_) => UserProvider(),
           update: (context, authProvider, userProvider) {
@@ -54,16 +58,16 @@ class MyApp extends StatelessWidget {
             return budgetProvider;
           },
         ),
-        ChangeNotifierProxyProvider3<AuthenticationProvider, UserProvider,
-            CategoryProvider, ReceiptProvider>(
+        ChangeNotifierProxyProvider4<AuthenticationProvider, UserProvider,
+            CategoryProvider, CurrencyProvider, ReceiptProvider>(
           create: (_) => ReceiptProvider(),
           update: (context, authProvider, userProvider, categoryProvider,
-              receiptProvider) {
+              currencyProvider, receiptProvider) {
             receiptProvider ??= ReceiptProvider();
             receiptProvider.authProvider = authProvider;
             receiptProvider.userProvider = userProvider;
-            receiptProvider.categoryProvider =
-                categoryProvider; // Assign CategoryProvider
+            receiptProvider.categoryProvider = categoryProvider;
+            receiptProvider.currencyProvider = currencyProvider;
             return receiptProvider;
           },
         ),
