@@ -195,7 +195,7 @@ class ReceiptListPageState extends State<ReceiptListPage> {
     },
   ];
 
-  Widget _buildSearchBarWitchChips(BuildContext context) {
+  Widget _buildSearchBarWithChips(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -235,48 +235,50 @@ class ReceiptListPageState extends State<ReceiptListPage> {
         ),
         const SizedBox(height: 8),
 
-        // Chips for Filters
-        Wrap(
-          spacing: 8.0, // Horizontal spacing between chips
-          runSpacing: 4.0, // Vertical spacing between rows
-          children: _filterOptions.map((option) {
-            return ChoiceChip(
-              label: Row(
-                children: [
-                  Icon(
-                    option['icon'],
-                    size: 18,
-                    color: option['isSelected'] ? dark25 : purple200,
+        // Chips for Filters in a Single Horizontal Row
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal, // Enable horizontal scrolling
+          child: Row(
+            children: _filterOptions.map((option) {
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                child: ChoiceChip(
+                  label: Row(
+                    children: [
+                      Icon(
+                        option['icon'],
+                        size: 18,
+                        color: option['isSelected'] ? dark25 : purple200,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        option['label'],
+                        style: TextStyle(
+                          color: option['isSelected']
+                              ? dark25
+                              : purple200, // Text color for selected/unselected
+                        ),
+                      ),
+                    ],
                   ),
-                  SizedBox(
-                    width: 8,
+                  selected: option['isSelected'],
+                  selectedColor: purple20, // Background color for selected chip
+                  backgroundColor:
+                      Colors.grey.shade200, // Background for unselected chip
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12.0),
                   ),
-                  Text(
-                    option['label'],
-                    style: TextStyle(
-                      color: option['isSelected']
-                          ? dark25
-                          : purple200, // Text color for selected/unselected
-                    ),
-                  ),
-                ],
-              ),
-              selected: option['isSelected'],
-              selectedColor: purple20, // Background color for selected chip
-              backgroundColor:
-                  Colors.grey.shade200, // Background for unselected chip
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12.0),
-              ),
-              onSelected: (isSelected) {
-                setState(() {
-                  option['isSelected'] = isSelected;
-                });
-                _performSearch(_searchController
-                    .text); // Trigger search with updated filters
-              },
-            );
-          }).toList(),
+                  onSelected: (isSelected) {
+                    setState(() {
+                      option['isSelected'] = isSelected;
+                    });
+                    _performSearch(_searchController
+                        .text); // Trigger search with updated filters
+                  },
+                ),
+              );
+            }).toList(),
+          ),
         ),
       ],
     );
@@ -352,7 +354,7 @@ class ReceiptListPageState extends State<ReceiptListPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildSearchBarWitchChips(context), // The search bar at the top
+            _buildSearchBarWithChips(context), // The search bar at the top
             const SizedBox(height: 16), // Add space after the search bar
             Expanded(
               child: Consumer<ReceiptProvider>(
