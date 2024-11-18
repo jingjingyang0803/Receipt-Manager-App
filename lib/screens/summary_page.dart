@@ -183,9 +183,11 @@ class SummaryPageState extends State<SummaryPage> {
 
     print("Expenses: $expenses");
     return Scaffold(
+      resizeToAvoidBottomInset: true,
+      backgroundColor: light90,
       appBar: AppBar(
         title: Text('Monthly Summary', style: TextStyle(color: Colors.black)),
-        backgroundColor: Colors.white,
+        backgroundColor: light90,
         elevation: 0,
         iconTheme: IconThemeData(color: Colors.black),
       ),
@@ -198,7 +200,7 @@ class SummaryPageState extends State<SummaryPage> {
           ),
           // Month and Year Picker
           Container(
-            color: Colors.white,
+            color: light90,
             padding: const EdgeInsets.all(20),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
