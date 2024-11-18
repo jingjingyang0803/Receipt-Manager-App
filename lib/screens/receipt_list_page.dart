@@ -163,14 +163,20 @@ class ReceiptListPageState extends State<ReceiptListPage> {
       'isSelected': true
     },
     {
+      'key': 'amountToDisplay',
+      'label': 'Converted Amt',
+      'icon': Icons.attach_money,
+      'isSelected': true
+    },
+    {
       'key': 'amount',
-      'label': 'Amount',
+      'label': 'Original Amt',
       'icon': Icons.attach_money,
       'isSelected': true
     },
     {
       'key': 'itemName',
-      'label': 'Item',
+      'label': 'Items',
       'icon': Icons.label,
       'isSelected': true
     },
@@ -190,6 +196,12 @@ class ReceiptListPageState extends State<ReceiptListPage> {
       'key': 'description',
       'label': 'Description',
       'icon': Icons.description,
+      'isSelected': true
+    },
+    {
+      'key': 'currencyCode',
+      'label': 'Currency',
+      'icon': Icons.attach_money,
       'isSelected': true
     },
   ];
@@ -327,7 +339,7 @@ class ReceiptListPageState extends State<ReceiptListPage> {
           }
 
           // Handle specific keys
-          if (key == 'amount' && value is num) {
+          if ((key == 'amount' || key == 'amountToDisplay') && value is num) {
             final amountString = value.toStringAsFixed(2);
             print(
                 "Key: $key, Value: $amountString, Matches: ${amountString.contains(lowerCaseQuery)}");
