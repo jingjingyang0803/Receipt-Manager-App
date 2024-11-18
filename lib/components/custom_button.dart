@@ -25,20 +25,14 @@ class CustomButton extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
         ),
       ),
-      child: FittedBox(
-        fit: BoxFit.scaleDown,
-
-        child: Text(
-    text,
-    style: TextStyle(
-    color: textColor,
-    fontSize: 18,
-    fontWeight: FontWeight.w600,
+      child: Text(
+        text,
+        style: TextStyle(
+          color: textColor,
+          fontSize: 18,
+          fontWeight: FontWeight.w600,
         ),
-    maxLines: 1, // Ensure text stays in one line
-    overflow: TextOverflow.ellipsis, // Handle overflow gracefully
       ),
-    ),
     );
   }
 }
