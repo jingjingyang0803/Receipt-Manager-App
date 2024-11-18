@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../constants/app_colors.dart';
 import '../providers/budget_provider.dart';
 import '../providers/receipt_provider.dart';
 
@@ -183,16 +184,22 @@ class SummaryPageState extends State<SummaryPage> {
     print("Expenses: $expenses");
     return Scaffold(
       appBar: AppBar(
-        title: Text('Manage Spending', style: TextStyle(color: Colors.black)),
+        title: Text('Monthly Summary', style: TextStyle(color: Colors.black)),
         backgroundColor: Colors.white,
         elevation: 0,
         iconTheme: IconThemeData(color: Colors.black),
       ),
       body: Column(
         children: [
+          Divider(
+            color: Colors.grey.shade300,
+            thickness: 1,
+            height: 1,
+          ),
           // Month and Year Picker
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+          Container(
+            color: Colors.white,
+            padding: const EdgeInsets.all(20),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -200,13 +207,13 @@ class SummaryPageState extends State<SummaryPage> {
                   style: TextButton.styleFrom(
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8.0),
-                      side: BorderSide(color: Colors.lightBlue),
+                      side: BorderSide(color: purple60),
                     ),
                   ),
                   onPressed: _showMonthPicker,
                   child: Text(
                     months[_month - 1],
-                    style: TextStyle(fontSize: 16, color: Colors.lightBlue),
+                    style: TextStyle(fontSize: 16, color: purple60),
                   ),
                 ),
                 SizedBox(width: 16),
@@ -214,13 +221,13 @@ class SummaryPageState extends State<SummaryPage> {
                   style: TextButton.styleFrom(
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8.0),
-                      side: BorderSide(color: Colors.lightBlue),
+                      side: BorderSide(color: purple60),
                     ),
                   ),
                   onPressed: _showYearPicker,
                   child: Text(
                     _year.toString(),
-                    style: TextStyle(fontSize: 16, color: Colors.lightBlue),
+                    style: TextStyle(fontSize: 16, color: purple60),
                   ),
                 ),
               ],
