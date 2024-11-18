@@ -41,47 +41,38 @@ class SummaryPageState extends State<SummaryPage> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      // Initialize the providers using context
-      final receiptProvider =
-          Provider.of<ReceiptProvider>(context, listen: false);
-      final budgetProvider =
-          Provider.of<BudgetProvider>(context, listen: false);
 
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       try {
+        final receiptProvider =
+            Provider.of<ReceiptProvider>(context, listen: false);
+        final budgetProvider =
+            Provider.of<BudgetProvider>(context, listen: false);
+
         await receiptProvider.fetchAllReceipts();
         await budgetProvider.loadUserBudgets();
-        print("All Receipts: ${receiptProvider.allReceipts}");
 
         receiptProvider.groupReceiptsByCategoryOneMonth(_month, _year);
-      } catch (e, stackTrace) {
-        print("Error in data fetching: $e");
-        print("StackTrace: $stackTrace");
-      }
 
-      // Update UI
-      setState(() {
-        currencySymbol = receiptProvider.currencySymbol!;
-      });
+        setState(() {}); // Trigger rebuild after data is ready
+      } catch (e, stackTrace) {
+        print("Error: $e\n$stackTrace");
+      }
     });
   }
 
-  void _loadDataForSelectedDate() {
+  void _loadDataForSelectedDate() async {
     // Initialize the providers using context
     final receiptProvider =
         Provider.of<ReceiptProvider>(context, listen: false);
-    final budgetProvider = Provider.of<BudgetProvider>(context, listen: false);
 
     print("Loading data for Month: $_month, Year: $_year");
-    receiptProvider.fetchAllReceipts();
-    receiptProvider.groupReceiptsByCategoryOneMonth(
-      _month,
-      _year,
-    );
-    final data = receiptProvider.groupedReceiptsByCategoryOneMonth;
-    print("Fetched Data: $data");
 
-    // Update currency and UI
+    // Ensure fetchAllReceipts is awaited before grouping
+    await receiptProvider.fetchAllReceipts();
+    receiptProvider.groupReceiptsByCategoryOneMonth(_month, _year);
+
+    // Trigger UI update after data is loaded
     setState(() {});
   }
 
@@ -182,8 +173,10 @@ class SummaryPageState extends State<SummaryPage> {
 
     final budgets = budgetProvider.budgets;
     receiptProvider.fetchAllReceipts();
+    receiptProvider.groupReceiptsByCategoryOneMonth(_month, _year);
     final expenses = receiptProvider.groupedReceiptsByCategoryOneMonth;
 
+    print("Expenses: $expenses");
     return Scaffold(
       appBar: AppBar(
         title: Text('Monthly Spending'),

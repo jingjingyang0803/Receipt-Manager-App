@@ -328,9 +328,11 @@ class ReceiptProvider extends ChangeNotifier {
     // Log grouped data
     print("Grouped Receipts by Category: $groupedByCategory");
 
-    // Update state and notify listeners
-    _groupedReceiptsByCategory = groupedByCategory;
-    notifyListeners();
+    // Update state asynchronously to prevent conflicts
+    Future.microtask(() {
+      _groupedReceiptsByCategoryOneMonth = groupedByCategory;
+      notifyListeners();
+    });
   }
 
   void calculateTotalSpending(Map<String, Map<String, dynamic>> groupedData) {
