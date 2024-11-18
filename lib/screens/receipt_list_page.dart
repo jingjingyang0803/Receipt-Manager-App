@@ -381,12 +381,15 @@ class ReceiptListPageState extends State<ReceiptListPage> {
                     return buildNoResultsFound(); // Show "No results" message if empty
                   }
 
+                  // Get the sortOption from ReceiptProvider
+                  String sectionTitle = receiptProvider.sortOption;
+
                   // Display the filtered receipts
                   return ListView(
                     children: [
                       _buildReceiptSection(
                         context,
-                        sectionTitle: 'Receipts',
+                        sectionTitle: 'Receipts $sectionTitle',
                         receipts:
                             _searchedReceipts, // Use the local searched list
                       ),
