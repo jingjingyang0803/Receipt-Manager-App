@@ -206,6 +206,7 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
     Map<String, dynamic> receiptData = {
       'merchant': _merchantController.text,
       'date': Timestamp.fromDate(DateTime.parse(_dateController.text)),
+      'currencyCode': _selectedCurrencyCode,
       'amount': amount,
       'categoryId': _selectedCategoryId,
       'paymentMethod': _selectedPaymentMethod,
