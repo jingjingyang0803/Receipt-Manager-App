@@ -108,77 +108,6 @@ class ReceiptListPageState extends State<ReceiptListPage> {
     super.dispose();
   }
 
-  // Method to filter receipts and provide suggestions
-  // Inside ReceiptListPageState
-  void _performSearch(String query) {
-    final lowerCaseQuery = query.toLowerCase();
-
-    setState(() {
-      final receiptProvider =
-          Provider.of<ReceiptProvider>(context, listen: false);
-      final lowerCaseQuery = query
-          .toLowerCase(); // Replace `searchQuery` with your actual query variable.
-
-      _searchedReceipts = receiptProvider.filteredReceipts.where((receipt) {
-        print("Checking receipt: $receipt");
-
-        final matches = receipt.entries.any((entry) {
-          final key = entry.key;
-          final value = entry.value;
-
-          // Handle specific keys together
-          const relevantKeys = {
-            'amount',
-            'merchant',
-            'itemName',
-            'paymentMethod',
-            'categoryName',
-            'categoryIcon',
-            'description'
-          };
-
-          if (relevantKeys.contains(key)) {
-            var stringValue = value?.toString().toLowerCase() ?? '';
-            if (key == 'amount') {
-              // Format numeric value to two decimal places
-              stringValue = value.toStringAsFixed(2);
-            }
-            print(
-                "Key: $key, Value: $stringValue, Matches: ${stringValue.contains(lowerCaseQuery)}");
-            return stringValue.contains(lowerCaseQuery);
-          }
-
-          // Special case for date
-          if (key == 'date' && value is Timestamp) {
-            final date = value.toDate();
-            final formattedDate =
-                "${date.day} ${DateFormat.MMMM().format(date)} ${date.year}";
-            final formattedMonthNumber =
-                "${date.month}"; // Get numeric month representation
-
-            print(
-                "Formatted Date: $formattedDate (${formattedMonthNumber}), Query: $lowerCaseQuery");
-            return formattedDate.toLowerCase().contains(lowerCaseQuery) ||
-                formattedMonthNumber
-                    .contains(lowerCaseQuery); // Match both formats
-          }
-
-          // Ignore other fields:
-          // - id: Unique identifier, not relevant for searching.
-          // - imageUrl: Typically contains a URL, not text to match user queries.
-          // - categoryId: Internal identifier, not meaningful to users.
-          // - categoryColor: A Color object, not searchable by text.
-          return false;
-        });
-
-        print("Receipt matches: $matches");
-        return matches;
-      }).toList();
-
-      print("Search results: $_searchedReceipts");
-    });
-  }
-
   Widget buildNoResultsFound() {
     return Center(
       child: Column(
@@ -215,38 +144,201 @@ class ReceiptListPageState extends State<ReceiptListPage> {
     );
   }
 
-  Widget _buildSearchBar(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color:
-            Colors.white, // Same background color as the financial report bar
-        borderRadius: BorderRadius.circular(8.0), // Same rounded corners
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 14), // Adjust padding
-      child: Row(
-        children: [
-          Expanded(
-            child: TextField(
-              controller: _searchController,
-              focusNode: _searchFocusNode,
-              decoration: const InputDecoration(
-                hintText: 'Search...',
-                border: InputBorder.none,
-                hintStyle: TextStyle(color: purple80), // Optional: hint color
+  // Define filter options with icons
+  // Ignore other fields:
+  // - id: Unique identifier, not relevant for searching.
+  // - imageUrl: Typically contains a URL, not text to match user queries.
+  // - categoryId: Internal identifier, not meaningful to users.
+  // - categoryColor: A Color object, not searchable by text.
+  final List<Map<String, dynamic>> _filterOptions = [
+    {
+      'key': 'date',
+      'label': 'Date',
+      'icon': Icons.calendar_month_outlined,
+      'isSelected': true
+    },
+    {
+      'key': 'merchant',
+      'label': 'Merchant',
+      'icon': Icons.store,
+      'isSelected': true
+    },
+    {
+      'key': 'amount',
+      'label': 'Amount',
+      'icon': Icons.attach_money,
+      'isSelected': true
+    },
+    {
+      'key': 'itemName',
+      'label': 'Item Name',
+      'icon': Icons.label,
+      'isSelected': true
+    },
+    {
+      'key': 'paymentMethod',
+      'label': 'Payment Method',
+      'icon': Icons.credit_card,
+      'isSelected': true
+    },
+    {
+      'key': 'categoryName',
+      'label': 'Category Name',
+      'icon': Icons.category,
+      'isSelected': true
+    },
+    {
+      'key': 'description',
+      'label': 'Description',
+      'icon': Icons.description,
+      'isSelected': true
+    },
+  ];
+
+  Widget _buildSearchBarWitchChips(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Search Bar
+        Container(
+          decoration: BoxDecoration(
+            color: Colors
+                .white, // Same background color as the financial report bar
+            borderRadius: BorderRadius.circular(8.0), // Same rounded corners
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 14), // Adjust padding
+          child: Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: _searchController,
+                  focusNode: _searchFocusNode,
+                  decoration: const InputDecoration(
+                    hintText: 'Search...',
+                    border: InputBorder.none,
+                    hintStyle:
+                        TextStyle(color: purple80), // Optional: hint color
+                  ),
+                  style: const TextStyle(color: purple80),
+                  onChanged: (query) {
+                    _performSearch(query); // Call search on each text change
+                  },
+                ),
               ),
-              style: const TextStyle(color: purple80),
-              onChanged: (query) {
-                _performSearch(query); // Call search on each text change
+              Icon(
+                Icons.search,
+                color:
+                    purple80, // Match the icon color with the report bar text
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 8),
+
+        // Chips for Filters
+        Wrap(
+          spacing: 8.0, // Horizontal spacing between chips
+          runSpacing: 4.0, // Vertical spacing between rows
+          children: _filterOptions.map((option) {
+            return ChoiceChip(
+              label: Row(
+                children: [
+                  Icon(
+                    option['icon'],
+                    size: 18,
+                    color: option['isSelected'] ? dark25 : purple200,
+                  ),
+                  SizedBox(
+                    width: 8,
+                  ),
+                  Text(
+                    option['label'],
+                    style: TextStyle(
+                      color: option['isSelected']
+                          ? dark25
+                          : purple200, // Text color for selected/unselected
+                    ),
+                  ),
+                ],
+              ),
+              selected: option['isSelected'],
+              selectedColor: purple20, // Background color for selected chip
+              backgroundColor:
+                  Colors.grey.shade200, // Background for unselected chip
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12.0),
+              ),
+              onSelected: (isSelected) {
+                setState(() {
+                  option['isSelected'] = isSelected;
+                });
+                _performSearch(_searchController
+                    .text); // Trigger search with updated filters
               },
-            ),
-          ),
-          Icon(
-            Icons.search,
-            color: purple80, // Match the icon color with the report bar text
-          ),
-        ],
-      ),
+            );
+          }).toList(),
+        ),
+      ],
     );
+  }
+
+  // Method to filter receipts and provide suggestions
+  void _performSearch(String query) {
+    final selectedKeys = _filterOptions
+        .where((option) => option['isSelected'])
+        .map((option) => option['key'])
+        .toList();
+
+    setState(() {
+      final receiptProvider =
+          Provider.of<ReceiptProvider>(context, listen: false);
+      final lowerCaseQuery = query.toLowerCase();
+
+      _searchedReceipts = receiptProvider.filteredReceipts.where((receipt) {
+        print("Checking receipt: $receipt");
+        print("Search Query: $query, Selected Filters: $selectedKeys");
+
+        final matches = receipt.entries.any((entry) {
+          final key = entry.key;
+          final value = entry.value;
+
+          // Only process the keys that are in `selectedKeys`
+          if (!selectedKeys.contains(key)) {
+            return false; // Skip keys not selected by the user
+          }
+
+          // Handle specific keys
+          if (key == 'amount' && value is num) {
+            final amountString = value.toStringAsFixed(2);
+            print(
+                "Key: $key, Value: $amountString, Matches: ${amountString.contains(lowerCaseQuery)}");
+            return amountString.contains(lowerCaseQuery);
+          }
+
+          if (key == 'date' && value is Timestamp) {
+            final date = value.toDate();
+            final formattedDate =
+                "${date.day} ${DateFormat.MMMM().format(date)} ${date.year}";
+            final formattedMonthNumber = "${date.month}";
+            print(
+                "Formatted Date: $formattedDate (${formattedMonthNumber}), Query: $lowerCaseQuery");
+            return formattedDate.toLowerCase().contains(lowerCaseQuery) ||
+                formattedMonthNumber.contains(lowerCaseQuery);
+          }
+
+          // For other keys, match as a string
+          final stringValue = value?.toString().toLowerCase() ?? '';
+          print(
+              "Key: $key, Value: $stringValue, Matches: ${stringValue.contains(lowerCaseQuery)}");
+          return stringValue.contains(lowerCaseQuery);
+        });
+
+        print("Receipt matches: $matches");
+        return matches;
+      }).toList();
+
+      print("Search results: $_searchedReceipts");
+    });
   }
 
   @override
@@ -260,7 +352,7 @@ class ReceiptListPageState extends State<ReceiptListPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildSearchBar(context), // The search bar at the top
+            _buildSearchBarWitchChips(context), // The search bar at the top
             const SizedBox(height: 16), // Add space after the search bar
             Expanded(
               child: Consumer<ReceiptProvider>(
