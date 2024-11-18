@@ -122,13 +122,4 @@ class BudgetProvider extends ChangeNotifier {
       await loadUserBudgets(); // Refresh after updating
     }
   }
-
-  // Fetch budget by category ID for the current user
-  Future<void> loadBudgetByCategoryId(String categoryId) async {
-    if (_userEmail != null) {
-      _budgetByCategory =
-          await _budgetService.fetchBudgetByCategoryId(_userEmail!, categoryId);
-      notifyListeners();
-    }
-  }
 }

@@ -1,7 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-import '../logger.dart';
-
 class BudgetService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
@@ -50,42 +48,6 @@ class BudgetService {
     } catch (e) {
       print("Error updating user budgets: $e");
       rethrow;
-    }
-  }
-
-  // Fetch budget by category ID
-  Future<Map<String, dynamic>?> fetchBudgetByCategoryId(
-      String email, String categoryId) async {
-    try {
-      DocumentSnapshot userDoc =
-          await _firestore.collection('budgets').doc(email).get();
-
-      if (userDoc.exists && userDoc.data() != null) {
-        var data = userDoc.data() as Map<String, dynamic>;
-        List<dynamic> budgetList = data['budgetlist'] ?? [];
-
-        // Find the specific budget by categoryId
-        var budget = budgetList.firstWhere(
-          (budget) => budget['categoryId'] == categoryId,
-          orElse: () {
-            logger.w('Budget with categoryId $categoryId not found.');
-            return null;
-          },
-        );
-
-        return budget != null
-            ? {
-                'categoryId': budget['categoryId'],
-                'amount': budget['amount'],
-                'period': budget['period'],
-              }
-            : null;
-      }
-
-      return null;
-    } catch (e) {
-      logger.e("Error fetching budget by categoryId: $e");
-      return null;
     }
   }
 }
