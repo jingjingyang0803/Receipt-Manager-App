@@ -176,11 +176,17 @@ class SummaryPageState extends State<SummaryPage> {
     receiptProvider.groupReceiptsByCategoryOneMonth(_month, _year);
     final expenses = receiptProvider.groupedReceiptsByCategoryOneMonth;
 
+    receiptProvider.calculateTotalSpending(expenses!);
+    // Calculate total spending
+    final totalSpending = receiptProvider.totalSpending;
+
     print("Expenses: $expenses");
     return Scaffold(
       appBar: AppBar(
-        title: Text('Monthly Spending'),
-        backgroundColor: Colors.lightBlue,
+        title: Text('Manage Spending', style: TextStyle(color: Colors.black)),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        iconTheme: IconThemeData(color: Colors.black),
       ),
       body: Column(
         children: [
@@ -216,6 +222,33 @@ class SummaryPageState extends State<SummaryPage> {
                     _year.toString(),
                     style: TextStyle(fontSize: 16, color: Colors.lightBlue),
                   ),
+                ),
+              ],
+            ),
+          ),
+          // Display total spending
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Total Spending: ',
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                    Text(
+                      '$currencySymbol ${totalSpending.toStringAsFixed(2)}',
+                      style: TextStyle(fontSize: 18, color: Colors.red),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Note: Total includes uncategorized expenses.',
+                  style: TextStyle(fontSize: 14, color: Colors.grey[700]),
                 ),
               ],
             ),
