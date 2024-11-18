@@ -99,35 +99,24 @@ class CurrencyService {
     }
   }
 
-  // Method to convert amount to the base currency
-  Future<double> convertToBaseCurrency(
-      double amount, String currency, String selectedBaseCurrency) async {
+  // Method to convert an amount directly from baseCurrency to targetCurrency
+  Future<double> convertCurrency(
+      double amount, String baseCurrency, String targetCurrency) async {
     // Ensure conversion rates are fetched
     await fetchConversionRates();
 
-    // If the amount is already in the base currency, return it as is
-    if (currency == selectedBaseCurrency) {
+    // If the base and target currencies are the same, return the amount as is
+    if (baseCurrency == targetCurrency) {
       return amount;
     }
 
-    double amountInUSD;
+    // Get the exchange rates for the base and target currencies
+    double rateBase =
+        conversionRates![baseCurrency] ?? 1.0; // Default to 1.0 if not found
+    double rateTarget =
+        conversionRates![targetCurrency] ?? 1.0; // Default to 1.0 if not found
 
-    // Convert from the original currency to USD first
-    if (currency != 'USD') {
-      double rateToUSD =
-          conversionRates![currency] ?? 1.0; // Default to 1.0 if rate not found
-      amountInUSD = amount / rateToUSD;
-    } else {
-      amountInUSD = amount;
-    }
-
-    // Convert from USD to the base currency
-    if (selectedBaseCurrency != 'USD') {
-      double rateToBaseCurrency = conversionRates![selectedBaseCurrency] ??
-          1.0; // Default to 1.0 if rate not found
-      return amountInUSD * rateToBaseCurrency;
-    } else {
-      return amountInUSD;
-    }
+    // Direct conversion using the formula x * a = y * b
+    return amount * (rateTarget / rateBase);
   }
 }
