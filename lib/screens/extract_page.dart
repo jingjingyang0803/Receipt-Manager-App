@@ -253,10 +253,10 @@ class ExtractPageState extends State<ExtractPage> {
 
     if (_language == 'Finnish') {
       totalKeywords = ['yhteensä', 'summa', 'osto'];
-      assumedCurrency = '€';
+      assumedCurrency = 'EUR';
     } else if (_language == 'English') {
       totalKeywords = ['total', 'amount due', 'balance'];
-      assumedCurrency = '\$';
+      assumedCurrency = 'USD';
     } else {
       logger.w('Language detection failed or unknown language');
       _totalPrice = "Not Found";
@@ -606,7 +606,8 @@ class ExtractPageState extends State<ExtractPage> {
                         text: 'OK',
                         backgroundColor: purple100,
                         textColor: light80,
-                        onPressed: _confirmDataAndNavigate, // Confirm and navigate
+                        onPressed:
+                            _confirmDataAndNavigate, // Confirm and navigate
                       ),
                     ),
                   ),
