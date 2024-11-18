@@ -465,36 +465,59 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
               ],
               SizedBox(height: 20),
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly, // Distribute buttons evenly
                 children: [
-                  SizedBox(
-                    width: 100,
-                    child: CustomButton(
-                      text: 'Cancel',
-                      backgroundColor: purple100,
-                      textColor: light80,
-                      onPressed: () => Navigator.pop(context),
+                  // Cancel Button
+                  Flexible(
+                    flex: 1,
+                    child: SizedBox(
+                      height: 40, // Button height
+                      width: 90, // Button width
+                      child: CustomButton(
+                        text: 'Cancel',
+                        backgroundColor: purple100,
+                        textColor: light80,
+                        onPressed: () => Navigator.pop(context),
+                      ),
                     ),
                   ),
-                  SizedBox(width: 10),
-                  SizedBox(
-                    width: 100,
-                    child: CustomButton(
-                      text: widget.receiptId != null ? 'Update' : 'Save',
-                      backgroundColor: purple100,
-                      textColor: light80,
-                      onPressed: _saveReceipt,
+                  SizedBox(width: 10), // Spacing between buttons
+                  // Update/Save Button
+                  Flexible(
+                    flex: 1,
+                    child: SizedBox(
+                      height: 40, // Button height
+                      width: 90, // Button width
+                      child: CustomButton(
+                        text: widget.receiptId != null ? 'Update' : 'Save',
+                        backgroundColor: purple100,
+                        textColor: light80,
+                        onPressed: _saveReceipt,
+                      ),
                     ),
                   ),
+                  if (widget.receiptId != null) ...[
+                    SizedBox(width: 10), // Spacing between buttons
+                    // Delete Button
+                    Flexible(
+                      flex: 1,
+                      child: SizedBox(
+                        height: 40, // Button height
+                        width: 90, // Button width
+                        child: CustomButton(
+                          text: 'Delete',
+                          backgroundColor: purple100,
+                          textColor: light80,
+                          onPressed: _confirmDelete,
+                        ),
+                      ),
+                    ),
+                  ],
                 ],
               ),
-              if (widget.receiptId != null)
-                CustomButton(
-                  text: 'Delete',
-                  backgroundColor: purple100,
-                  textColor: light80,
-                  onPressed: _confirmDelete,
-                ),
+
+
+
             ],
           ),
         ),
