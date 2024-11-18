@@ -31,7 +31,7 @@ class ReceiptListPageState extends State<ReceiptListPage> {
 
   List<Map<String, dynamic>> _suggestions = []; // To hold search suggestions
 
-  String currencySymbol = '€';
+  String currencySymbol = ' ';
 
   @override
   void initState() {

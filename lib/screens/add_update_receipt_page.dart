@@ -48,7 +48,7 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
 
   String? _uploadedImageUrl;
 
-  String currencySymbol = '€';
+  String currencySymbol = ' ';
 
   @override
   void initState() {
@@ -465,7 +465,8 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
               ],
               SizedBox(height: 20),
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly, // Distribute buttons evenly
+                mainAxisAlignment:
+                    MainAxisAlignment.spaceEvenly, // Distribute buttons evenly
                 children: [
                   // Cancel Button
                   Flexible(
@@ -515,9 +516,6 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
                   ],
                 ],
               ),
-
-
-
             ],
           ),
         ),
