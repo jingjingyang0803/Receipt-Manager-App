@@ -78,26 +78,4 @@ class CategoryProvider extends ChangeNotifier {
     }
     return false;
   }
-
-  // Fetch category name by ID for the current user
-  Future<void> loadCategoryNameById(String categoryId) async {
-    if (_userEmail != null) {
-      _categoryDetails = {
-        'name': await _categoryService.fetchCategoryNameById(
-            _userEmail!, categoryId)
-      };
-      notifyListeners();
-    }
-  }
-
-  // Fetch category icon by ID for the current user
-  Future<void> loadCategoryIconById(String categoryId) async {
-    if (_userEmail != null) {
-      _categoryDetails = {
-        'icon': await _categoryService.fetchCategoryIconById(
-            _userEmail!, categoryId)
-      };
-      notifyListeners();
-    }
-  }
 }
