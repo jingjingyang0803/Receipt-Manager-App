@@ -86,7 +86,7 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
 
       _selectedCurrencyCode = widget.existingReceipt!['currencyCode'];
       _totalController.text =
-          widget.existingReceipt!['amountToDisplay']?.toString() ?? '';
+          widget.existingReceipt!['amount']?.toString() ?? '';
 
       _selectedCategoryId = widget.existingReceipt!['categoryId'];
       _selectedCategoryName = widget.existingReceipt!['categoryName'];
