@@ -567,6 +567,62 @@ class ReceiptProvider extends ChangeNotifier {
     return filteredByCategory;
   }
 
+  // Group receipts by interval and category
+  void groupByIntervalAndCategory(TimeInterval interval) {
+    final Map<String, Map<String, Map<String, dynamic>>> groupedData = {};
+
+    for (var receipt in _filteredReceipts) {
+      // Parse the date and amount
+      final date = (receipt['date'] as Timestamp?)?.toDate() ?? DateTime.now();
+      final amount = (receipt['amountToDisplay'] as num?)?.toDouble() ?? 0.0;
+
+      // Determine the interval key
+      String intervalKey;
+      switch (interval) {
+        case TimeInterval.day:
+          intervalKey = DateFormat('yyyy-MM-dd').format(date);
+          break;
+        case TimeInterval.week:
+          intervalKey = '${date.year}-W${getWeekNumber(date)}';
+          break;
+        case TimeInterval.month:
+          intervalKey = DateFormat('yyyy-MM').format(date);
+          break;
+        case TimeInterval.year:
+          intervalKey = DateFormat('yyyy').format(date);
+          break;
+      }
+
+      // Get the category ID and name
+      final categoryId = receipt['categoryId'] ?? 'null';
+      final categoryName = receipt['categoryName'] ?? 'Uncategorized';
+      final categoryColor = receipt['categoryColor'] ?? Colors.grey;
+      final categoryIcon = receipt['categoryIcon'] ?? '❓';
+
+      // Initialize the interval if not already present
+      groupedData[intervalKey] ??= {};
+
+      // Add data to the category within the interval
+      if (groupedData[intervalKey]!.containsKey(categoryId)) {
+        groupedData[intervalKey]![categoryId]!['total'] += amount;
+      } else {
+        groupedData[intervalKey]![categoryId] = {
+          'categoryName': categoryName,
+          'categoryColor': categoryColor,
+          'categoryIcon': categoryIcon,
+          'total': amount,
+        };
+      }
+    }
+
+    // Log or store the grouped data
+    print("Grouped Data by Interval and Category: $groupedData");
+
+    // Notify listeners or set the grouped data to a variable
+    // Example: _groupedReceiptsByIntervalAndCategory = groupedData;
+    notifyListeners();
+  }
+
   // Add receipt
   Future<void> addReceipt({required Map<String, dynamic> receiptData}) async {
     if (_userEmail != null) {
