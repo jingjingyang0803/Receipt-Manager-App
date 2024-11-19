@@ -56,9 +56,6 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
     super.initState();
     _loadUserCategories();
     _initializeFormFields();
-
-    final receiptProvider =
-        Provider.of<ReceiptProvider>(context, listen: false);
   }
 
   Future<void> _loadUserCategories() async {

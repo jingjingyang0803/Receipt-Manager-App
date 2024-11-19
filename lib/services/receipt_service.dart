@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../logger.dart';
+
 class ReceiptService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
@@ -9,22 +11,22 @@ class ReceiptService {
         _firestore.collection('receipts').doc(email);
 
     DocumentSnapshot<Map<String, dynamic>> docSnapshot = await docRef.get();
-    print("Checking existence of document for email: $email");
+    logger.i("Checking existence of document for email: $email");
 
     if (!docSnapshot.exists) {
       await docRef.set({
         'receiptlist': [],
         'receiptCount': 0,
       });
-      print(
+      logger.i(
           "Document created for email: $email with empty receiptlist and receiptCount initialized.");
     } else {
-      print("Document already exists for email: $email");
+      logger.e("Document already exists for email: $email");
     }
 
     await for (var snapshot in docRef.snapshots()) {
-      print("Received snapshot for email: $email");
-      print("Snapshot data: ${snapshot.data()}");
+      logger.i("Received snapshot for email: $email");
+      logger.i("Snapshot data: ${snapshot.data()}");
       yield snapshot;
     }
   }

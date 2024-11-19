@@ -12,7 +12,7 @@ import 'receipt_list_page.dart';
 
 class BasePage extends StatefulWidget {
   static const String id = 'base_page';
-  const BasePage({Key? key}) : super(key: key);
+  const BasePage({super.key});
 
   @override
   BasePageState createState() => BasePageState();
