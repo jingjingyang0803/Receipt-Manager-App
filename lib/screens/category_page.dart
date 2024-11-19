@@ -91,6 +91,8 @@ class CategoryPageState extends State<CategoryPage> {
                   final categories = categoryProvider.categories;
 
                   return ListView.builder(
+                    padding: const EdgeInsets.only(
+                        bottom: 60), // Add padding to prevent FAB overlap
                     itemCount: categories.length,
                     itemBuilder: (context, index) {
                       String categoryId = categories[index]['id'] ?? '';
