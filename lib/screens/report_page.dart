@@ -5,7 +5,6 @@ import 'package:provider/provider.dart';
 import '../../logger.dart';
 import '../../providers/receipt_provider.dart';
 import '../components/custom_app_bar.dart';
-import '../components/custom_option_widget.dart';
 import '../constants/app_colors.dart';
 
 class ReportPage extends StatefulWidget {
@@ -19,6 +18,7 @@ class ReportPage extends StatefulWidget {
 
 class ReportPageState extends State<ReportPage> {
   bool isPieChart = true; // Toggle state for chart
+  bool isLineChart = false; // Add a state to track the line chart
 
   TimeInterval selectedInterval =
       TimeInterval.day; // Default time interval (day)
@@ -510,55 +510,56 @@ class ReportPageState extends State<ReportPage> {
                   // Toggle Button for Bar Chart and Pie Chart
                   Row(
                     children: [
-                      // Bar Chart Button with rounded left corners
+                      // Bar Chart Button
                       TextButton(
                         onPressed: () {
                           setState(() {
                             isPieChart = false;
+                            isLineChart =
+                                false; // Ensure this is false when switching
                           });
                         },
                         style: TextButton.styleFrom(
-                          backgroundColor: isPieChart ? Colors.white : purple80,
-                          minimumSize: const Size(
-                              10, 50), // Adjust width and height if necessary
+                          backgroundColor: (!isPieChart && !isLineChart)
+                              ? purple80
+                              : Colors.white,
+                          minimumSize: const Size(10, 50),
                           shape: RoundedRectangleBorder(
                             borderRadius: const BorderRadius.only(
                               topLeft: Radius.circular(8),
                               bottomLeft: Radius.circular(8),
                             ),
                             side: BorderSide(
-                              color: isPieChart
-                                  ? light60
-                                  : Colors
-                                      .transparent, // Border only when inactive
+                              color: (!isPieChart && !isLineChart)
+                                  ? Colors.transparent
+                                  : light60,
                               width: 1.5,
                             ),
                           ),
                         ),
                         child: Icon(
-                          Icons.bar_chart, // Use preferred icon for bar chart
-                          color: isPieChart ? purple80 : light60,
+                          Icons.bar_chart,
+                          color: (!isPieChart && !isLineChart)
+                              ? light80
+                              : purple100,
                         ),
                       ),
-                      // Pie Chart Button with rounded right corners
+
+                      // Pie Chart Button
                       TextButton(
                         onPressed: () {
                           setState(() {
                             isPieChart = true;
+                            isLineChart =
+                                false; // Ensure this is false when switching
                           });
                         },
                         style: TextButton.styleFrom(
                           backgroundColor: isPieChart ? purple80 : Colors.white,
                           minimumSize: const Size(10, 50),
                           shape: RoundedRectangleBorder(
-                            borderRadius: const BorderRadius.only(
-                              topRight: Radius.circular(8),
-                              bottomRight: Radius.circular(8),
-                            ),
                             side: BorderSide(
-                              color: isPieChart
-                                  ? Colors.transparent
-                                  : light60, // Border only when inactive
+                              color: isPieChart ? Colors.transparent : light60,
                               width: 1.5,
                             ),
                           ),
@@ -568,50 +569,60 @@ class ReportPageState extends State<ReportPage> {
                           color: isPieChart ? light80 : purple100,
                         ),
                       ),
+
+                      // Line Chart Button
+                      TextButton(
+                        onPressed: () {
+                          setState(() {
+                            isLineChart = true;
+                            isPieChart =
+                                false; // Ensure this is false when switching
+                          });
+                        },
+                        style: TextButton.styleFrom(
+                          backgroundColor:
+                              isLineChart ? purple80 : Colors.white,
+                          minimumSize: const Size(10, 50),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: const BorderRadius.only(
+                              topRight: Radius.circular(8),
+                              bottomRight: Radius.circular(8),
+                            ),
+                            side: BorderSide(
+                              color: isLineChart ? Colors.transparent : light60,
+                              width: 1.5,
+                            ),
+                          ),
+                        ),
+                        child: Icon(
+                          Icons.show_chart, // Line chart icon
+                          color: isLineChart ? light80 : purple100,
+                        ),
+                      ),
                     ],
                   ),
                   const SizedBox(height: 10),
+                  // Add logic in the widget rendering section
                   if (isPieChart)
                     buildCard(
                       context: context,
                       title: 'Expenses by Category',
-                      content:
-                          buildPieChart(context), // Uses Consumer internally
+                      content: buildPieChart(context),
                     )
-                  // buildCard(
-                  //   context: context,
-                  //   title: 'Expenses Trend by Category',
-                  //   content: buildCategoryLineChart(context),
-                  // )
-                  else ...[
-                    const SizedBox(height: 20),
-                    Center(
-                      child: Wrap(
-                        spacing: 8,
-                        children: TimeInterval.values
-                            .map((interval) => CustomOptionWidget(
-                                  label: interval.name.toUpperCase(),
-                                  isSelected: receiptProvider
-                                          .selectedInterval ==
-                                      interval, // Access directly from provider
-                                  onSelected: (_) {
-                                    receiptProvider.updateInterval(interval);
-                                  },
-                                ))
-                            .toList(),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
+                  else if (isLineChart)
+                    buildCard(
+                      context: context,
+                      title: 'Expenses Trend by Category',
+                      content: buildCategoryLineChart(context),
+                    )
+                  else
                     buildCard(
                       context: context,
                       title:
                           'Expenses by ${receiptProvider.selectedInterval.name}',
                       content: buildBarChart(
-                        context,
-                        receiptProvider.selectedInterval,
-                      ), // Uses Consumer internally
+                          context, receiptProvider.selectedInterval),
                     ),
-                  ],
                 ],
               ),
             ),
