@@ -28,6 +28,8 @@ class SettingsPageState extends State<SettingsPage> {
   XFile? _profileImage;
   late TextEditingController _nameController;
   late UserProvider userProvider;
+  bool _isEditingName = false; // Track whether the "Your Name" field is in edit mode
+
 
   String? currencyCode;
   String? currencySymbol;
@@ -87,14 +89,13 @@ class SettingsPageState extends State<SettingsPage> {
   }
 
   Future<void> _saveUserName() async {
-    final userProvider = Provider.of<UserProvider>(context, listen: false);
     final newName = _nameController.text.trim();
-
-    // Proceed with the update if the new name is different from the current name, even if empty
-    if (newName != userProvider.userName) {
+    if (newName.isNotEmpty && newName != userProvider.userName) {
+      // Save the updated name to the UserProvider
       await userProvider.updateUserProfile(userName: newName);
     }
   }
+
 
   Future<void> _showCurrencyPicker(BuildContext context) async {
     await showModalBottomSheet(
@@ -197,21 +198,77 @@ class SettingsPageState extends State<SettingsPage> {
                             userEmail ?? "Email not available",
                             style: TextStyle(color: purple200, fontSize: 16),
                           ),
-                          TextFormField(
-                            controller: _nameController,
-                            style: TextStyle(
-                              color: dark75,
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            decoration: InputDecoration(
-                              border: InputBorder.none,
-                              isDense: true,
-                              hintText: 'Your Name',
-                              hintStyle: TextStyle(color: Colors.grey),
-                            ),
-                            onFieldSubmitted: (_) => _saveUserName(),
+
+                          Row(
+                            children: [
+                              if (_isEditingName)
+                                Expanded(
+                                  child: TextFormField(
+                                    controller: _nameController,
+                                    style: TextStyle(
+                                      color: dark75,
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    decoration: InputDecoration(
+                                      border: InputBorder.none,
+                                      isDense: true,
+                                      hintText: 'Your Name',
+                                      hintStyle: TextStyle(color: Colors.grey),
+                                    ),
+                                  ),
+                                )
+                              else
+                                Expanded(
+                                  child: Text(
+                                    _nameController.text.isEmpty ? 'Your Name' : _nameController.text,
+                                    style: TextStyle(
+                                      color: dark75,
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              if (_isEditingName)
+                                Row(
+                                  children: [
+                                    IconButton(
+                                      icon: Icon(Icons.check, color: Colors.green),
+                                      onPressed: () async {
+                                        // Save the updated name
+                                        await _saveUserName();
+                                        setState(() {
+                                          _isEditingName = false;
+                                        });
+                                      },
+                                    ),
+                                    IconButton(
+                                      icon: Icon(Icons.close, color: Colors.red),
+                                      onPressed: () {
+                                        // Cancel editing
+                                        setState(() {
+                                          _isEditingName = false;
+                                          _nameController.text = userProvider.userName?? ''; // Revert changes
+                                        });
+                                      },
+                                    ),
+                                  ],
+                                )
+                              else
+                                IconButton(
+                                  icon: Icon(Icons.edit, color: purple100),
+                                  onPressed: () {
+                                    // Start editing
+                                    setState(() {
+                                      _isEditingName = true;
+                                    });
+                                  },
+                                ),
+                            ],
                           ),
+
+
+
                         ],
                       ),
                     ),
