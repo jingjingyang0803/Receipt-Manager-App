@@ -1,20 +1,19 @@
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/foundation.dart' as foundation;
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:receipt_manager/components/custom_input_field.dart';
 
 import '../constants/app_colors.dart';
 import '../logger.dart';
-import '../services/category_service.dart';
+import '../providers/category_provider.dart';
 import 'custom_button.dart';
 
 class AddCategoryWidget extends StatefulWidget {
-  final String userId; // Add userId parameter
   final VoidCallback
       onCategoryAdded; // Callback to trigger after adding category
 
-  const AddCategoryWidget(
-      {super.key, required this.userId, required this.onCategoryAdded});
+  const AddCategoryWidget({super.key, required this.onCategoryAdded});
 
   @override
   AddCategoryWidgetState createState() => AddCategoryWidgetState();
@@ -26,7 +25,6 @@ class AddCategoryWidgetState extends State<AddCategoryWidget> {
   bool showEmojiPicker = false; // Track whether to show emoji picker
   String? _errorMessage; // Error message for duplicate category names
 
-  final CategoryService _categoryService = CategoryService();
   final FocusNode _textFieldFocusNode = FocusNode();
 
   @override
@@ -51,6 +49,9 @@ class AddCategoryWidgetState extends State<AddCategoryWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final categoryProvider =
+        Provider.of<CategoryProvider>(context, listen: false);
+
     return Container(
       padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -145,40 +146,36 @@ class AddCategoryWidgetState extends State<AddCategoryWidget> {
               if (categoryName.isNotEmpty) {
                 try {
                   // Check if the category exists
-                  bool categoryExists = await _categoryService.categoryExists(
-                      widget.userId, categoryName);
+                  bool categoryExists = await categoryProvider
+                      .checkIfCategoryExists(categoryName);
 
                   if (categoryExists) {
                     logger.w("Category '$categoryName' already exists.");
-                    // Show a toast or another dialog instead of using the closed context
                     setState(() {
                       _errorMessage =
                           "Category '$categoryName' already exists.";
                     });
                   } else {
-                    if (mounted) {
-                      Navigator.of(context).pop(); // Close dialog immediately
-                    }
-
-                    // Add category to Firestore
-                    await _categoryService.addCategoryToFirestore(
-                        widget.userId, categoryName, selectedIcon);
+                    // Add category through the provider
+                    await categoryProvider.addCategory(
+                        categoryName, selectedIcon);
 
                     // Trigger the callback after adding the category
                     widget.onCategoryAdded();
+                    if (mounted) {
+                      Navigator.of(context).pop(); // Close the dialog
+                    }
                   }
                 } catch (e) {
                   logger.e("An error occurred: ${e.toString()}");
                 }
               } else {
-                if (mounted) {
-                  setState(() {
-                    _errorMessage = "Category name cannot be empty.";
-                  });
-                }
+                setState(() {
+                  _errorMessage = "Category name cannot be empty.";
+                });
               }
             },
-          )
+          ),
         ],
       ),
     );
