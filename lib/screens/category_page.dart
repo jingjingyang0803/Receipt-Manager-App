@@ -53,7 +53,6 @@ class CategoryPageState extends State<CategoryPage> {
               borderRadius: BorderRadius.circular(20),
             ),
             child: AddCategoryWidget(
-              userId: userEmail,
               onCategoryAdded: () {
                 categoryProvider.loadUserCategories();
               },
@@ -124,7 +123,8 @@ class CategoryPageState extends State<CategoryPage> {
                           style: TextStyle(fontSize: 16, color: Colors.black),
                         ),
                         trailing: IconButton(
-                          icon: Icon(Icons.delete_outline, color: purple100),
+                          icon:
+                              Icon(Icons.delete_outline, color: categoryColor),
                           onPressed: () {
                             showModalBottomSheet(
                               context: context,
