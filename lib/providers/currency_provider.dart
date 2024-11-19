@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../logger.dart';
 import '../services/currency_service.dart';
 
 class CurrencyProvider with ChangeNotifier {
@@ -25,7 +26,7 @@ class CurrencyProvider with ChangeNotifier {
       _conversionRates = _currencyService.conversionRates;
       _lastFetched = DateTime.now();
     } catch (e) {
-      print('Error fetching conversion rates: $e');
+      logger.e('Error fetching conversion rates: $e');
       _conversionRates = null;
     } finally {
       _isLoading = false;

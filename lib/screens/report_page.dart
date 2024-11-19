@@ -76,7 +76,7 @@ class ReportPageState extends State<ReportPage> {
     final groupedReceipts = receiptProvider.groupedReceiptsByCategory ?? {};
 
     // Debug print for grouped receipts
-    print(groupedReceipts);
+    logger.i(groupedReceipts);
 
     // Check if groupedReceipts is empty
     if (groupedReceipts.isEmpty) {

@@ -109,7 +109,7 @@ class ReceiptProvider extends ChangeNotifier {
 
 // Fetch all receipts
   Future<void> fetchAllReceipts() async {
-    print("fetchAllReceipts called");
+    logger.i("fetchAllReceipts called");
     _categoryProvider?.loadUserCategories();
 
     try {
@@ -117,10 +117,10 @@ class ReceiptProvider extends ChangeNotifier {
           FirebaseFirestore.instance.collection('receipts').doc(_userEmail);
 
       final snapshot = await userDoc.get();
-      print('Fetched Snapshot Data: ${snapshot.data()}');
+      logger.i('Fetched Snapshot Data: ${snapshot.data()}');
 
       if (snapshot.data() == null) {
-        print('No receipts found.');
+        logger.w('No receipts found.');
         _allReceipts = [];
         notifyListeners();
         return;
@@ -321,12 +321,13 @@ class ReceiptProvider extends ChangeNotifier {
         double amountToDisplay = amount; // Default is the same amount
         if (rates.containsKey(baseCurrency) &&
             rates.containsKey(userCurrencyCode)) {
-          print(rates[baseCurrency]);
-          print(rates[userCurrencyCode]);
+          logger.i(rates[baseCurrency]);
+          logger.i(rates[userCurrencyCode]);
           final rate = rates[baseCurrency]! / rates[userCurrencyCode]!;
           amountToDisplay = amount / rate;
         } else {
-          print("Currency code not found: $baseCurrency or $userCurrencyCode");
+          logger
+              .w("Currency code not found: $baseCurrency or $userCurrencyCode");
         }
 
         return {
@@ -339,7 +340,7 @@ class ReceiptProvider extends ChangeNotifier {
         };
       }).toList();
 
-      print(
+      logger.i(
           "Receipts fetched and enriched (${_allReceipts.length}): $_allReceipts");
 
       // Notify listeners
@@ -350,7 +351,7 @@ class ReceiptProvider extends ChangeNotifier {
   }
 
   void applyFilters() {
-    print("applyFilters called");
+    logger.i("applyFilters called");
 
     const primaryMethods = ['Credit Card', 'Debit Card', 'Cash'];
     logger.i(
@@ -503,8 +504,8 @@ class ReceiptProvider extends ChangeNotifier {
     }).toList();
 
     // Log the selected month, year, and filtered receipts
-    print("Selected Month: $month, Year: $year");
-    print("Filtered Receipts for Month and Year: $filteredReceipts");
+    logger.i("Selected Month: $month, Year: $year");
+    logger.i("Filtered Receipts for Month and Year: $filteredReceipts");
 
     // Group receipts by category
     for (var receipt in filteredReceipts) {
@@ -535,7 +536,8 @@ class ReceiptProvider extends ChangeNotifier {
     }
 
     // Log grouped data
-    print("Grouped Receipts by Category: $groupedReceiptsByCategoryOneMonth");
+    logger
+        .i("Grouped Receipts by Category: $groupedReceiptsByCategoryOneMonth");
 
     _groupedReceiptsByCategoryOneMonth = groupedReceiptsByCategoryOneMonth;
     notifyListeners();
@@ -602,7 +604,7 @@ class ReceiptProvider extends ChangeNotifier {
     }
     _groupedReceiptsByIntervalAndCategory = groupedData;
     // Log or store the grouped data
-    print("Grouped Data by Interval and Category: $groupedData");
+    logger.i("Grouped Data by Interval and Category: $groupedData");
 
     // Notify listeners or set the grouped data to a variable
     // Example: _groupedReceiptsByIntervalAndCategory = groupedData;

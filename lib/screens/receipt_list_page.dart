@@ -8,6 +8,7 @@ import 'package:receipt_manager/providers/receipt_provider.dart';
 
 import '../components/custom_app_bar.dart';
 import '../components/expense_item_card.dart';
+import '../logger.dart';
 import 'add_update_receipt_page.dart';
 import 'extract_page.dart';
 
@@ -29,8 +30,6 @@ class ReceiptListPageState extends State<ReceiptListPage> {
   List<Map<String, dynamic>> _searchedReceipts =
       []; // Local list for search results
 
-  List<Map<String, dynamic>> _suggestions = []; // To hold search suggestions
-
   String currencySymbol = ' ';
 
   @override
@@ -41,7 +40,7 @@ class ReceiptListPageState extends State<ReceiptListPage> {
           Provider.of<ReceiptProvider>(context, listen: false);
       receiptProvider.fetchAllReceipts();
       receiptProvider.applyFilters();
-      print("Calling fetchReceipts");
+      logger.i("Calling fetchReceipts");
 
       setState(() {
         _searchedReceipts =
@@ -326,8 +325,8 @@ class ReceiptListPageState extends State<ReceiptListPage> {
       final lowerCaseQuery = query.toLowerCase();
 
       _searchedReceipts = receiptProvider.filteredReceipts.where((receipt) {
-        print("Checking receipt: $receipt");
-        print("Search Query: $query, Selected Filters: $selectedKeys");
+        logger.i("Checking receipt: $receipt");
+        logger.i("Search Query: $query, Selected Filters: $selectedKeys");
 
         final matches = receipt.entries.any((entry) {
           final key = entry.key;
@@ -341,7 +340,7 @@ class ReceiptListPageState extends State<ReceiptListPage> {
           // Handle specific keys
           if ((key == 'amount' || key == 'amountToDisplay') && value is num) {
             final amountString = value.toStringAsFixed(2);
-            print(
+            logger.i(
                 "Key: $key, Value: $amountString, Matches: ${amountString.contains(lowerCaseQuery)}");
             return amountString.contains(lowerCaseQuery);
           }
@@ -351,24 +350,24 @@ class ReceiptListPageState extends State<ReceiptListPage> {
             final formattedDate =
                 "${date.day} ${DateFormat.MMMM().format(date)} ${date.year}";
             final formattedMonthNumber = "${date.month}";
-            print(
-                "Formatted Date: $formattedDate (${formattedMonthNumber}), Query: $lowerCaseQuery");
+            logger.i(
+                "Formatted Date: $formattedDate ($formattedMonthNumber), Query: $lowerCaseQuery");
             return formattedDate.toLowerCase().contains(lowerCaseQuery) ||
                 formattedMonthNumber.contains(lowerCaseQuery);
           }
 
           // For other keys, match as a string
           final stringValue = value?.toString().toLowerCase() ?? '';
-          print(
+          logger.i(
               "Key: $key, Value: $stringValue, Matches: ${stringValue.contains(lowerCaseQuery)}");
           return stringValue.contains(lowerCaseQuery);
         });
 
-        print("Receipt matches: $matches");
+        logger.i("Receipt matches: $matches");
         return matches;
       }).toList();
 
-      print("Search results: $_searchedReceipts");
+      logger.i("Search results: $_searchedReceipts");
     });
   }
 

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../constants/app_colors.dart';
+import '../logger.dart';
 import '../providers/budget_provider.dart';
 import '../providers/receipt_provider.dart';
 
@@ -55,7 +56,7 @@ class SummaryPageState extends State<SummaryPage> {
 
         setState(() {}); // Trigger rebuild after data is ready
       } catch (e, stackTrace) {
-        print("Error: $e\n$stackTrace");
+        logger.e("Error: $e\n$stackTrace");
       }
     });
   }
@@ -65,7 +66,7 @@ class SummaryPageState extends State<SummaryPage> {
     final receiptProvider =
         Provider.of<ReceiptProvider>(context, listen: false);
 
-    print("Loading data for Month: $_month, Year: $_year");
+    logger.i("Loading data for Month: $_month, Year: $_year");
 
     // Ensure fetchAllReceipts is awaited before grouping
     await receiptProvider.fetchAllReceipts();
@@ -174,18 +175,18 @@ class SummaryPageState extends State<SummaryPage> {
     receiptProvider.fetchAllReceipts();
     receiptProvider.groupReceiptsByCategoryOneMonth(_month, _year);
     final expenses = receiptProvider.groupedReceiptsByCategoryOneMonth;
-    print("Expenses: $expenses");
+    logger.i("Expenses: $expenses");
 
     receiptProvider.calculateTotalSpending(expenses!);
     // Calculate total spending
     final totalSpending = receiptProvider.totalSpending;
-    print("totalSpending: $totalSpending");
+    logger.i("totalSpending: $totalSpending");
 
     // Access 'currencySymbolToDisplay' from the first entry, assuming all entries share the same currency
     final currencySymbol = expenses.isNotEmpty
         ? expenses.values.first['currencySymbolToDisplay']
         : null; // Handle empty map case receiptProvider.calculateTotalSpending(expenses);
-    print("currencySymbol: $currencySymbol");
+    logger.i("currencySymbol: $currencySymbol");
 
     return Scaffold(
       resizeToAvoidBottomInset: true,
@@ -278,13 +279,13 @@ class SummaryPageState extends State<SummaryPage> {
                 final categoryIcon = budget['categoryIcon'];
                 final budgetAmount = budget['amount'];
 
-                print("expenses: $expenses");
+                logger.i("expenses: $expenses");
                 final spent = expenses[categoryId]?['total'] ?? 0.0;
                 final currencySymbol =
                     expenses[categoryId]?['currencySymbolToDisplay'] ?? ' ';
 
-                print("Budget: $budget");
-                print(
+                logger.i("Budget: $budget");
+                logger.i(
                     "CategoryId: $categoryId, Spent: ${expenses[categoryId]?['totalToDisplay']}");
 
                 double ratio = budgetAmount == 0

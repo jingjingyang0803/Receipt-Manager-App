@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../logger.dart';
+
 class BudgetService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
@@ -14,7 +16,7 @@ class BudgetService {
         await _firestore.collection('budgets').doc(email).set({
           'budgetlist': [],
         });
-        print("Default document created for email: $email");
+        logger.i("Default document created for email: $email");
         return [];
       }
 
@@ -30,7 +32,7 @@ class BudgetService {
         };
       }).toList();
     } catch (e) {
-      print("Error fetching user budgets: $e");
+      logger.e("Error fetching user budgets: $e");
       return [];
     }
   }
@@ -46,7 +48,7 @@ class BudgetService {
               merge:
                   true)); // Use `set` with merge to ensure creation if missing
     } catch (e) {
-      print("Error updating user budgets: $e");
+      logger.e("Error updating user budgets: $e");
       rethrow;
     }
   }
