@@ -58,6 +58,7 @@ class ReceiptProvider extends ChangeNotifier {
   Map<String, Map<String, dynamic>>? _groupedReceiptsByCategory;
   late Map<String, Map<String, dynamic>>? _groupedReceiptsByInterval;
   late Map<String, Map<String, dynamic>>? _groupedReceiptsByCategoryOneMonth;
+  late Map<String, Map<String, dynamic>>? _groupedReceiptsByIntervalAndCategory;
 
   Map<String, Map<String, dynamic>>? get groupedReceiptsByCategory =>
       _groupedReceiptsByCategory;
@@ -65,6 +66,8 @@ class ReceiptProvider extends ChangeNotifier {
       _groupedReceiptsByInterval;
   Map<String, Map<String, dynamic>>? get groupedReceiptsByCategoryOneMonth =>
       _groupedReceiptsByCategoryOneMonth;
+  Map<String, Map<String, dynamic>>? get groupedReceiptsByIntervalAndCategory =>
+      _groupedReceiptsByIntervalAndCategory;
 
   // Spending and Currency
   double _totalSpending = 0.0;
@@ -550,23 +553,6 @@ class ReceiptProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Filter receipts by a specific category
-  List<Map<String, dynamic>> filterReceiptsByCategory(String categoryId) {
-    // Ensure categoryId is valid
-    if (categoryId.isEmpty) {
-      print("Invalid categoryId provided.");
-      return [];
-    }
-
-    // Filter receipts by the given categoryId
-    final filteredByCategory = _filteredReceipts.where((receipt) {
-      return receipt['categoryId'] == categoryId;
-    }).toList();
-
-    print("Filtered Receipts for Category ($categoryId): $filteredByCategory");
-    return filteredByCategory;
-  }
-
   // Group receipts by interval and category
   void groupByIntervalAndCategory(TimeInterval interval) {
     final Map<String, Map<String, Map<String, dynamic>>> groupedData = {};
@@ -614,7 +600,7 @@ class ReceiptProvider extends ChangeNotifier {
         };
       }
     }
-
+    _groupedReceiptsByIntervalAndCategory = groupedData;
     // Log or store the grouped data
     print("Grouped Data by Interval and Category: $groupedData");
 

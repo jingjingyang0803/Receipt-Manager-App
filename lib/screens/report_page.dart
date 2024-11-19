@@ -310,6 +310,116 @@ class ReportPageState extends State<ReportPage> {
     );
   }
 
+  Widget buildCategoryLineChart(BuildContext context) {
+    final receiptProvider =
+        Provider.of<ReceiptProvider>(context, listen: false);
+
+    // Group data by interval and category
+    receiptProvider
+        .groupByIntervalAndCategory(receiptProvider.selectedInterval);
+
+    final groupedData = receiptProvider.groupedReceiptsByIntervalAndCategory;
+    if (groupedData == null || groupedData.isEmpty) {
+      return const Center(child: Text('No data available.'));
+    }
+
+    // Prepare line chart data
+    final List<LineChartBarData> lines = [];
+    final Map<String, Color> categoryColors =
+        {}; // Legend colors for categories
+    final List<String> intervalLabels = groupedData.keys.toList();
+
+    // Loop through grouped data
+    groupedData.forEach((interval, categories) {
+      categories.forEach((categoryId, categoryData) {
+        final categoryName = categoryData['categoryName'] ?? 'Unknown';
+        final categoryColor =
+            categoryData['categoryColor'] as Color? ?? Colors.grey;
+        final totalAmount = categoryData['total'] as double? ?? 0.0;
+
+        if (!categoryColors.containsKey(categoryId)) {
+          categoryColors[categoryId] = categoryColor;
+        }
+
+        // Create FlSpot for the line chart
+        final index = intervalLabels.indexOf(interval);
+        while (lines.length <= index) {
+          // Initialize a new line data with empty spots if it doesn't exist
+          final List<FlSpot> spots = []; // Correctly initialize the list
+          if (spots.isEmpty) {
+            spots.add(const FlSpot(0, 0)); // Add a default spot to avoid errors
+          }
+          lines.add(LineChartBarData(
+            spots: spots, // Pass the spots to the chart data
+            isCurved: true,
+            color: categoryColor, // Replace with the appropriate color variable
+            barWidth: 2,
+            dotData: FlDotData(show: false),
+            belowBarData: BarAreaData(show: false),
+          ));
+        }
+
+        lines[index].spots.add(FlSpot(index.toDouble(), totalAmount));
+      });
+    });
+
+    return Column(
+      children: [
+        // Line chart widget
+        SizedBox(
+          height: 300,
+          child: LineChart(LineChartData(
+            gridData: FlGridData(show: true),
+            titlesData: FlTitlesData(
+              leftTitles: AxisTitles(
+                sideTitles: SideTitles(showTitles: true),
+              ),
+              bottomTitles: AxisTitles(
+                sideTitles: SideTitles(
+                  showTitles: true,
+                  getTitlesWidget: (value, meta) {
+                    final index = value.toInt();
+                    return index < intervalLabels.length
+                        ? Text(intervalLabels[index],
+                            style: const TextStyle(fontSize: 10))
+                        : const Text('');
+                  },
+                  reservedSize: 32,
+                ),
+              ),
+            ),
+            lineBarsData: lines,
+          )),
+        ),
+
+        const SizedBox(height: 20),
+
+        // Legend
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: categoryColors.entries.map((entry) {
+            return Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 16,
+                  height: 16,
+                  decoration: BoxDecoration(
+                    color: entry.value,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                ),
+                const SizedBox(width: 4),
+                Text(entry.key, style: const TextStyle(fontSize: 12)),
+              ],
+            );
+          }).toList(),
+        ),
+      ],
+    );
+  }
+
 // Method to build a customizable card with dynamic content
   Widget buildCard({
     required BuildContext context,
@@ -433,6 +543,11 @@ class ReportPageState extends State<ReportPage> {
                       content:
                           buildPieChart(context), // Uses Consumer internally
                     )
+                  // buildCard(
+                  //   context: context,
+                  //   title: 'Expenses Trend by Category',
+                  //   content: buildCategoryLineChart(context),
+                  // )
                   else ...[
                     const SizedBox(height: 20),
                     Center(
