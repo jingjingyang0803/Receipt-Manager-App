@@ -140,8 +140,7 @@ class CategoryService {
         List<dynamic> categoryList = data['categorylist'] ?? [];
 
         return categoryList.any((category) =>
-            category['name'].toString().toLowerCase() ==
-            categoryName.toLowerCase());
+            category['name'].trim().toString() == categoryName.trim());
       }
 
       return false;

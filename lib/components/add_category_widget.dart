@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:receipt_manager/components/custom_input_field.dart';
 
 import '../constants/app_colors.dart';
+import '../logger.dart';
 import '../services/category_service.dart';
 import 'custom_button.dart';
 
@@ -142,26 +143,42 @@ class AddCategoryWidgetState extends State<AddCategoryWidget> {
             textColor: light80,
             onPressed: () async {
               if (categoryName.isNotEmpty) {
-                // Check if the category exists
-                bool categoryExists = await _categoryService.categoryExists(
-                    widget.userId, categoryName);
+                try {
+                  // Check if the category exists
+                  bool categoryExists = await _categoryService.categoryExists(
+                      widget.userId, categoryName);
 
-                if (categoryExists) {
+                  if (categoryExists) {
+                    logger.w("Category '$categoryName' already exists.");
+                    // Show a toast or another dialog instead of using the closed context
+                    setState(() {
+                      _errorMessage =
+                          "Category '$categoryName' already exists.";
+                    });
+                  } else {
+                    if (mounted) {
+                      Navigator.of(context).pop(); // Close dialog immediately
+                    }
+
+                    // Add category to Firestore
+                    await _categoryService.addCategoryToFirestore(
+                        widget.userId, categoryName, selectedIcon);
+
+                    // Trigger the callback after adding the category
+                    widget.onCategoryAdded();
+                  }
+                } catch (e) {
+                  logger.e("An error occurred: ${e.toString()}");
+                }
+              } else {
+                if (mounted) {
                   setState(() {
-                    _errorMessage = "Category '$categoryName' already exists.";
+                    _errorMessage = "Category name cannot be empty.";
                   });
-                } else {
-                  // Add category to Firestore if it doesn't exist
-                  await _categoryService.addCategoryToFirestore(
-                      widget.userId, categoryName, selectedIcon);
-
-                  // Call the callback after adding category
-                  widget.onCategoryAdded();
-                  Navigator.pop(context); // Close dialog after adding
                 }
               }
             },
-          ),
+          )
         ],
       ),
     );
