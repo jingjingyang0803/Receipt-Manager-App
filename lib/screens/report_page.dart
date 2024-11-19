@@ -40,6 +40,7 @@ class ReportPageState extends State<ReportPage> {
       receiptProvider.applyFilters();
       receiptProvider.groupByCategory();
       receiptProvider.groupByInterval(selectedInterval);
+      receiptProvider.groupByIntervalAndCategory(selectedInterval);
 
       setState(() {
         selectedInterval = receiptProvider.selectedInterval;
@@ -311,57 +312,15 @@ class ReportPageState extends State<ReportPage> {
   }
 
   Widget buildCategoryLineChart(BuildContext context) {
-    final receiptProvider =
-        Provider.of<ReceiptProvider>(context, listen: false);
-
-    // Group data by interval and category
-    receiptProvider
-        .groupByIntervalAndCategory(receiptProvider.selectedInterval);
-
+    final receiptProvider = Provider.of<ReceiptProvider>(context);
     final groupedData = receiptProvider.groupedReceiptsByIntervalAndCategory;
+
     if (groupedData == null || groupedData.isEmpty) {
       return const Center(child: Text('No data available.'));
     }
 
-    // Prepare line chart data
-    final List<LineChartBarData> lines = [];
-    final Map<String, Color> categoryColors =
-        {}; // Legend colors for categories
-    final List<String> intervalLabels = groupedData.keys.toList();
-
-    // Loop through grouped data
-    groupedData.forEach((interval, categories) {
-      categories.forEach((categoryId, categoryData) {
-        final categoryName = categoryData['categoryName'] ?? 'Unknown';
-        final categoryColor =
-            categoryData['categoryColor'] as Color? ?? Colors.grey;
-        final totalAmount = categoryData['total'] as double? ?? 0.0;
-
-        if (!categoryColors.containsKey(categoryId)) {
-          categoryColors[categoryId] = categoryColor;
-        }
-
-        // Create FlSpot for the line chart
-        final index = intervalLabels.indexOf(interval);
-        while (lines.length <= index) {
-          // Initialize a new line data with empty spots if it doesn't exist
-          final List<FlSpot> spots = []; // Correctly initialize the list
-          if (spots.isEmpty) {
-            spots.add(const FlSpot(0, 0)); // Add a default spot to avoid errors
-          }
-          lines.add(LineChartBarData(
-            spots: spots, // Pass the spots to the chart data
-            isCurved: true,
-            color: categoryColor, // Replace with the appropriate color variable
-            barWidth: 2,
-            dotData: FlDotData(show: false),
-            belowBarData: BarAreaData(show: false),
-          ));
-        }
-
-        lines[index].spots.add(FlSpot(index.toDouble(), totalAmount));
-      });
-    });
+    final lines = getLineChartData(context); // Get the line chart data
+    final intervalLabels = groupedData.keys.toList();
 
     return Column(
       children: [
@@ -391,33 +350,109 @@ class ReportPageState extends State<ReportPage> {
             lineBarsData: lines,
           )),
         ),
-
         const SizedBox(height: 20),
 
         // Legend
         Wrap(
           spacing: 8,
           runSpacing: 8,
-          children: categoryColors.entries.map((entry) {
-            return Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  width: 16,
-                  height: 16,
-                  decoration: BoxDecoration(
-                    color: entry.value,
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                ),
-                const SizedBox(width: 4),
-                Text(entry.key, style: const TextStyle(fontSize: 12)),
-              ],
-            );
-          }).toList(),
+          children: getLegendItems(context),
         ),
       ],
     );
+  }
+
+  List<LineChartBarData> getLineChartData(BuildContext context) {
+    final receiptProvider =
+        Provider.of<ReceiptProvider>(context, listen: false);
+    final groupedData = receiptProvider.groupedReceiptsByIntervalAndCategory;
+
+    if (groupedData == null || groupedData.isEmpty) {
+      return [];
+    }
+
+    final Map<String, List<FlSpot>> categorySpots = {};
+    final Map<String, Color> categoryColors = {};
+    final List<String> intervalLabels = groupedData.keys.toList();
+
+    // Collect all category IDs to ensure each category has data for all intervals
+    final allCategoryIds =
+        groupedData.values.expand((categories) => categories.keys).toSet();
+
+    // Populate categorySpots with data for each interval
+    for (var interval in intervalLabels) {
+      final intervalIndex = intervalLabels.indexOf(interval).toDouble();
+      final categories = groupedData[interval] ?? {};
+
+      for (var categoryId in allCategoryIds) {
+        final categoryData = categories[categoryId];
+        final total = (categoryData?['total'] as double? ?? 0.0)
+            .clamp(0.0, double.infinity);
+
+        if (!categorySpots.containsKey(categoryId)) {
+          categorySpots[categoryId] = [];
+          categoryColors[categoryId] =
+              categoryData?['categoryColor'] as Color? ?? Colors.grey;
+        }
+
+        categorySpots[categoryId]!.add(FlSpot(intervalIndex, total));
+      }
+    }
+
+    // Create line chart data for each category
+    return categorySpots.entries.map((entry) {
+      final categoryId = entry.key;
+      return LineChartBarData(
+        spots: entry.value,
+        isCurved: true,
+        color: categoryColors[categoryId],
+        barWidth: 2,
+        dotData: FlDotData(show: false),
+        belowBarData: BarAreaData(show: false),
+      );
+    }).toList();
+  }
+
+  List<Widget> getLegendItems(BuildContext context) {
+    final receiptProvider =
+        Provider.of<ReceiptProvider>(context, listen: false);
+    final groupedData = receiptProvider.groupedReceiptsByIntervalAndCategory;
+
+    if (groupedData == null || groupedData.isEmpty) {
+      return [];
+    }
+
+    // Get unique category names and colors
+    final Map<String, Color> categoryColors = {};
+    groupedData.values.forEach((categories) {
+      categories.forEach((categoryId, categoryData) {
+        final categoryName = categoryData['categoryName'] ?? 'Unknown';
+        final categoryColor =
+            categoryData['categoryColor'] as Color? ?? Colors.grey;
+        if (!categoryColors.containsKey(categoryName)) {
+          categoryColors[categoryName] = categoryColor;
+        }
+      });
+    });
+
+    // Generate legend widgets
+    return categoryColors.entries.map((entry) {
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 16,
+            height: 16,
+            decoration: BoxDecoration(
+              color: entry.value,
+              borderRadius: BorderRadius.circular(4),
+            ),
+          ),
+          const SizedBox(width: 4),
+          Text(entry.key, style: const TextStyle(fontSize: 12)),
+        ],
+      );
+    }).toList();
   }
 
 // Method to build a customizable card with dynamic content
