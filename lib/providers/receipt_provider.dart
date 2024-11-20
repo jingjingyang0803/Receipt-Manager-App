@@ -114,6 +114,12 @@ class ReceiptProvider extends ChangeNotifier {
     logger.i("fetchAllReceipts called");
     _categoryProvider?.loadUserCategories();
 
+    final userCurrencyCode =
+        _userProvider?.userProfile?.data()?['currencyCode'];
+    // Get the currency symbol using intl
+    _currencySymbolToDisplay =
+        NumberFormat.simpleCurrency(name: userCurrencyCode).currencySymbol;
+
     try {
       final userDoc =
           FirebaseFirestore.instance.collection('receipts').doc(_userEmail);
@@ -137,12 +143,6 @@ class ReceiptProvider extends ChangeNotifier {
           (cat) => cat['id'] == receipt['categoryId'],
           orElse: () => {'name': 'Unknown', 'icon': '❓'},
         );
-
-        final userCurrencyCode =
-            _userProvider?.userProfile?.data()?['currencyCode'];
-        // Get the currency symbol using intl
-        _currencySymbolToDisplay =
-            NumberFormat.simpleCurrency(name: userCurrencyCode).currencySymbol;
 
         final rates = {
           "AED": 3.672993,
