@@ -19,9 +19,8 @@ class ReceiptProvider extends ChangeNotifier {
   CategoryProvider? _categoryProvider;
   CurrencyProvider? _currencyProvider;
 
-  // Date Range
-  DateTime? _startDate = DateTime(
-      DateTime.now().year - 1, DateTime.now().month, DateTime.now().day);
+  // Date Range default as current year
+  DateTime? _startDate = DateTime(DateTime.now().year, 1, 1);
   DateTime? _endDate = DateTime.now();
 
   DateTime? get startDate => _startDate;
