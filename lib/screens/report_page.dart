@@ -35,7 +35,7 @@ class ReportPageState extends State<ReportPage> {
       receiptProvider.applyFilters();
       receiptProvider.groupByCategory();
       receiptProvider.groupByInterval(selectedInterval);
-      receiptProvider.groupByIntervalAndCategory(selectedInterval);
+      receiptProvider.groupByDayAndCategory();
 
       if (mounted) {
         setState(() {
@@ -301,61 +301,10 @@ class ReportPageState extends State<ReportPage> {
     );
   }
 
-  Widget buildCategoryLineChart(BuildContext context) {
-    final receiptProvider = Provider.of<ReceiptProvider>(context);
-    final groupedData = receiptProvider.groupedReceiptsByIntervalAndCategory;
-
-    if (groupedData == null || groupedData.isEmpty) {
-      return const Center(child: Text('No data available.'));
-    }
-
-    final lines = getLineChartData(context); // Get the line chart data
-    final intervalLabels = groupedData.keys.toList();
-
-    return Column(
-      children: [
-        // Line chart widget
-        SizedBox(
-          height: 300,
-          child: LineChart(LineChartData(
-            gridData: FlGridData(show: true),
-            titlesData: FlTitlesData(
-              leftTitles: AxisTitles(
-                sideTitles: SideTitles(showTitles: true),
-              ),
-              bottomTitles: AxisTitles(
-                sideTitles: SideTitles(
-                  showTitles: true,
-                  getTitlesWidget: (value, meta) {
-                    final index = value.toInt();
-                    return index < intervalLabels.length
-                        ? Text(intervalLabels[index],
-                            style: const TextStyle(fontSize: 10))
-                        : const Text('');
-                  },
-                  reservedSize: 32,
-                ),
-              ),
-            ),
-            lineBarsData: lines,
-          )),
-        ),
-        const SizedBox(height: 20),
-
-        // Legend
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: getLegendItems(context),
-        ),
-      ],
-    );
-  }
-
   List<LineChartBarData> getLineChartData(BuildContext context) {
     final receiptProvider =
         Provider.of<ReceiptProvider>(context, listen: false);
-    final groupedData = receiptProvider.groupedReceiptsByIntervalAndCategory;
+    final groupedData = receiptProvider.groupedReceiptsByDayAndCategory;
 
     if (groupedData == null || groupedData.isEmpty) {
       return [];
@@ -363,13 +312,25 @@ class ReportPageState extends State<ReportPage> {
 
     final Map<String, List<FlSpot>> categorySpots = {};
     final Map<String, Color> categoryColors = {};
-    final List<String> intervalLabels = groupedData.keys.toList();
 
-    // Collect all category IDs to ensure each category has data for all intervals
+    // Collect all category IDs
     final allCategoryIds =
         groupedData.values.expand((categories) => categories.keys).toSet();
 
-    // Initialize categoryColors at the start
+    // Determine start and end date for the interval
+    final allDates =
+        groupedData.keys.map((date) => DateTime.parse(date)).toList();
+    allDates.sort();
+    final startDate = allDates.first;
+    final endDate = allDates.last;
+
+    // Generate continuous dates for the entire interval
+    final continuousDates = List.generate(
+      endDate.difference(startDate).inDays + 1,
+      (index) => startDate.add(Duration(days: index)),
+    );
+
+    // Initialize categoryColors
     for (var categories in groupedData.values) {
       for (var categoryId in categories.keys) {
         if (!categoryColors.containsKey(categoryId)) {
@@ -380,20 +341,23 @@ class ReportPageState extends State<ReportPage> {
       }
     }
 
-    // Populate categorySpots with data for every interval
+    // Populate categorySpots with data for all dates
     for (var categoryId in allCategoryIds) {
       if (!categorySpots.containsKey(categoryId)) {
         categorySpots[categoryId] = [];
       }
 
-      for (var interval in intervalLabels) {
-        final intervalIndex = intervalLabels.indexOf(interval).toDouble();
-        final categories = groupedData[interval] ?? {};
+      for (var date in continuousDates) {
+        final dateKey =
+            date.toIso8601String().split('T')[0]; // Format as 'yyyy-MM-dd'
+        final categories = groupedData[dateKey] ?? {};
         final categoryData = categories[categoryId];
         final total = (categoryData?['total'] as double? ?? 0.0)
             .clamp(0.0, double.infinity);
 
-        categorySpots[categoryId]!.add(FlSpot(intervalIndex, total));
+        categorySpots[categoryId]!.add(
+          FlSpot(date.difference(startDate).inDays.toDouble(), total),
+        );
       }
     }
 
@@ -414,7 +378,7 @@ class ReportPageState extends State<ReportPage> {
   List<Widget> getLegendItems(BuildContext context) {
     final receiptProvider =
         Provider.of<ReceiptProvider>(context, listen: false);
-    final groupedData = receiptProvider.groupedReceiptsByIntervalAndCategory;
+    final groupedData = receiptProvider.groupedReceiptsByDayAndCategory;
 
     if (groupedData == null || groupedData.isEmpty) {
       return [];
@@ -422,7 +386,7 @@ class ReportPageState extends State<ReportPage> {
 
     // Get unique category names and colors
     final Map<String, Color> categoryColors = {};
-    groupedData.values.forEach((categories) {
+    for (var categories in groupedData.values) {
       categories.forEach((categoryId, categoryData) {
         final categoryName = categoryData['categoryName'] ?? 'Unknown';
         final categoryColor =
@@ -431,7 +395,7 @@ class ReportPageState extends State<ReportPage> {
           categoryColors[categoryName] = categoryColor;
         }
       });
-    });
+    }
 
     // Generate legend widgets
     return categoryColors.entries.map((entry) {
@@ -451,6 +415,64 @@ class ReportPageState extends State<ReportPage> {
         ],
       );
     }).toList();
+  }
+
+// Method to build the line chart
+  Widget buildCategoryLineChart(BuildContext context) {
+    final receiptProvider = Provider.of<ReceiptProvider>(context);
+    final groupedData = receiptProvider.groupedReceiptsByDayAndCategory;
+
+    if (groupedData == null || groupedData.isEmpty) {
+      return const Center(child: Text('No data available.'));
+    }
+
+    final lines = getLineChartData(context); // Get the line chart data
+
+    // Determine start and end date for the interval
+    final allDates =
+        groupedData.keys.map((date) => DateTime.parse(date)).toList();
+    allDates.sort();
+    final startDate = allDates.first;
+
+    return Column(
+      children: [
+        // Line chart widget
+        SizedBox(
+          height: 300,
+          child: LineChart(LineChartData(
+            gridData: FlGridData(show: true),
+            titlesData: FlTitlesData(
+              leftTitles: AxisTitles(
+                sideTitles: SideTitles(showTitles: true),
+              ),
+              bottomTitles: AxisTitles(
+                sideTitles: SideTitles(
+                  showTitles: true,
+                  getTitlesWidget: (value, meta) {
+                    final index = value.toInt();
+                    final date = startDate.add(Duration(days: index));
+                    return Text(
+                      '${date.month}/${date.day}', // Format as 'MM/DD'
+                      style: const TextStyle(fontSize: 10),
+                    );
+                  },
+                  reservedSize: 32,
+                ),
+              ),
+            ),
+            lineBarsData: lines,
+          )),
+        ),
+        const SizedBox(height: 20),
+
+        // Legend
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: getLegendItems(context),
+        ),
+      ],
+    );
   }
 
 // Method to build a customizable card with dynamic content
