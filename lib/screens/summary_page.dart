@@ -19,6 +19,7 @@ class SummaryPage extends StatefulWidget {
 class SummaryPageState extends State<SummaryPage> {
   int _month = DateTime.now().month;
   int _year = DateTime.now().year;
+  String _currencySymbolToDisplay = ' ';
 
   final List<String> months = [
     'January',
@@ -43,13 +44,16 @@ class SummaryPageState extends State<SummaryPage> {
     super.initState();
     // Load data when the widget is initialized
     Future.microtask(() {
-      final receiptProvider =
-          Provider.of<ReceiptProvider>(context, listen: false);
       final budgetProvider =
           Provider.of<BudgetProvider>(context, listen: false);
-
-      receiptProvider.fetchAllReceipts();
       budgetProvider.loadUserBudgets();
+
+      final receiptProvider =
+          Provider.of<ReceiptProvider>(context, listen: false);
+      receiptProvider.fetchAllReceipts();
+      setState(() {
+        _currencySymbolToDisplay = receiptProvider.currencySymbolToDisplay!;
+      });
 
       receiptProvider.groupReceiptsByCategoryOneMonth(_month, _year);
       receiptProvider.calculateTotalSpending(
@@ -172,10 +176,6 @@ class SummaryPageState extends State<SummaryPage> {
           final budgets = budgetProvider.budgets;
           final expenses = receiptProvider.groupedReceiptsByCategoryOneMonth;
           final totalSpending = receiptProvider.totalSpending;
-          final currencySymbol = receiptProvider.allReceipts.isNotEmpty
-              ? receiptProvider.allReceipts.first['currencySymbolToDisplay'] ??
-                  '€'
-              : '€';
 
           return Column(
             children: [
@@ -235,7 +235,7 @@ class SummaryPageState extends State<SummaryPage> {
                               fontSize: 18, fontWeight: FontWeight.bold),
                         ),
                         Text(
-                          '$currencySymbol ${totalSpending.toStringAsFixed(2)}',
+                          '$_currencySymbolToDisplay ${totalSpending.toStringAsFixed(2)}',
                           style: TextStyle(fontSize: 18, color: Colors.red),
                         ),
                       ],
@@ -260,8 +260,6 @@ class SummaryPageState extends State<SummaryPage> {
                     final budgetAmount = budget['amount'];
 
                     final spent = expenses![categoryId]?['total'] ?? 0.0;
-                    final categoryCurrencySymbol =
-                        expenses[categoryId]?['currencySymbolToDisplay'] ?? '€';
 
                     double ratio = budgetAmount == 0
                         ? (spent > 0 ? 1.0 : 0.0)
@@ -305,7 +303,7 @@ class SummaryPageState extends State<SummaryPage> {
                                     style: TextStyle(
                                         fontSize: 14, color: Colors.grey[700])),
                                 Text(
-                                  '$categoryCurrencySymbol ${budgetAmount.toStringAsFixed(2)}',
+                                  '$_currencySymbolToDisplay ${budgetAmount.toStringAsFixed(2)}',
                                   style: TextStyle(
                                       fontSize: 15, color: Colors.grey[800]),
                                 ),
@@ -319,7 +317,7 @@ class SummaryPageState extends State<SummaryPage> {
                                     style: TextStyle(
                                         fontSize: 14, color: Colors.grey[700])),
                                 Text(
-                                  '$categoryCurrencySymbol ${spent.toStringAsFixed(2)}',
+                                  '$_currencySymbolToDisplay ${spent.toStringAsFixed(2)}',
                                   style: TextStyle(
                                     fontSize: 15,
                                     color: getColor(ratio),
