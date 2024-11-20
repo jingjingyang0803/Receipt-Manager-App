@@ -11,6 +11,8 @@ import 'currency_provider.dart';
 
 enum TimeInterval { day, week, month, year }
 
+enum ChartType { pie, bar, line }
+
 class ReceiptProvider extends ChangeNotifier {
   // Services and Providers
   final ReceiptService _receiptService = ReceiptService();
@@ -52,6 +54,8 @@ class ReceiptProvider extends ChangeNotifier {
   int? get receiptCount => _receiptCount;
   DateTime? get oldestDate => _oldestDate;
   DateTime? get newestDate => _newestDate;
+
+  ChartType currentChartType = ChartType.pie;
 
   // Grouped Receipts
   Map<String, Map<String, dynamic>>? _groupedReceiptsByCategory;
@@ -347,6 +351,11 @@ class ReceiptProvider extends ChangeNotifier {
     }
   }
 
+  void setChartType(ChartType type) {
+    currentChartType = type;
+    applyFilters(); // Ensure grouping matches the new chart type
+  }
+
   void applyFilters() {
     logger.i("applyFilters called");
 
@@ -400,6 +409,15 @@ class ReceiptProvider extends ChangeNotifier {
 
     logger.i(
         "Filtered and Sorted Receipts (${_filteredReceipts.length}): $_filteredReceipts");
+
+    // Call appropriate grouping based on the current chart type
+    if (currentChartType == ChartType.pie) {
+      groupByCategory();
+    } else if (currentChartType == ChartType.bar) {
+      groupByInterval(selectedInterval);
+    } else if (currentChartType == ChartType.line) {
+      groupByIntervalAndCategory(selectedInterval);
+    }
 
     // Notify listeners
     notifyListeners();

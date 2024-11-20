@@ -18,8 +18,6 @@ class ReportPage extends StatefulWidget {
 
 class ReportPageState extends State<ReportPage> {
   String _currencySymbolToDisplay = ' ';
-  bool isPieChart = true; // Toggle state for chart
-  bool isLineChart = false; // Add a state to track the line chart
 
   TimeInterval selectedInterval =
       TimeInterval.day; // Default time interval (day)
@@ -491,19 +489,7 @@ class ReportPageState extends State<ReportPage> {
       appBar: CustomAppBar(),
       body: Consumer<ReceiptProvider>(
         builder: (context, receiptProvider, child) {
-          if (receiptProvider.allReceipts.isEmpty) {
-            return const Center(
-              child: Text(
-                'No receipts found for the settings.',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.grey, // Optional: color to match your design
-                  fontWeight: FontWeight.bold,
-                ),
-                textAlign: TextAlign.center, // Optional: to align the text
-              ),
-            );
-          }
+          final chartType = receiptProvider.currentChartType;
 
           return Padding(
             padding: const EdgeInsets.all(20.0),
@@ -511,20 +497,16 @@ class ReportPageState extends State<ReportPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Toggle Button for Bar Chart and Pie Chart
+                  // Toggle Button for Charts
                   Row(
                     children: [
                       // Bar Chart Button
                       TextButton(
                         onPressed: () {
-                          setState(() {
-                            isPieChart = false;
-                            isLineChart =
-                                false; // Ensure this is false when switching
-                          });
+                          receiptProvider.setChartType(ChartType.bar);
                         },
                         style: TextButton.styleFrom(
-                          backgroundColor: (!isPieChart && !isLineChart)
+                          backgroundColor: chartType == ChartType.bar
                               ? purple80
                               : Colors.white,
                           minimumSize: const Size(10, 50),
@@ -534,7 +516,7 @@ class ReportPageState extends State<ReportPage> {
                               bottomLeft: Radius.circular(8),
                             ),
                             side: BorderSide(
-                              color: (!isPieChart && !isLineChart)
+                              color: chartType == ChartType.bar
                                   ? Colors.transparent
                                   : light60,
                               width: 1.5,
@@ -543,49 +525,46 @@ class ReportPageState extends State<ReportPage> {
                         ),
                         child: Icon(
                           Icons.bar_chart,
-                          color: (!isPieChart && !isLineChart)
-                              ? light80
-                              : purple100,
+                          color:
+                              chartType == ChartType.bar ? light80 : purple100,
                         ),
                       ),
 
                       // Pie Chart Button
                       TextButton(
                         onPressed: () {
-                          setState(() {
-                            isPieChart = true;
-                            isLineChart =
-                                false; // Ensure this is false when switching
-                          });
+                          receiptProvider.setChartType(ChartType.pie);
                         },
                         style: TextButton.styleFrom(
-                          backgroundColor: isPieChart ? purple80 : Colors.white,
+                          backgroundColor: chartType == ChartType.pie
+                              ? purple80
+                              : Colors.white,
                           minimumSize: const Size(10, 50),
                           shape: RoundedRectangleBorder(
                             side: BorderSide(
-                              color: isPieChart ? Colors.transparent : light60,
+                              color: chartType == ChartType.pie
+                                  ? Colors.transparent
+                                  : light60,
                               width: 1.5,
                             ),
                           ),
                         ),
                         child: Icon(
                           Icons.pie_chart,
-                          color: isPieChart ? light80 : purple100,
+                          color:
+                              chartType == ChartType.pie ? light80 : purple100,
                         ),
                       ),
 
                       // Line Chart Button
                       TextButton(
                         onPressed: () {
-                          setState(() {
-                            isLineChart = true;
-                            isPieChart =
-                                false; // Ensure this is false when switching
-                          });
+                          receiptProvider.setChartType(ChartType.line);
                         },
                         style: TextButton.styleFrom(
-                          backgroundColor:
-                              isLineChart ? purple80 : Colors.white,
+                          backgroundColor: chartType == ChartType.line
+                              ? purple80
+                              : Colors.white,
                           minimumSize: const Size(10, 50),
                           shape: RoundedRectangleBorder(
                             borderRadius: const BorderRadius.only(
@@ -593,27 +572,30 @@ class ReportPageState extends State<ReportPage> {
                               bottomRight: Radius.circular(8),
                             ),
                             side: BorderSide(
-                              color: isLineChart ? Colors.transparent : light60,
+                              color: chartType == ChartType.line
+                                  ? Colors.transparent
+                                  : light60,
                               width: 1.5,
                             ),
                           ),
                         ),
                         child: Icon(
                           Icons.show_chart, // Line chart icon
-                          color: isLineChart ? light80 : purple100,
+                          color:
+                              chartType == ChartType.line ? light80 : purple100,
                         ),
                       ),
                     ],
                   ),
                   const SizedBox(height: 10),
-                  // Add logic in the widget rendering section
-                  if (isPieChart)
+                  // Render the chart dynamically
+                  if (chartType == ChartType.pie)
                     buildCard(
                       context: context,
                       title: 'Expenses by Category',
                       content: buildPieChart(context),
                     )
-                  else if (isLineChart)
+                  else if (chartType == ChartType.line)
                     buildCard(
                       context: context,
                       title: 'Expenses Trend by Category',
