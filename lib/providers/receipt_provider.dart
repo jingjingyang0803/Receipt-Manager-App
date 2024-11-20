@@ -354,6 +354,13 @@ class ReceiptProvider extends ChangeNotifier {
     logger.i(
         "Applying filters on Receipts (${_allReceipts.length}): $_allReceipts");
 
+    // If category or payment method filters are empty, return an empty list
+    if (_selectedCategoryIds.isEmpty || _selectedPaymentMethods.isEmpty) {
+      _filteredReceipts = [];
+      notifyListeners();
+      return;
+    }
+
     // Apply filtering logic
     _filteredReceipts = _allReceipts.where((receipt) {
       final categoryId = receipt['categoryId'] ?? 'unknown';
