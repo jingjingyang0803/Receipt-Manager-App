@@ -34,19 +34,31 @@ class CalendarFilterWidgetState extends State<CalendarFilterWidget> {
     _endDate = widget.initialEndDate;
     _startDate = widget.initialStartDate;
 
-    // Calculate _selectedDays based on the initial dates
+    // Check for All History
     if (_startDate == DateTime(2000)) {
       _selectedDays = -1; // All History
-    } else if (_startDate?.month == 1 &&
-        _startDate?.year == DateTime.now().year) {
-      _selectedDays = -1; // Current Year
-    } else if (_startDate?.month == DateTime.now().month &&
-        _startDate?.year == DateTime.now().year) {
-      _selectedDays = -1; // Current Month
-    } else if (_endDate != null && _startDate != null) {
+    }
+    // Check for Current Year
+    else if (_startDate?.day == 1 &&
+        _startDate?.month == 1 &&
+        _startDate?.year == DateTime.now().year &&
+        _endDate?.day == DateTime.now().day &&
+        _endDate?.month == DateTime.now().month &&
+        _endDate?.year == DateTime.now().year) {
+      _selectedDays = -2; // Current Year
+    }
+    // Check for Current Month
+    else if (_startDate?.day == 1 &&
+        _startDate?.month == DateTime.now().month &&
+        _startDate?.year == DateTime.now().year &&
+        _endDate?.day == DateTime.now().day &&
+        _endDate?.month == DateTime.now().month &&
+        _endDate?.year == DateTime.now().year) {
+      _selectedDays = -3; // Current Month
+    }
+    // Otherwise, calculate days difference
+    else if (_endDate != null && _startDate != null) {
       _selectedDays = _endDate!.difference(_startDate!).inDays;
-    } else {
-      _selectedDays = 90; // Default to 90 days if no specific range is provided
     }
   }
 
@@ -68,17 +80,19 @@ class CalendarFilterWidgetState extends State<CalendarFilterWidget> {
         case 'Current Year':
           _startDate = DateTime(now.year, 1, 1);
           _endDate = DateTime(now.year, now.month, now.day);
+          _selectedDays = -2; // Distinct value for Current Year
           break;
         case 'Current Month':
           _startDate = DateTime(now.year, now.month, 1);
           _endDate = DateTime(now.year, now.month, now.day);
+          _selectedDays = -3; // Distinct value for Current Month
           break;
         case 'All History':
-          _startDate = DateTime(2000); // Set a very early start date
-          _endDate = DateTime.now(); // Set to current date
+          _startDate = DateTime(2000);
+          _endDate = DateTime.now();
+          _selectedDays = -1; // Distinct value for All History
           break;
       }
-      _selectedDays = -1; // Indicate no fixed range for these special options
     });
   }
 
@@ -187,16 +201,18 @@ class CalendarFilterWidgetState extends State<CalendarFilterWidget> {
                             _startDate == DateTime(2000);
                       }
                       if (option == 'Current Year') {
-                        return _selectedDays == -1 &&
+                        return _selectedDays == -2 &&
                             _startDate?.month == 1 &&
-                            _startDate?.year == DateTime.now().year;
+                            _startDate?.year == DateTime.now().year &&
+                            _endDate?.year == DateTime.now().year;
                       }
                       if (option == 'Current Month') {
-                        return _selectedDays == -1 &&
+                        return _selectedDays == -3 &&
                             _startDate?.month == DateTime.now().month &&
-                            _startDate?.year == DateTime.now().year;
+                            _startDate?.year == DateTime.now().year &&
+                            _endDate?.year == DateTime.now().year;
                       }
-                      return false; // Default to not selected for any other case
+                      return false;
                     }(),
                     onSelected: (_) => _updateSpecialRange(option),
                   ),
