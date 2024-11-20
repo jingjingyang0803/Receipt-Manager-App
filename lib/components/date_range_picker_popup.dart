@@ -1,8 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 import '../constants/app_colors.dart';
+import '../providers/receipt_provider.dart';
 import 'custom_button.dart';
 import 'custom_divider.dart';
 import 'custom_option_widget.dart';
@@ -34,32 +36,45 @@ class CalendarFilterWidgetState extends State<CalendarFilterWidget> {
     _endDate = widget.initialEndDate;
     _startDate = widget.initialStartDate;
 
-    // Check for All History
-    if (_startDate == DateTime(2000)) {
-      _selectedDays = -1; // All History
-    }
-    // Check for Current Year
-    else if (_startDate?.day == 1 &&
-        _startDate?.month == 1 &&
-        _startDate?.year == DateTime.now().year &&
-        _endDate?.day == DateTime.now().day &&
-        _endDate?.month == DateTime.now().month &&
-        _endDate?.year == DateTime.now().year) {
-      _selectedDays = -2; // Current Year
-    }
-    // Check for Current Month
-    else if (_startDate?.day == 1 &&
-        _startDate?.month == DateTime.now().month &&
-        _startDate?.year == DateTime.now().year &&
-        _endDate?.day == DateTime.now().day &&
-        _endDate?.month == DateTime.now().month &&
-        _endDate?.year == DateTime.now().year) {
-      _selectedDays = -3; // Current Month
-    }
-    // Otherwise, calculate days difference
-    else if (_endDate != null && _startDate != null) {
-      _selectedDays = _endDate!.difference(_startDate!).inDays;
-    }
+    final receiptProvider =
+        Provider.of<ReceiptProvider>(context, listen: false);
+    receiptProvider.fetchAllReceipts();
+    receiptProvider
+        .loadOldestAndNewestDates(); // Call once during initialization
+    final oldestDate = receiptProvider.oldestDate;
+    final newestDate = receiptProvider.newestDate;
+
+    setState(() {
+      _startDate ??= oldestDate;
+      _endDate ??= newestDate;
+
+      // Check for All History dynamically
+      if (_startDate == oldestDate && _endDate == newestDate) {
+        _selectedDays = -1; // All History
+      }
+      // Check for Current Year
+      else if (_startDate?.day == 1 &&
+          _startDate?.month == 1 &&
+          _startDate?.year == DateTime.now().year &&
+          _endDate?.day == DateTime.now().day &&
+          _endDate?.month == DateTime.now().month &&
+          _endDate?.year == DateTime.now().year) {
+        _selectedDays = -2; // Current Year
+      }
+      // Check for Current Month
+      else if (_startDate?.day == 1 &&
+          _startDate?.month == DateTime.now().month &&
+          _startDate?.year == DateTime.now().year &&
+          _endDate?.day == DateTime.now().day &&
+          _endDate?.month == DateTime.now().month &&
+          _endDate?.year == DateTime.now().year) {
+        _selectedDays = -3; // Current Month
+      }
+      // Otherwise, calculate days difference
+      else if (_endDate != null && _startDate != null) {
+        _selectedDays = _endDate!.difference(_startDate!).inDays;
+      }
+    });
   }
 
   void _updateRange(int days) {
@@ -73,7 +88,13 @@ class CalendarFilterWidgetState extends State<CalendarFilterWidget> {
     });
   }
 
-  void _updateSpecialRange(String option) {
+  Future<void> _updateSpecialRange(String option) async {
+    final receiptProvider =
+        Provider.of<ReceiptProvider>(context, listen: false);
+    final oldestDate = receiptProvider.oldestDate;
+    final newestDate = receiptProvider.newestDate;
+    print(oldestDate);
+
     setState(() {
       final now = DateTime.now();
       switch (option) {
@@ -88,8 +109,8 @@ class CalendarFilterWidgetState extends State<CalendarFilterWidget> {
           _selectedDays = -3; // Distinct value for Current Month
           break;
         case 'All History':
-          _startDate = DateTime(2000);
-          _endDate = DateTime.now();
+          _startDate = oldestDate;
+          _endDate = newestDate;
           _selectedDays = -1; // Distinct value for All History
           break;
       }
@@ -196,9 +217,15 @@ class CalendarFilterWidgetState extends State<CalendarFilterWidget> {
                   (option) => CustomOptionWidget(
                     label: option,
                     isSelected: () {
+                      final receiptProvider =
+                          Provider.of<ReceiptProvider>(context, listen: false);
+                      final oldestDate = receiptProvider.oldestDate;
+                      final newestDate = receiptProvider.newestDate;
+
                       if (option == 'All History') {
                         return _selectedDays == -1 &&
-                            _startDate == DateTime(2000);
+                            _startDate == oldestDate &&
+                            _endDate == newestDate;
                       }
                       if (option == 'Current Year') {
                         return _selectedDays == -2 &&
