@@ -1,5 +1,6 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../../logger.dart';
@@ -317,14 +318,25 @@ class ReportPageState extends State<ReportPage> {
     final allCategoryIds =
         groupedData.values.expand((categories) => categories.keys).toSet();
 
-    // Convert groupedData.keys (e.g., `yyyy-MM`) to sorted list of months
-    final sortedKeys = groupedData.keys.toList()..sort();
-    final startDate = DateTime.parse('${sortedKeys.first}-01');
+    // Determine start and end date
+    final allDates = groupedData.keys
+        .map((key) =>
+            DateTime.parse('$key-01')) // Convert `yyyy-MM` to valid date
+        .toList();
+    allDates.sort();
+    final startDate = allDates.first;
+    final endDate = allDates.last;
 
-    // Create X indices for each month
-    final monthIndices = {
-      for (int i = 0; i < sortedKeys.length; i++) sortedKeys[i]: i.toDouble(),
-    };
+    // Generate continuous months for the entire interval
+    final continuousMonths = List.generate(
+      (endDate.year - startDate.year) * 12 +
+          endDate.month -
+          startDate.month +
+          1, // Total months including start and end
+      (index) => DateTime(startDate.year, startDate.month + index, 1),
+    )
+        .map((date) => DateFormat('yyyy-MM').format(date))
+        .toList(); // Format as `yyyy-MM`
 
     // Initialize categoryColors
     for (var categories in groupedData.values) {
@@ -343,14 +355,16 @@ class ReportPageState extends State<ReportPage> {
         categorySpots[categoryId] = [];
       }
 
-      for (var key in sortedKeys) {
-        final xValue = monthIndices[key]!;
-        final categories = groupedData[key] ?? {};
+      for (var month in continuousMonths) {
+        final xValue = continuousMonths.indexOf(month).toDouble();
+        final categories = groupedData[month] ?? {};
         final categoryData = categories[categoryId];
         final total = (categoryData?['total'] as double? ?? 0.0)
             .clamp(0.0, double.infinity); // Prevent negative values
 
-        categorySpots[categoryId]!.add(FlSpot(xValue, total));
+        categorySpots[categoryId]!.add(
+          FlSpot(xValue, total),
+        );
       }
     }
 
@@ -423,10 +437,25 @@ class ReportPageState extends State<ReportPage> {
     final lines = getLineChartData(context); // Get the line chart data
 
     // Determine start and end date for the interval
+    // Determine start and end date from groupedData.keys
     final allDates = groupedData.keys
-        .map((key) => DateTime.parse('$key-01')) // Append `-01`
+        .map((key) =>
+            DateTime.parse('$key-01')) // Convert `yyyy-MM` to valid date
         .toList();
     allDates.sort();
+    final startDate = allDates.first;
+    final endDate = allDates.last;
+
+// Generate all months between startDate and endDate
+    final continuousMonths = List.generate(
+      (endDate.year - startDate.year) * 12 +
+          endDate.month -
+          startDate.month +
+          1, // Total months including start and end
+      (index) => DateTime(startDate.year, startDate.month + index, 1),
+    )
+        .map((date) => DateFormat('yyyy-MM').format(date))
+        .toList(); // Format as `yyyy-MM`
 
     return Column(
       children: [
@@ -458,21 +487,15 @@ class ReportPageState extends State<ReportPage> {
                   showTitles: true,
                   getTitlesWidget: (value, meta) {
                     final index = value.toInt();
-
-                    // Ensure sorted order of the keys
-                    final sortedKeys = groupedData.keys.toList()..sort();
-
-                    // Only display labels that match valid indices
-                    if (index >= 0 && index < sortedKeys.length) {
-                      final date = DateTime.parse(
-                          '${sortedKeys[index]}-01'); // Parse to valid date
+                    if (index >= 0 && index < continuousMonths.length) {
+                      final month = continuousMonths[index];
+                      final date = DateTime.parse('$month-01');
                       return Text(
                         '${date.year}/${date.month.toString().padLeft(2, '0')}', // Format as YYYY/MM
                         style: const TextStyle(fontSize: 10),
                       );
                     }
-                    return const SizedBox
-                        .shrink(); // Hide labels for invalid indices
+                    return const SizedBox.shrink();
                   },
                   reservedSize: 32,
                 ),
