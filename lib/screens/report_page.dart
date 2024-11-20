@@ -358,25 +358,18 @@ class ReportPageState extends State<ReportPage> {
     final groupedData = receiptProvider.groupedReceiptsByIntervalAndCategory;
 
     if (groupedData == null || groupedData.isEmpty) {
-      logger.i('Grouped data is empty or null. Returning an empty list.');
       return [];
     }
-
-    logger.i('Grouped data received for line chart: $groupedData');
 
     final Map<String, List<FlSpot>> categorySpots = {};
     final Map<String, Color> categoryColors = {};
     final List<String> intervalLabels = groupedData.keys.toList();
 
-    logger.i('Interval labels extracted: $intervalLabels');
-
     // Collect all category IDs to ensure each category has data for all intervals
     final allCategoryIds =
         groupedData.values.expand((categories) => categories.keys).toSet();
 
-    logger.i('All category IDs collected: $allCategoryIds');
-
-// Initialize categoryColors at the start
+    // Initialize categoryColors at the start
     for (var categories in groupedData.values) {
       for (var categoryId in categories.keys) {
         if (!categoryColors.containsKey(categoryId)) {
@@ -387,51 +380,35 @@ class ReportPageState extends State<ReportPage> {
       }
     }
 
-// Now loop through intervals
-    for (var interval in intervalLabels) {
-      final intervalIndex = intervalLabels.indexOf(interval).toDouble();
-      final categories = groupedData[interval] ?? {};
+    // Populate categorySpots with data for every interval
+    for (var categoryId in allCategoryIds) {
+      if (!categorySpots.containsKey(categoryId)) {
+        categorySpots[categoryId] = [];
+      }
 
-      for (var categoryId in allCategoryIds) {
+      for (var interval in intervalLabels) {
+        final intervalIndex = intervalLabels.indexOf(interval).toDouble();
+        final categories = groupedData[interval] ?? {};
         final categoryData = categories[categoryId];
         final total = (categoryData?['total'] as double? ?? 0.0)
             .clamp(0.0, double.infinity);
 
-        if (!categorySpots.containsKey(categoryId)) {
-          categorySpots[categoryId] = [];
-        }
-
-        // Add FlSpot for each interval, even if total is 0
         categorySpots[categoryId]!.add(FlSpot(intervalIndex, total));
       }
     }
 
-    // Log the populated category spots and colors
-    logger.i('Category spots prepared: $categorySpots');
-    logger.i('Category colors prepared: $categoryColors');
-
-    // Create line chart data for each category
-    try {
-      final lineChartData = categorySpots.entries.map((entry) {
-        final categoryId = entry.key;
-        logger.i(
-            'Creating LineChartBarData for Category ID "$categoryId" with color ${categoryColors[categoryId]} and spots ${entry.value}');
-        return LineChartBarData(
-          spots: entry.value,
-          isCurved: true,
-          color: categoryColors[categoryId],
-          barWidth: 2,
-          dotData: FlDotData(show: false),
-          belowBarData: BarAreaData(show: false),
-        );
-      }).toList();
-
-      logger.i('Line chart data successfully created.');
-      return lineChartData;
-    } catch (e, stackTrace) {
-      logger.e('Error creating line chart data: $e');
-      return [];
-    }
+    // Create LineChartBarData for each category
+    return categorySpots.entries.map((entry) {
+      final categoryId = entry.key;
+      return LineChartBarData(
+        spots: entry.value,
+        isCurved: true,
+        color: categoryColors[categoryId],
+        barWidth: 2,
+        dotData: FlDotData(show: false),
+        belowBarData: BarAreaData(show: false),
+      );
+    }).toList();
   }
 
   List<Widget> getLegendItems(BuildContext context) {
@@ -511,6 +488,32 @@ class ReportPageState extends State<ReportPage> {
     );
   }
 
+  Widget _buildFilterOption({
+    required String label,
+    required bool isSelected,
+    required Function(bool) onSelected,
+  }) {
+    return GestureDetector(
+      onTap: () {
+        onSelected(!isSelected);
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          color: isSelected ? purple100 : Colors.grey.shade200,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: isSelected ? Colors.white : Colors.black,
+            fontSize: 14,
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -532,36 +535,6 @@ class ReportPageState extends State<ReportPage> {
                       // Bar Chart Button
                       TextButton(
                         onPressed: () {
-                          receiptProvider.setChartType(ChartType.bar);
-                        },
-                        style: TextButton.styleFrom(
-                          backgroundColor: chartType == ChartType.bar
-                              ? purple80
-                              : Colors.white,
-                          minimumSize: const Size(10, 50),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: const BorderRadius.only(
-                              topLeft: Radius.circular(8),
-                              bottomLeft: Radius.circular(8),
-                            ),
-                            side: BorderSide(
-                              color: chartType == ChartType.bar
-                                  ? Colors.transparent
-                                  : light60,
-                              width: 1.5,
-                            ),
-                          ),
-                        ),
-                        child: Icon(
-                          Icons.bar_chart,
-                          color:
-                              chartType == ChartType.bar ? light80 : purple100,
-                        ),
-                      ),
-
-                      // Pie Chart Button
-                      TextButton(
-                        onPressed: () {
                           receiptProvider.setChartType(ChartType.pie);
                         },
                         style: TextButton.styleFrom(
@@ -570,6 +543,10 @@ class ReportPageState extends State<ReportPage> {
                               : Colors.white,
                           minimumSize: const Size(10, 50),
                           shape: RoundedRectangleBorder(
+                            borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(8),
+                              bottomLeft: Radius.circular(8),
+                            ),
                             side: BorderSide(
                               color: chartType == ChartType.pie
                                   ? Colors.transparent
@@ -582,6 +559,32 @@ class ReportPageState extends State<ReportPage> {
                           Icons.pie_chart,
                           color:
                               chartType == ChartType.pie ? light80 : purple100,
+                        ),
+                      ),
+
+                      // Pie Chart Button
+                      TextButton(
+                        onPressed: () {
+                          receiptProvider.setChartType(ChartType.bar);
+                        },
+                        style: TextButton.styleFrom(
+                          backgroundColor: chartType == ChartType.bar
+                              ? purple80
+                              : Colors.white,
+                          minimumSize: const Size(10, 50),
+                          shape: RoundedRectangleBorder(
+                            side: BorderSide(
+                              color: chartType == ChartType.bar
+                                  ? Colors.transparent
+                                  : light60,
+                              width: 1.5,
+                            ),
+                          ),
+                        ),
+                        child: Icon(
+                          Icons.bar_chart,
+                          color:
+                              chartType == ChartType.bar ? light80 : purple100,
                         ),
                       ),
 
@@ -617,7 +620,30 @@ class ReportPageState extends State<ReportPage> {
                     ],
                   ),
                   const SizedBox(height: 10),
-                  // Render the chart dynamically
+
+                  // Render the interval options dynamically
+                  if (chartType != ChartType.pie) ...[
+                    const SizedBox(height: 20),
+                    Center(
+                      child: Wrap(
+                        spacing: 8,
+                        children: TimeInterval.values
+                            .map((interval) => _buildFilterOption(
+                                  label: interval.name.toUpperCase(),
+                                  isSelected:
+                                      receiptProvider.selectedInterval ==
+                                          interval,
+                                  onSelected: (_) {
+                                    receiptProvider.updateInterval(interval);
+                                  },
+                                ))
+                            .toList(),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                  ],
+
+                  // Render the chart
                   if (chartType == ChartType.pie)
                     buildCard(
                       context: context,
