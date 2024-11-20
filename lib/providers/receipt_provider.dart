@@ -383,8 +383,8 @@ class ReceiptProvider extends ChangeNotifier {
     _filteredReceipts.sort((a, b) {
       final dateA = (a['date'] as Timestamp).toDate();
       final dateB = (b['date'] as Timestamp).toDate();
-      final amountA = (a['amount'] as num?)?.toDouble() ?? 0.0;
-      final amountB = (b['amount'] as num?)?.toDouble() ?? 0.0;
+      final amountA = (a['amountToDisplay'] as num?)?.toDouble() ?? 0.0;
+      final amountB = (b['amountToDisplay'] as num?)?.toDouble() ?? 0.0;
 
       if (_sortOption == 'Newest') return dateB.compareTo(dateA);
       if (_sortOption == 'Oldest') return dateA.compareTo(dateB);

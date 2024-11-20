@@ -8,7 +8,6 @@ import 'package:receipt_manager/providers/receipt_provider.dart';
 
 import '../components/custom_app_bar.dart';
 import '../components/expense_item_card.dart';
-import '../logger.dart';
 import 'add_update_receipt_page.dart';
 import 'extract_page.dart';
 
@@ -35,16 +34,26 @@ class ReceiptListPageState extends State<ReceiptListPage> {
   @override
   void initState() {
     super.initState();
+
     Future.microtask(() {
       final receiptProvider =
           Provider.of<ReceiptProvider>(context, listen: false);
+
+      // Fetch receipts and apply filters initially
       receiptProvider.fetchAllReceipts();
       receiptProvider.applyFilters();
-      logger.i("Calling fetchReceipts");
 
+      // Set initial search results
       setState(() {
-        _searchedReceipts =
-            receiptProvider.filteredReceipts; // Initialize search results
+        _searchedReceipts = receiptProvider.filteredReceipts;
+      });
+    });
+
+    // Listen for changes in ReceiptProvider and update _searchedReceipts
+    Provider.of<ReceiptProvider>(context, listen: false).addListener(() {
+      setState(() {
+        _searchedReceipts = Provider.of<ReceiptProvider>(context, listen: false)
+            .filteredReceipts;
       });
     });
   }
@@ -314,60 +323,40 @@ class ReceiptListPageState extends State<ReceiptListPage> {
 
   // Method to filter receipts and provide suggestions
   void _performSearch(String query) {
+    final receiptProvider =
+        Provider.of<ReceiptProvider>(context, listen: false);
     final selectedKeys = _filterOptions
         .where((option) => option['isSelected'])
         .map((option) => option['key'])
         .toList();
 
     setState(() {
-      final receiptProvider =
-          Provider.of<ReceiptProvider>(context, listen: false);
       final lowerCaseQuery = query.toLowerCase();
 
+      // Filter receipts based on selected filters and search query
       _searchedReceipts = receiptProvider.filteredReceipts.where((receipt) {
-        logger.i("Checking receipt: $receipt");
-        logger.i("Search Query: $query, Selected Filters: $selectedKeys");
-
-        final matches = receipt.entries.any((entry) {
+        return receipt.entries.any((entry) {
           final key = entry.key;
           final value = entry.value;
 
-          // Only process the keys that are in `selectedKeys`
-          if (!selectedKeys.contains(key)) {
-            return false; // Skip keys not selected by the user
-          }
+          // Only process keys that are in selectedKeys
+          if (!selectedKeys.contains(key)) return false;
 
-          // Handle specific keys
           if ((key == 'amount' || key == 'amountToDisplay') && value is num) {
-            final amountString = value.toStringAsFixed(2);
-            logger.i(
-                "Key: $key, Value: $amountString, Matches: ${amountString.contains(lowerCaseQuery)}");
-            return amountString.contains(lowerCaseQuery);
+            return value.toStringAsFixed(2).contains(lowerCaseQuery);
           }
 
           if (key == 'date' && value is Timestamp) {
             final date = value.toDate();
             final formattedDate =
                 "${date.day} ${DateFormat.MMMM().format(date)} ${date.year}";
-            final formattedMonthNumber = "${date.month}";
-            logger.i(
-                "Formatted Date: $formattedDate ($formattedMonthNumber), Query: $lowerCaseQuery");
-            return formattedDate.toLowerCase().contains(lowerCaseQuery) ||
-                formattedMonthNumber.contains(lowerCaseQuery);
+            return formattedDate.toLowerCase().contains(lowerCaseQuery);
           }
 
-          // For other keys, match as a string
           final stringValue = value?.toString().toLowerCase() ?? '';
-          logger.i(
-              "Key: $key, Value: $stringValue, Matches: ${stringValue.contains(lowerCaseQuery)}");
           return stringValue.contains(lowerCaseQuery);
         });
-
-        logger.i("Receipt matches: $matches");
-        return matches;
       }).toList();
-
-      logger.i("Search results: $_searchedReceipts");
     });
   }
 
