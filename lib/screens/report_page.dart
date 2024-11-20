@@ -622,7 +622,7 @@ class ReportPageState extends State<ReportPage> {
                   const SizedBox(height: 10),
 
                   // Render the interval options dynamically
-                  if (chartType != ChartType.pie) ...[
+                  if (chartType == ChartType.bar) ...[
                     const SizedBox(height: 20),
                     Center(
                       child: Wrap(
