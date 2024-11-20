@@ -23,28 +23,26 @@ class ReportPageState extends State<ReportPage> {
       TimeInterval.day; // Default time interval (day)
 
   @override
+  @override
   void initState() {
     super.initState();
 
-    // Safe asynchronous execution to avoid build conflicts
     Future.microtask(() {
       final receiptProvider =
           Provider.of<ReceiptProvider>(context, listen: false);
 
-      logger.i("Initializing ReportPage...");
-      logger.i("Fetching initial data.");
-
-      // Fetch initial receipts and grouping
       receiptProvider.fetchAllReceipts();
       receiptProvider.applyFilters();
       receiptProvider.groupByCategory();
       receiptProvider.groupByInterval(selectedInterval);
       receiptProvider.groupByIntervalAndCategory(selectedInterval);
 
-      setState(() {
-        _currencySymbolToDisplay = receiptProvider.currencySymbolToDisplay!;
-        selectedInterval = receiptProvider.selectedInterval;
-      });
+      if (mounted) {
+        setState(() {
+          _currencySymbolToDisplay = receiptProvider.currencySymbolToDisplay!;
+          selectedInterval = receiptProvider.selectedInterval;
+        });
+      }
     });
   }
 
@@ -360,18 +358,36 @@ class ReportPageState extends State<ReportPage> {
     final groupedData = receiptProvider.groupedReceiptsByIntervalAndCategory;
 
     if (groupedData == null || groupedData.isEmpty) {
+      logger.i('Grouped data is empty or null. Returning an empty list.');
       return [];
     }
+
+    logger.i('Grouped data received for line chart: $groupedData');
 
     final Map<String, List<FlSpot>> categorySpots = {};
     final Map<String, Color> categoryColors = {};
     final List<String> intervalLabels = groupedData.keys.toList();
 
+    logger.i('Interval labels extracted: $intervalLabels');
+
     // Collect all category IDs to ensure each category has data for all intervals
     final allCategoryIds =
         groupedData.values.expand((categories) => categories.keys).toSet();
 
-    // Populate categorySpots with data for each interval
+    logger.i('All category IDs collected: $allCategoryIds');
+
+// Initialize categoryColors at the start
+    for (var categories in groupedData.values) {
+      for (var categoryId in categories.keys) {
+        if (!categoryColors.containsKey(categoryId)) {
+          final categoryData = categories[categoryId];
+          categoryColors[categoryId] =
+              categoryData?['categoryColor'] as Color? ?? Colors.grey;
+        }
+      }
+    }
+
+// Now loop through intervals
     for (var interval in intervalLabels) {
       final intervalIndex = intervalLabels.indexOf(interval).toDouble();
       final categories = groupedData[interval] ?? {};
@@ -383,26 +399,39 @@ class ReportPageState extends State<ReportPage> {
 
         if (!categorySpots.containsKey(categoryId)) {
           categorySpots[categoryId] = [];
-          categoryColors[categoryId] =
-              categoryData?['categoryColor'] as Color? ?? Colors.grey;
         }
 
+        // Add FlSpot for each interval, even if total is 0
         categorySpots[categoryId]!.add(FlSpot(intervalIndex, total));
       }
     }
 
+    // Log the populated category spots and colors
+    logger.i('Category spots prepared: $categorySpots');
+    logger.i('Category colors prepared: $categoryColors');
+
     // Create line chart data for each category
-    return categorySpots.entries.map((entry) {
-      final categoryId = entry.key;
-      return LineChartBarData(
-        spots: entry.value,
-        isCurved: true,
-        color: categoryColors[categoryId],
-        barWidth: 2,
-        dotData: FlDotData(show: false),
-        belowBarData: BarAreaData(show: false),
-      );
-    }).toList();
+    try {
+      final lineChartData = categorySpots.entries.map((entry) {
+        final categoryId = entry.key;
+        logger.i(
+            'Creating LineChartBarData for Category ID "$categoryId" with color ${categoryColors[categoryId]} and spots ${entry.value}');
+        return LineChartBarData(
+          spots: entry.value,
+          isCurved: true,
+          color: categoryColors[categoryId],
+          barWidth: 2,
+          dotData: FlDotData(show: false),
+          belowBarData: BarAreaData(show: false),
+        );
+      }).toList();
+
+      logger.i('Line chart data successfully created.');
+      return lineChartData;
+    } catch (e, stackTrace) {
+      logger.e('Error creating line chart data: $e');
+      return [];
+    }
   }
 
   List<Widget> getLegendItems(BuildContext context) {
