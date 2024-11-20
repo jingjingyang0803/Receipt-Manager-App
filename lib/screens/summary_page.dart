@@ -259,7 +259,8 @@ class SummaryPageState extends State<SummaryPage> {
                     final categoryIcon = budget['categoryIcon'];
                     final budgetAmount = budget['amount'];
 
-                    final spent = expenses![categoryId]?['total'] ?? 0.0;
+                    final spent =
+                        (expenses?[categoryId]?['total'] ?? 0.0) as double;
 
                     double ratio = budgetAmount == 0
                         ? (spent > 0 ? 1.0 : 0.0)
