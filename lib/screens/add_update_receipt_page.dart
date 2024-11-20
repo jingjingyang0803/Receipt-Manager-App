@@ -11,6 +11,7 @@ import '../components/category_select_popup.dart';
 import '../components/currency_roller_picker_popup.dart';
 import '../components/custom_button.dart';
 import '../constants/app_colors.dart';
+import '../providers/user_provider.dart';
 import '../services/storage_service.dart';
 import 'base_page.dart';
 
@@ -48,8 +49,6 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
   String? _selectedCurrencyCode;
 
   String? _uploadedImageUrl;
-
-  get userProvider => null;
 
   @override
   void initState() {
@@ -112,6 +111,9 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
     } else {
       // New receipt mode
       _dateController.text = DateTime.now().toLocal().toString().split(' ')[0];
+
+      final userProvider = Provider.of<UserProvider>(context, listen: false);
+      _selectedCurrencyCode = userProvider.currencyCode;
     }
 
     // Fetch categories through CategoryProvider
