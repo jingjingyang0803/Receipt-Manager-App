@@ -29,7 +29,7 @@ class ReceiptListPageState extends State<ReceiptListPage> {
   List<Map<String, dynamic>> _searchedReceipts =
       []; // Local list for search results
 
-  String currencySymbol = ' ';
+  String _currencySymbolToDisplay = ' ';
 
   @override
   void initState() {
@@ -46,6 +46,7 @@ class ReceiptListPageState extends State<ReceiptListPage> {
       // Set initial search results
       if (mounted) {
         setState(() {
+          _currencySymbolToDisplay = receiptProvider.currencySymbolToDisplay!;
           _searchedReceipts = receiptProvider.filteredReceipts;
         });
       }
@@ -84,7 +85,7 @@ class ReceiptListPageState extends State<ReceiptListPage> {
                         ? DateFormat('MMM d, yyyy')
                             .format((receipt['date'] as Timestamp).toDate())
                         : 'Unknown',
-                    currencySymbol: receipt['currencySymbolToDisplay'],
+                    currencySymbol: _currencySymbolToDisplay,
                     amount: receipt['amountToDisplay'].toStringAsFixed(2),
                     paymentMethod:
                         receipt['paymentMethod'] ?? 'Unknown Payment Method',

@@ -17,6 +17,7 @@ class ReportPage extends StatefulWidget {
 }
 
 class ReportPageState extends State<ReportPage> {
+  String _currencySymbolToDisplay = ' ';
   bool isPieChart = true; // Toggle state for chart
   bool isLineChart = false; // Add a state to track the line chart
 
@@ -28,7 +29,7 @@ class ReportPageState extends State<ReportPage> {
     super.initState();
 
     // Safe asynchronous execution to avoid build conflicts
-    Future.microtask(() async {
+    Future.microtask(() {
       final receiptProvider =
           Provider.of<ReceiptProvider>(context, listen: false);
 
@@ -36,13 +37,14 @@ class ReportPageState extends State<ReportPage> {
       logger.i("Fetching initial data.");
 
       // Fetch initial receipts and grouping
-      await receiptProvider.fetchAllReceipts();
+      receiptProvider.fetchAllReceipts();
       receiptProvider.applyFilters();
       receiptProvider.groupByCategory();
       receiptProvider.groupByInterval(selectedInterval);
       receiptProvider.groupByIntervalAndCategory(selectedInterval);
 
       setState(() {
+        _currencySymbolToDisplay = receiptProvider.currencySymbolToDisplay!;
         selectedInterval = receiptProvider.selectedInterval;
       });
     });
@@ -72,7 +74,6 @@ class ReportPageState extends State<ReportPage> {
   Widget buildPieChart(BuildContext context) {
     final receiptProvider = Provider.of<ReceiptProvider>(context);
 
-    receiptProvider.groupByCategory();
     // Get the grouped receipts by category
     final groupedReceipts = receiptProvider.groupedReceiptsByCategory ?? {};
 
@@ -137,8 +138,6 @@ class ReportPageState extends State<ReportPage> {
             final categoryIcon = categoryData['categoryIcon'] ?? '❓';
             final categoryColor =
                 categoryData['categoryColor'] ?? Colors.grey.shade200;
-            final currencySymbol =
-                categoryData['currencySymbolToDisplay'] ?? ' ';
 
             return Padding(
               padding:
@@ -171,7 +170,7 @@ class ReportPageState extends State<ReportPage> {
                           child: SingleChildScrollView(
                             scrollDirection: Axis.horizontal,
                             child: Text(
-                              '$categoryName: $currencySymbol ${total.toStringAsFixed(2)} (${percentage.toStringAsFixed(1)}%)',
+                              '$categoryName: $_currencySymbolToDisplay ${total.toStringAsFixed(2)} (${percentage.toStringAsFixed(1)}%)',
                               style: const TextStyle(fontSize: 14),
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -222,12 +221,7 @@ class ReportPageState extends State<ReportPage> {
   Widget buildBarChart(BuildContext context, TimeInterval interval) {
     final receiptProvider = Provider.of<ReceiptProvider>(context);
 
-    // Ensure data is grouped by interval before building the chart
-    receiptProvider.groupByInterval(interval);
-
     final groupedReceipts = receiptProvider.groupedReceiptsByInterval ?? {};
-    final currencySymbol =
-        groupedReceipts.values.first['currencySymbolToDisplay'];
 
     if (groupedReceipts.isEmpty) {
       return const Center(child: Text('No data available.'));
@@ -290,7 +284,7 @@ class ReportPageState extends State<ReportPage> {
               touchTooltipData: BarTouchTooltipData(
                 getTooltipItem: (group, groupIndex, rod, rodIndex) {
                   return BarTooltipItem(
-                    '$currencySymbol ${rod.toY.toStringAsFixed(1)}', // Add the currency symbol
+                    '$_currencySymbolToDisplay ${rod.toY.toStringAsFixed(1)}', // Add the currency symbol
                     const TextStyle(
                       color: Colors.black, // Tooltip text color
                       fontWeight: FontWeight.bold,
@@ -498,7 +492,17 @@ class ReportPageState extends State<ReportPage> {
       body: Consumer<ReceiptProvider>(
         builder: (context, receiptProvider, child) {
           if (receiptProvider.allReceipts.isEmpty) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(
+              child: Text(
+                'No receipts found for the settings.',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.grey, // Optional: color to match your design
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.center, // Optional: to align the text
+              ),
+            );
           }
 
           return Padding(
