@@ -366,6 +366,7 @@ class ReceiptProvider extends ChangeNotifier {
     // If category or payment method filters are empty, return an empty list
     if (_selectedCategoryIds.isEmpty || _selectedPaymentMethods.isEmpty) {
       _filteredReceipts = [];
+      _clearGroupedData(); // Clear all grouped data
       notifyListeners();
       return;
     }
@@ -419,8 +420,13 @@ class ReceiptProvider extends ChangeNotifier {
       groupByIntervalAndCategory(selectedInterval);
     }
 
-    // Notify listeners
     notifyListeners();
+  }
+
+  void _clearGroupedData() {
+    _groupedReceiptsByCategory = {};
+    _groupedReceiptsByInterval = {};
+    _groupedReceiptsByIntervalAndCategory = {};
   }
 
   // Update filters
