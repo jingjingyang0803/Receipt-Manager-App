@@ -10,6 +10,7 @@ import '../components/category_select_popup.dart';
 import '../components/currency_roller_picker_popup.dart';
 import '../components/custom_button.dart';
 import '../components/date_picker_popup.dart';
+import '../components/payment_roller_picker_popup.dart';
 import '../constants/app_colors.dart';
 import '../providers/user_provider.dart';
 import '../services/storage_service.dart';
@@ -346,31 +347,6 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
     );
   }
 
-  // Expanded(
-  //   child: DropdownButtonFormField<String>(
-  //     value: _selectedPaymentMethod,
-  //     items: [
-  //       'Credit Card',
-  //       'Debit Card',
-  //       'Cash',
-  //       'PayPal',
-  //       'MobilePay',
-  //       'Apple Pay',
-  //       'Google Pay',
-  //       'Bank Transfer',
-  //       'Others'
-  //     ]
-  //         .map((method) => DropdownMenuItem(
-  //               value: method,
-  //               child: Text(method),
-  //             ))
-  //         .toList(),
-  //     onChanged: (value) => setState(() {
-  //       _selectedPaymentMethod = value;
-  //     }),
-  //     decoration: InputDecoration(labelText: 'Payment Method'),
-  //   ),
-  // ),
   void _showPaymentMethodPicker(BuildContext context) {
     showModalBottomSheet(
       context: context,
@@ -379,46 +355,13 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (BuildContext context) {
-        return ListView(
-          children: [
-            ListTile(
-              title: Text('Credit Card'),
-              onTap: () {
-                setState(() {
-                  _selectedPaymentMethod = 'Credit Card';
-                });
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              title: Text('Debit Card'),
-              onTap: () {
-                setState(() {
-                  _selectedPaymentMethod = 'Debit Card';
-                });
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              title: Text('Cash'),
-              onTap: () {
-                setState(() {
-                  _selectedPaymentMethod = 'Cash';
-                });
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              title: Text('PayPal'),
-              onTap: () {
-                setState(() {
-                  _selectedPaymentMethod = 'PayPal';
-                });
-                Navigator.pop(context);
-              },
-            ),
-            // Add more options as needed
-          ],
+        return PaymentMethodPicker(
+          selectedPaymentMethod: _selectedPaymentMethod ?? '',
+          onPaymentMethodSelected: (String selectedMethod) {
+            setState(() {
+              _selectedPaymentMethod = selectedMethod;
+            });
+          },
         );
       },
     );
