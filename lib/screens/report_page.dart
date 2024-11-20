@@ -35,7 +35,7 @@ class ReportPageState extends State<ReportPage> {
       receiptProvider.applyFilters();
       receiptProvider.groupByCategory();
       receiptProvider.groupByInterval(selectedInterval);
-      receiptProvider.groupByDayAndCategory();
+      receiptProvider.groupByMonthAndCategory();
 
       if (mounted) {
         setState(() {
@@ -304,7 +304,7 @@ class ReportPageState extends State<ReportPage> {
   List<LineChartBarData> getLineChartData(BuildContext context) {
     final receiptProvider =
         Provider.of<ReceiptProvider>(context, listen: false);
-    final groupedData = receiptProvider.groupedReceiptsByDayAndCategory;
+    final groupedData = receiptProvider.groupedReceiptsByMonthAndCategory;
 
     if (groupedData == null || groupedData.isEmpty) {
       return [];
@@ -317,18 +317,14 @@ class ReportPageState extends State<ReportPage> {
     final allCategoryIds =
         groupedData.values.expand((categories) => categories.keys).toSet();
 
-    // Determine start and end date for the interval
-    final allDates =
-        groupedData.keys.map((date) => DateTime.parse(date)).toList();
-    allDates.sort();
-    final startDate = allDates.first;
-    final endDate = allDates.last;
+    // Convert groupedData.keys (e.g., `yyyy-MM`) to sorted list of months
+    final sortedKeys = groupedData.keys.toList()..sort();
+    final startDate = DateTime.parse('${sortedKeys.first}-01');
 
-    // Generate continuous dates for the entire interval
-    final continuousDates = List.generate(
-      endDate.difference(startDate).inDays + 1,
-      (index) => startDate.add(Duration(days: index)),
-    );
+    // Create X indices for each month
+    final monthIndices = {
+      for (int i = 0; i < sortedKeys.length; i++) sortedKeys[i]: i.toDouble(),
+    };
 
     // Initialize categoryColors
     for (var categories in groupedData.values) {
@@ -341,23 +337,20 @@ class ReportPageState extends State<ReportPage> {
       }
     }
 
-    // Populate categorySpots with data for all dates
+    // Populate categorySpots with data for all months
     for (var categoryId in allCategoryIds) {
       if (!categorySpots.containsKey(categoryId)) {
         categorySpots[categoryId] = [];
       }
 
-      for (var date in continuousDates) {
-        final dateKey =
-            date.toIso8601String().split('T')[0]; // Format as 'yyyy-MM-dd'
-        final categories = groupedData[dateKey] ?? {};
+      for (var key in sortedKeys) {
+        final xValue = monthIndices[key]!;
+        final categories = groupedData[key] ?? {};
         final categoryData = categories[categoryId];
         final total = (categoryData?['total'] as double? ?? 0.0)
-            .clamp(0.0, double.infinity);
+            .clamp(0.0, double.infinity); // Prevent negative values
 
-        categorySpots[categoryId]!.add(
-          FlSpot(date.difference(startDate).inDays.toDouble(), total),
-        );
+        categorySpots[categoryId]!.add(FlSpot(xValue, total));
       }
     }
 
@@ -369,7 +362,8 @@ class ReportPageState extends State<ReportPage> {
         isCurved: true,
         color: categoryColors[categoryId],
         barWidth: 2,
-        dotData: FlDotData(show: false),
+        isStrokeCapRound: true,
+        dotData: FlDotData(show: true),
         belowBarData: BarAreaData(show: false),
       );
     }).toList();
@@ -378,7 +372,7 @@ class ReportPageState extends State<ReportPage> {
   List<Widget> getLegendItems(BuildContext context) {
     final receiptProvider =
         Provider.of<ReceiptProvider>(context, listen: false);
-    final groupedData = receiptProvider.groupedReceiptsByDayAndCategory;
+    final groupedData = receiptProvider.groupedReceiptsByMonthAndCategory;
 
     if (groupedData == null || groupedData.isEmpty) {
       return [];
@@ -420,7 +414,7 @@ class ReportPageState extends State<ReportPage> {
 // Method to build the line chart
   Widget buildCategoryLineChart(BuildContext context) {
     final receiptProvider = Provider.of<ReceiptProvider>(context);
-    final groupedData = receiptProvider.groupedReceiptsByDayAndCategory;
+    final groupedData = receiptProvider.groupedReceiptsByMonthAndCategory;
 
     if (groupedData == null || groupedData.isEmpty) {
       return const Center(child: Text('No data available.'));
@@ -429,10 +423,10 @@ class ReportPageState extends State<ReportPage> {
     final lines = getLineChartData(context); // Get the line chart data
 
     // Determine start and end date for the interval
-    final allDates =
-        groupedData.keys.map((date) => DateTime.parse(date)).toList();
+    final allDates = groupedData.keys
+        .map((key) => DateTime.parse('$key-01')) // Append `-01`
+        .toList();
     allDates.sort();
-    final startDate = allDates.first;
 
     return Column(
       children: [
@@ -443,18 +437,42 @@ class ReportPageState extends State<ReportPage> {
             gridData: FlGridData(show: true),
             titlesData: FlTitlesData(
               leftTitles: AxisTitles(
-                sideTitles: SideTitles(showTitles: true),
+                sideTitles: SideTitles(
+                  showTitles: true, // Show the left titles
+                  reservedSize: 40, // Adjust this as needed for proper spacing
+                ),
+              ),
+              rightTitles: AxisTitles(
+                sideTitles: SideTitles(
+                  showTitles: true, // Show the right titles
+                  reservedSize: 40, // Adjust this as needed for proper spacing
+                ),
+              ),
+              topTitles: AxisTitles(
+                sideTitles: SideTitles(
+                  showTitles: false, // Hide the top titles
+                ),
               ),
               bottomTitles: AxisTitles(
                 sideTitles: SideTitles(
                   showTitles: true,
                   getTitlesWidget: (value, meta) {
                     final index = value.toInt();
-                    final date = startDate.add(Duration(days: index));
-                    return Text(
-                      '${date.month}/${date.day}', // Format as 'MM/DD'
-                      style: const TextStyle(fontSize: 10),
-                    );
+
+                    // Ensure sorted order of the keys
+                    final sortedKeys = groupedData.keys.toList()..sort();
+
+                    // Only display labels that match valid indices
+                    if (index >= 0 && index < sortedKeys.length) {
+                      final date = DateTime.parse(
+                          '${sortedKeys[index]}-01'); // Parse to valid date
+                      return Text(
+                        '${date.year}/${date.month.toString().padLeft(2, '0')}', // Format as YYYY/MM
+                        style: const TextStyle(fontSize: 10),
+                      );
+                    }
+                    return const SizedBox
+                        .shrink(); // Hide labels for invalid indices
                   },
                   reservedSize: 32,
                 ),

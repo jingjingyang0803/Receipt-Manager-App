@@ -61,7 +61,7 @@ class ReceiptProvider extends ChangeNotifier {
   Map<String, Map<String, dynamic>>? _groupedReceiptsByCategory;
   Map<String, Map<String, dynamic>>? _groupedReceiptsByInterval;
   Map<String, Map<String, dynamic>>? _groupedReceiptsByCategoryOneMonth;
-  Map<String, Map<String, dynamic>>? _groupedReceiptsByDayAndCategory;
+  Map<String, Map<String, dynamic>>? _groupedReceiptsByMonthAndCategory;
 
   Map<String, Map<String, dynamic>>? get groupedReceiptsByCategory =>
       _groupedReceiptsByCategory;
@@ -69,8 +69,8 @@ class ReceiptProvider extends ChangeNotifier {
       _groupedReceiptsByInterval;
   Map<String, Map<String, dynamic>>? get groupedReceiptsByCategoryOneMonth =>
       _groupedReceiptsByCategoryOneMonth;
-  Map<String, Map<String, dynamic>>? get groupedReceiptsByDayAndCategory =>
-      _groupedReceiptsByDayAndCategory;
+  Map<String, Map<String, dynamic>>? get groupedReceiptsByMonthAndCategory =>
+      _groupedReceiptsByMonthAndCategory;
 
   // Spending and Currency
   double _totalSpending = 0.0;
@@ -417,7 +417,7 @@ class ReceiptProvider extends ChangeNotifier {
     } else if (currentChartType == ChartType.bar) {
       groupByInterval(selectedInterval);
     } else if (currentChartType == ChartType.line) {
-      groupByDayAndCategory();
+      groupByMonthAndCategory();
     }
 
     notifyListeners();
@@ -426,7 +426,7 @@ class ReceiptProvider extends ChangeNotifier {
   void _clearGroupedData() {
     _groupedReceiptsByCategory = {};
     _groupedReceiptsByInterval = {};
-    _groupedReceiptsByDayAndCategory = {};
+    _groupedReceiptsByMonthAndCategory = {};
   }
 
   // Update filters
@@ -578,7 +578,7 @@ class ReceiptProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void groupByDayAndCategory() {
+  void groupByMonthAndCategory() {
     final Map<String, Map<String, Map<String, dynamic>>> groupedData = {};
 
     for (var receipt in _filteredReceipts) {
@@ -586,8 +586,8 @@ class ReceiptProvider extends ChangeNotifier {
       final date = (receipt['date'] as Timestamp?)?.toDate() ?? DateTime.now();
       final amount = (receipt['amountToDisplay'] as num?)?.toDouble() ?? 0.0;
 
-      // Always group by day
-      final intervalKey = DateFormat('yyyy-MM-dd').format(date);
+      // Always group by month
+      final intervalKey = DateFormat('yyyy-MM').format(date); // Group by month
 
       // Get the category ID and name
       final categoryId = receipt['categoryId'] ?? 'null';
@@ -612,10 +612,10 @@ class ReceiptProvider extends ChangeNotifier {
     }
 
     // Store the grouped data in the provider variable
-    _groupedReceiptsByDayAndCategory = groupedData;
+    _groupedReceiptsByMonthAndCategory = groupedData;
 
     // Log or debug the grouped data
-    logger.i("Grouped Data by Day: $groupedData");
+    logger.i("Grouped Data by Month: $groupedData");
 
     // Notify listeners of changes
     notifyListeners();
