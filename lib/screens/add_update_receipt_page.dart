@@ -162,7 +162,8 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
         amount == null ||
         _selectedPaymentMethod == null) {
       messenger.showSnackBar(
-        SnackBar(content: Text('Please fill in all required fields')),
+        SnackBar(
+            content: Text('Please fill in all required fields with * mark')),
       );
       return;
     }
@@ -305,6 +306,124 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
     );
   }
 
+  InputDecoration buildRequiredFieldDecoration(String label) {
+    return InputDecoration(
+      label: RichText(
+        text: TextSpan(
+          text: label,
+          style: TextStyle(color: Colors.grey, fontSize: 16),
+          children: [
+            TextSpan(
+              text: ' *',
+              style: TextStyle(color: Colors.red, fontSize: 16),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  InputDecoration buildDynamicLabelDecoration({
+    required String label,
+    required bool isSelected,
+    String? selectedValue,
+  }) {
+    return InputDecoration(
+      label: RichText(
+        text: TextSpan(
+          text: isSelected && selectedValue != null ? selectedValue : label,
+          style: TextStyle(color: Colors.grey, fontSize: 16),
+          children: [
+            if (!isSelected) // Add red asterisk if not selected
+              TextSpan(
+                text: ' *',
+                style: TextStyle(color: Colors.red, fontSize: 16),
+              ),
+          ],
+        ),
+      ),
+      border: OutlineInputBorder(),
+    );
+  }
+
+  // Expanded(
+  //   child: DropdownButtonFormField<String>(
+  //     value: _selectedPaymentMethod,
+  //     items: [
+  //       'Credit Card',
+  //       'Debit Card',
+  //       'Cash',
+  //       'PayPal',
+  //       'MobilePay',
+  //       'Apple Pay',
+  //       'Google Pay',
+  //       'Bank Transfer',
+  //       'Others'
+  //     ]
+  //         .map((method) => DropdownMenuItem(
+  //               value: method,
+  //               child: Text(method),
+  //             ))
+  //         .toList(),
+  //     onChanged: (value) => setState(() {
+  //       _selectedPaymentMethod = value;
+  //     }),
+  //     decoration: InputDecoration(labelText: 'Payment Method'),
+  //   ),
+  // ),
+  void _showPaymentMethodPicker(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (BuildContext context) {
+        return ListView(
+          children: [
+            ListTile(
+              title: Text('Credit Card'),
+              onTap: () {
+                setState(() {
+                  _selectedPaymentMethod = 'Credit Card';
+                });
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              title: Text('Debit Card'),
+              onTap: () {
+                setState(() {
+                  _selectedPaymentMethod = 'Debit Card';
+                });
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              title: Text('Cash'),
+              onTap: () {
+                setState(() {
+                  _selectedPaymentMethod = 'Cash';
+                });
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              title: Text('PayPal'),
+              onTap: () {
+                setState(() {
+                  _selectedPaymentMethod = 'PayPal';
+                });
+                Navigator.pop(context);
+              },
+            ),
+            // Add more options as needed
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -333,33 +452,31 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
                 controller: _merchantController,
                 decoration: InputDecoration(labelText: 'Merchant'),
               ),
-              SizedBox(width: 40),
+              SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Expanded(
-                    child: DropdownButtonFormField<String>(
-                      value: _selectedPaymentMethod,
-                      items: [
-                        'Credit Card',
-                        'Debit Card',
-                        'Cash',
-                        'PayPal',
-                        'MobilePay',
-                        'Apple Pay',
-                        'Google Pay',
-                        'Bank Transfer',
-                        'Others'
-                      ]
-                          .map((method) => DropdownMenuItem(
-                                value: method,
-                                child: Text(method),
-                              ))
-                          .toList(),
-                      onChanged: (value) => setState(() {
-                        _selectedPaymentMethod = value;
-                      }),
-                      decoration: InputDecoration(labelText: 'Payment Method'),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            // Show payment method picker (you need to implement this)
+                            _showPaymentMethodPicker(context);
+                          },
+                          child: AbsorbPointer(
+                            child: TextField(
+                              decoration: buildDynamicLabelDecoration(
+                                label: 'Select Payment',
+                                isSelected: _selectedPaymentMethod != null &&
+                                    _selectedPaymentMethod!.isNotEmpty,
+                                selectedValue: _selectedPaymentMethod,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                   SizedBox(width: 20),
@@ -369,7 +486,7 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
                       child: AbsorbPointer(
                         child: TextField(
                           controller: _dateController,
-                          decoration: InputDecoration(labelText: 'Date'),
+                          decoration: buildRequiredFieldDecoration('Date'),
                         ),
                       ),
                     ),
@@ -405,7 +522,7 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
                   Expanded(
                     child: TextField(
                       controller: _totalController,
-                      decoration: InputDecoration(labelText: 'Total'),
+                      decoration: buildRequiredFieldDecoration('Total'),
                     ),
                   ),
                 ],
@@ -422,12 +539,15 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
                           onTap: () => _showCategoryBottomSheet(context),
                           child: AbsorbPointer(
                             child: TextField(
-                              decoration: InputDecoration(
-                                labelText: _selectedCategoryId?.isNotEmpty ==
+                              decoration: buildDynamicLabelDecoration(
+                                label: 'Select Category',
+                                isSelected:
+                                    _selectedCategoryId?.isNotEmpty == true,
+                                selectedValue: _selectedCategoryId
+                                            ?.isNotEmpty ==
                                         true
                                     ? '$_selectedCategoryIcon $_selectedCategoryName'
-                                    : 'Select Category',
-                                border: OutlineInputBorder(),
+                                    : null,
                               ),
                             ),
                           ),
