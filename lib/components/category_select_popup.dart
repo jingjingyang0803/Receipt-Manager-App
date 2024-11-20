@@ -45,7 +45,7 @@ class CategorySelectPopupState extends State<CategorySelectPopup> {
                   height:
                       8), // Set a fixed height for the grid, allowing it to scroll if there are too many items
               Container(
-                height: 250, // Fixed height for the grid container
+                height: 400, // Fixed height for the grid container
                 decoration: BoxDecoration(
                   color: light90,
                   borderRadius: BorderRadius.circular(12),
