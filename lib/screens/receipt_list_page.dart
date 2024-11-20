@@ -44,9 +44,11 @@ class ReceiptListPageState extends State<ReceiptListPage> {
       receiptProvider.applyFilters();
 
       // Set initial search results
-      setState(() {
-        _searchedReceipts = receiptProvider.filteredReceipts;
-      });
+      if (mounted) {
+        setState(() {
+          _searchedReceipts = receiptProvider.filteredReceipts;
+        });
+      }
     });
 
     // Listen for changes in ReceiptProvider and update _searchedReceipts

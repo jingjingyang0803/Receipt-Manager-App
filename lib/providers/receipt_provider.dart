@@ -19,13 +19,10 @@ class ReceiptProvider extends ChangeNotifier {
   CategoryProvider? _categoryProvider;
   CurrencyProvider? _currencyProvider;
 
+  String? _currencySymbolToDisplay;
   // Date Range default as current year
   DateTime? _startDate = DateTime(DateTime.now().year, 1, 1);
   DateTime? _endDate = DateTime.now();
-
-  DateTime? get startDate => _startDate;
-  DateTime? get endDate => _endDate;
-
   // Sorting and Filtering Options
   String _sortOption = "Newest";
   List<String> _selectedPaymentMethods = [
@@ -36,6 +33,9 @@ class ReceiptProvider extends ChangeNotifier {
   ];
   List<String> _selectedCategoryIds = [];
 
+  String? get currencySymbolToDisplay => _currencySymbolToDisplay;
+  DateTime? get startDate => _startDate;
+  DateTime? get endDate => _endDate;
   String get sortOption => _sortOption;
   List<String> get selectedPaymentMethods => _selectedPaymentMethods;
   List<String> get selectedCategoryIds => _selectedCategoryIds;
@@ -55,9 +55,9 @@ class ReceiptProvider extends ChangeNotifier {
 
   // Grouped Receipts
   Map<String, Map<String, dynamic>>? _groupedReceiptsByCategory;
-  late Map<String, Map<String, dynamic>>? _groupedReceiptsByInterval;
-  late Map<String, Map<String, dynamic>>? _groupedReceiptsByCategoryOneMonth;
-  late Map<String, Map<String, dynamic>>? _groupedReceiptsByIntervalAndCategory;
+  Map<String, Map<String, dynamic>>? _groupedReceiptsByInterval;
+  Map<String, Map<String, dynamic>>? _groupedReceiptsByCategoryOneMonth;
+  Map<String, Map<String, dynamic>>? _groupedReceiptsByIntervalAndCategory;
 
   Map<String, Map<String, dynamic>>? get groupedReceiptsByCategory =>
       _groupedReceiptsByCategory;
@@ -75,7 +75,6 @@ class ReceiptProvider extends ChangeNotifier {
 
   // Time Interval
   TimeInterval _selectedInterval = TimeInterval.month;
-
   TimeInterval get selectedInterval => _selectedInterval;
 
   // User Email
@@ -138,7 +137,7 @@ class ReceiptProvider extends ChangeNotifier {
         final userCurrencyCode =
             _userProvider?.userProfile?.data()?['currencyCode'];
         // Get the currency symbol using intl
-        final currencySymbol =
+        _currencySymbolToDisplay =
             NumberFormat.simpleCurrency(name: userCurrencyCode).currencySymbol;
 
         final rates = {
@@ -334,7 +333,6 @@ class ReceiptProvider extends ChangeNotifier {
           'categoryName': category?['name'],
           'categoryIcon': category?['icon'],
           'categoryColor': category?['color'],
-          'currencySymbolToDisplay': currencySymbol,
           'amountToDisplay': amountToDisplay,
         };
       }).toList();
@@ -435,7 +433,6 @@ class ReceiptProvider extends ChangeNotifier {
           'categoryName': receipt['categoryName'],
           'categoryIcon': receipt['categoryIcon'],
           'categoryColor': receipt['categoryColor'],
-          'currencySymbolToDisplay': receipt['currencySymbolToDisplay'],
         };
       }
     }
@@ -479,7 +476,6 @@ class ReceiptProvider extends ChangeNotifier {
         'categoryName': receipt['categoryName'],
         'categoryIcon': receipt['categoryIcon'],
         'categoryColor': receipt['categoryColor'],
-        'currencySymbolToDisplay': receipt['currencySymbolToDisplay'],
       };
     }
 
@@ -520,8 +516,6 @@ class ReceiptProvider extends ChangeNotifier {
             receipt['categoryIcon'];
         groupedReceiptsByCategoryOneMonth[categoryId]!['categoryColor'] =
             receipt['categoryColor'];
-        groupedReceiptsByCategoryOneMonth[categoryId]![
-            'currencySymbolToDisplay'] = receipt['currencySymbolToDisplay'];
       } else {
         groupedReceiptsByCategoryOneMonth[categoryId] = {
           'categoryId': receipt['categoryId'],
@@ -529,7 +523,6 @@ class ReceiptProvider extends ChangeNotifier {
           'categoryName': receipt['categoryName'],
           'categoryIcon': receipt['categoryIcon'],
           'categoryColor': receipt['categoryColor'],
-          'currencySymbolToDisplay': receipt['currencySymbolToDisplay'],
         };
       }
     }
