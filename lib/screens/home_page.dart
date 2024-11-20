@@ -31,6 +31,8 @@ class HomePageState extends State<HomePage> {
     final receiptProvider =
         Provider.of<ReceiptProvider>(context, listen: false);
     receiptProvider.fetchAllReceipts(); // Call once during initialization
+    receiptProvider.loadReceiptCount();
+    receiptProvider.loadOldestAndNewestDates();
   }
 
   @override

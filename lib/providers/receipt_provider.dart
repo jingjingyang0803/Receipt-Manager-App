@@ -649,4 +649,37 @@ class ReceiptProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  // Fetch receipt count
+  Future<void> loadReceiptCount() async {
+    if (_userEmail != null) {
+      _receiptCount = _allReceipts.length;
+      notifyListeners();
+    }
+  }
+
+  // Get oldest and newest dates of receipts
+  Future<void> loadOldestAndNewestDates() async {
+    DateTime? oldestDate;
+    DateTime? newestDate;
+
+    for (var receipt in _allReceipts) {
+      DateTime receiptDate = (receipt['date'] as Timestamp).toDate();
+
+      // Check for the oldest date
+      if (oldestDate == null || receiptDate.isBefore(oldestDate)) {
+        oldestDate = receiptDate;
+      }
+
+      // Check for the newest date
+      if (newestDate == null || receiptDate.isAfter(newestDate)) {
+        newestDate = receiptDate;
+      }
+    }
+
+    // Update the provider's state with the oldest and newest dates
+    _oldestDate = oldestDate ?? DateTime.now();
+    _newestDate = newestDate ?? DateTime.now();
+    notifyListeners();
+  }
 }
