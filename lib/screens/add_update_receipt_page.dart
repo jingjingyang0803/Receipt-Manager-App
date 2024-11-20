@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:receipt_manager/providers/category_provider.dart';
@@ -10,6 +9,7 @@ import 'package:receipt_manager/providers/receipt_provider.dart';
 import '../components/category_select_popup.dart';
 import '../components/currency_roller_picker_popup.dart';
 import '../components/custom_button.dart';
+import '../components/date_picker_popup.dart';
 import '../constants/app_colors.dart';
 import '../providers/user_provider.dart';
 import '../services/storage_service.dart';
@@ -130,8 +130,6 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
   }
 
   Future<void> _selectDate(BuildContext context) async {
-    DateTime initialDate = DateTime.now();
-
     await showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -139,40 +137,14 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (BuildContext context) {
-        DateTime tempPickedDate = initialDate;
-
-        return Container(
-          height: 300,
-          padding: EdgeInsets.all(16),
-          child: Column(
-            children: [
-              Text(
-                'Select Date',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              Expanded(
-                child: CupertinoDatePicker(
-                  initialDateTime: initialDate,
-                  mode: CupertinoDatePickerMode.date,
-                  minimumDate: DateTime(2000),
-                  maximumDate: DateTime(2101),
-                  onDateTimeChanged: (DateTime newDate) {
-                    tempPickedDate = newDate;
-                  },
-                ),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    _dateController.text =
-                        "${tempPickedDate.toLocal()}".split(' ')[0];
-                  });
-                  Navigator.pop(context);
-                },
-                child: Text('DONE'),
-              ),
-            ],
-          ),
+        return DatePickerPopup(
+          initialDate: DateTime.now(),
+          onConfirm: (DateTime selectedDate) {
+            setState(() {
+              _dateController.text = "${selectedDate.toLocal()}".split(' ')[0];
+            });
+            Navigator.pop(context);
+          },
         );
       },
     );
