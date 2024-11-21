@@ -130,14 +130,14 @@ class SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     final authProvider =
-        Provider.of<AuthenticationProvider>(context, listen: false);
+    Provider.of<AuthenticationProvider>(context, listen: false);
     final userEmail = authProvider.user?.email;
 
     return Scaffold(
       backgroundColor: light90,
       appBar: AppBar(
         automaticallyImplyLeading:
-            false, // Removes the default back arrowbackgroundColor: light90,
+        false, // Removes the default back arrowbackgroundColor: light90,
         backgroundColor: light90,
         elevation: 0,
         iconTheme: IconThemeData(color: Colors.black),
@@ -148,7 +148,7 @@ class SettingsPageState extends State<SettingsPage> {
 
           return Padding(
             padding:
-                const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+            const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -177,12 +177,12 @@ class SettingsPageState extends State<SettingsPage> {
                               backgroundImage: _profileImage != null
                                   ? FileImage(File(_profileImage!.path))
                                   : profileImagePath != null
-                                      ? NetworkImage(profileImagePath)
-                                      : null,
+                                  ? NetworkImage(profileImagePath)
+                                  : null,
                               radius: 45.0,
                               child: profileImagePath == null
                                   ? Icon(Icons.person,
-                                      size: 50, color: Colors.grey)
+                                  size: 50, color: Colors.grey)
                                   : null,
                             ),
                           ),
@@ -230,27 +230,59 @@ class SettingsPageState extends State<SettingsPage> {
                                   ),
                                 ),
                               if (_isEditingName)
+
                                 Row(
+                                  mainAxisSize: MainAxisSize.min, // Shrink row to fit content
+                                  crossAxisAlignment: CrossAxisAlignment.center, // Align buttons in center
                                   children: [
-                                    IconButton(
-                                      icon: Icon(Icons.check, color: Colors.green),
-                                      onPressed: () async {
-                                        // Save the updated name
-                                        await _saveUserName();
-                                        setState(() {
-                                          _isEditingName = false;
-                                        });
-                                      },
+                                    // Check Button
+                                    Container(
+                                      height: 32, // Small height
+                                      width: 32,  // Small width
+                                      child: ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                          shape: CircleBorder(),
+                                          padding: EdgeInsets.zero, // No extra padding
+                                          backgroundColor: Colors.green, // Green background for "Save"
+                                          elevation: 3, // Slight 3D effect
+                                        ),
+                                        onPressed: () async {
+                                          await _saveUserName();
+                                          setState(() {
+                                            _isEditingName = false;
+                                          });
+                                        },
+                                        child: Icon(
+                                          Icons.check,
+                                          color: Colors.white,
+                                          size: 18, // Small icon size
+                                        ),
+                                      ),
                                     ),
-                                    IconButton(
-                                      icon: Icon(Icons.close, color: Colors.red),
-                                      onPressed: () {
-                                        // Cancel editing
-                                        setState(() {
-                                          _isEditingName = false;
-                                          _nameController.text = userProvider.userName?? ''; // Revert changes
-                                        });
-                                      },
+                                    SizedBox(width: 8), // Adjust gap between buttons
+                                    // Cross Button
+                                    Container(
+                                      height: 32, // Small height
+                                      width: 32,  // Small width
+                                      child: ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                          shape: CircleBorder(),
+                                          padding: EdgeInsets.zero, // No extra padding
+                                          backgroundColor: Colors.red, // Red background for "Cancel"
+                                          elevation: 3, // Slight 3D effect
+                                        ),
+                                        onPressed: () {
+                                          setState(() {
+                                            _isEditingName = false;
+                                            _nameController.text = userProvider.userName ?? '';
+                                          });
+                                        },
+                                        child: Icon(
+                                          Icons.close,
+                                          color: Colors.white,
+                                          size: 18, // Small icon size
+                                        ),
+                                      ),
                                     ),
                                   ],
                                 )
@@ -312,7 +344,7 @@ class SettingsPageState extends State<SettingsPage> {
                             iconColor: purple100,
                             onTap: () => _showCurrencyPicker(context),
                             trailingTextBuilder: () =>
-                                "$currencyCode $currencySymbol",
+                            "$currencyCode $currencySymbol",
                           ),
                           Divider(thickness: 1, color: light90),
                           SettingsMenuItem(
@@ -387,7 +419,7 @@ class SettingsMenuItem extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
         child: Row(
           mainAxisAlignment:
-              MainAxisAlignment.spaceBetween, // Space between elements
+          MainAxisAlignment.spaceBetween, // Space between elements
           children: [
             Row(
               children: [
