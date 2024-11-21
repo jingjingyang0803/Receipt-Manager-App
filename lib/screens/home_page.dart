@@ -55,10 +55,9 @@ class HomePageState extends State<HomePage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildWelcomeSection(),
-            const SizedBox(height: 20),
+            const SizedBox(height: 26),
             _buildQuickActions(context),
-            const SizedBox(height: 20),
-            _buildMonthlySummary(context),
+            const SizedBox(height: 26),
           ],
         ),
       ),
@@ -95,36 +94,55 @@ class HomePageState extends State<HomePage> {
   }
 
   Widget _buildQuickActions(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        _buildActionButton(
-          icon: Icons.add,
-          label: "Add Expense",
-          onPressed: () {
-            Navigator.pushNamed(context, AddOrUpdateReceiptPage.id);
-          },
-        ),
-        _buildActionButton(
-          icon: Icons.bar_chart,
-          label: "View Reports",
-          onPressed: () {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => ReportPage(),
-                ));
-          },
-        ),
-        _buildActionButton(
-          icon: Icons.attach_money,
-          label: "Set Budget",
-          onPressed: () {
-            Navigator.pushNamed(context, BudgetPage.id);
-          },
-        ),
-      ],
-    );
+    return Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          _buildActionButton(
+            icon: Icons.add,
+            label: "Add Expense",
+            onPressed: () {
+              Navigator.pushNamed(context, AddOrUpdateReceiptPage.id);
+            },
+          ),
+          _buildActionButton(
+            icon: Icons.bar_chart,
+            label: "View Reports",
+            onPressed: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ReportPage(),
+                  ));
+            },
+          ),
+        ],
+      ),
+      SizedBox(height: 26), // Add spacing between rows
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          _buildActionButton(
+            icon: Icons.attach_money,
+            label: "Set Budget",
+            onPressed: () {
+              Navigator.pushNamed(context, BudgetPage.id);
+            },
+          ),
+          _buildActionButton(
+            icon: Icons.analytics,
+            label: "View Summary",
+            onPressed: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => SummaryPage(),
+                  ));
+            },
+          ),
+        ],
+      ),
+    ]);
   }
 
   Widget _buildActionButton({
@@ -149,32 +167,6 @@ class HomePageState extends State<HomePage> {
           style: const TextStyle(color: Colors.black54, fontSize: 12),
         ),
       ],
-    );
-  }
-
-  Widget _buildMonthlySummary(BuildContext context) {
-    return Expanded(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'Spending vs. Budget',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 8),
-          _buildActionButton(
-            icon: Icons.analytics,
-            label: "View Summary",
-            onPressed: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => SummaryPage(),
-                  ));
-            },
-          ),
-        ],
-      ),
     );
   }
 }
