@@ -307,14 +307,9 @@ class SettingsPageState extends State<SettingsPage> {
                                       });
                                     },
                                   ),
-
-
                                 ),
                             ],
                           ),
-
-
-
                         ],
                       ),
                     ),
