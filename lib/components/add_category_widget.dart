@@ -48,6 +48,7 @@ class AddCategoryWidgetState extends State<AddCategoryWidget> {
   }
 
   @override
+  @override
   Widget build(BuildContext context) {
     final categoryProvider =
         Provider.of<CategoryProvider>(context, listen: false);
@@ -65,118 +66,124 @@ class AddCategoryWidgetState extends State<AddCategoryWidget> {
           ),
         ],
       ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // Icon selection
-          GestureDetector(
-            onTap: () {
-              setState(() {
-                showEmojiPicker = !showEmojiPicker; // Toggle emoji picker
-                if (showEmojiPicker) {
-                  _textFieldFocusNode
-                      .unfocus(); // Remove focus if picker is opened
-                }
-              });
-            },
-            child: CircleAvatar(
-              radius: 40,
-              backgroundColor: light40,
-              child: Text(
-                selectedIcon,
-                style: TextStyle(fontSize: 30),
-              ),
-            ),
-          ),
-
-          if (_errorMessage != null)
-            Padding(
-              padding: const EdgeInsets.only(top: 10),
-              child: Text(
-                _errorMessage!,
-                style: TextStyle(color: Colors.red),
-              ),
-            ),
-          SizedBox(height: 10),
-
-          // Show emoji picker if toggled
-          if (showEmojiPicker)
-            SizedBox(
-              height: 200, // Adjust height as necessary
-              child: EmojiPicker(
-                onEmojiSelected: (category, emoji) {
-                  setState(() {
-                    selectedIcon = emoji.emoji; // Update selected emoji
-                  });
-                },
-                config: Config(
-                  height: 256,
-                  checkPlatformCompatibility: true,
-                  viewOrderConfig: const ViewOrderConfig(),
-                  emojiViewConfig: EmojiViewConfig(
-                    emojiSizeMax: 28 *
-                        (foundation.defaultTargetPlatform == TargetPlatform.iOS
-                            ? 1.2
-                            : 1.0),
-                  ),
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Icon selection
+            GestureDetector(
+              onTap: () {
+                setState(() {
+                  showEmojiPicker = !showEmojiPicker; // Toggle emoji picker
+                  if (showEmojiPicker) {
+                    _textFieldFocusNode
+                        .unfocus(); // Remove focus if picker is opened
+                  }
+                });
+              },
+              child: CircleAvatar(
+                radius: 40,
+                backgroundColor: light40,
+                child: Text(
+                  selectedIcon,
+                  style: TextStyle(fontSize: 30),
                 ),
               ),
             ),
-          SizedBox(height: 10),
 
-          // Category name input field
-          CustomTextFormField(
-            focusNode: _textFieldFocusNode, // Attach focus node
-            labelText: "Category name",
-            onChanged: (value) {
-              setState(() {
-                categoryName = value;
-                _errorMessage = null; // Reset error when input changes
-              });
-            },
-          ),
-          SizedBox(height: 10),
+            if (_errorMessage != null)
+              Padding(
+                padding: const EdgeInsets.only(top: 10),
+                child: Text(
+                  _errorMessage!,
+                  style: TextStyle(color: Colors.red),
+                ),
+              ),
+            SizedBox(height: 10),
 
-          // Add button
-          CustomButton(
-            text: "Add Category",
-            backgroundColor: purple100,
-            textColor: light80,
-            onPressed: () async {
-              if (categoryName.isNotEmpty) {
-                try {
-                  // Check if the category exists
-                  bool categoryExists = await categoryProvider
-                      .checkIfCategoryExists(categoryName);
-
-                  if (categoryExists) {
-                    logger.w("Category '$categoryName' already exists.");
+            // Show emoji picker if toggled
+            if (showEmojiPicker)
+              ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxHeight:
+                      MediaQuery.of(context).size.height * 0.4, // Dynamic size
+                ),
+                child: EmojiPicker(
+                  onEmojiSelected: (category, emoji) {
                     setState(() {
-                      _errorMessage =
-                          "Category '$categoryName' already exists.";
+                      selectedIcon = emoji.emoji; // Update selected emoji
                     });
-                  } else {
-                    // Add category through the provider
-                    await categoryProvider.addCategory(
-                        categoryName, selectedIcon);
+                  },
+                  config: Config(
+                    height: 256, // Keep the same height
+                    checkPlatformCompatibility: true,
+                    viewOrderConfig: const ViewOrderConfig(),
+                    emojiViewConfig: EmojiViewConfig(
+                      emojiSizeMax: 28 *
+                          (foundation.defaultTargetPlatform ==
+                                  TargetPlatform.iOS
+                              ? 1.2
+                              : 1.0),
+                    ),
+                  ),
+                ),
+              ),
+            SizedBox(height: 10),
 
-                    // Trigger the callback after adding the category
-                    widget.onCategoryAdded();
-                    if (mounted) {
-                      Navigator.of(context).pop(); // Close the dialog
-                    }
-                  }
-                } catch (e) {
-                  logger.e("An error occurred: ${e.toString()}");
-                }
-              } else {
+            // Category name input field
+            CustomTextFormField(
+              focusNode: _textFieldFocusNode, // Attach focus node
+              labelText: "Category name",
+              onChanged: (value) {
                 setState(() {
-                  _errorMessage = "Category name cannot be empty.";
+                  categoryName = value;
+                  _errorMessage = null; // Reset error when input changes
                 });
-              }
-            },
-          ),
-        ],
+              },
+            ),
+            SizedBox(height: 10),
+
+            // Add button
+            CustomButton(
+              text: "Add Category",
+              backgroundColor: purple100,
+              textColor: light80,
+              onPressed: () async {
+                if (categoryName.isNotEmpty) {
+                  try {
+                    // Check if the category exists
+                    bool categoryExists = await categoryProvider
+                        .checkIfCategoryExists(categoryName);
+
+                    if (categoryExists) {
+                      logger.w("Category '$categoryName' already exists.");
+                      setState(() {
+                        _errorMessage =
+                            "Category '$categoryName' already exists.";
+                      });
+                    } else {
+                      // Add category through the provider
+                      await categoryProvider.addCategory(
+                          categoryName, selectedIcon);
+
+                      // Trigger the callback after adding the category
+                      widget.onCategoryAdded();
+                      if (mounted) {
+                        Navigator.of(context).pop(); // Close the dialog
+                      }
+                    }
+                  } catch (e) {
+                    logger.e("An error occurred: ${e.toString()}");
+                  }
+                } else {
+                  setState(() {
+                    _errorMessage = "Category name cannot be empty.";
+                  });
+                }
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
