@@ -99,38 +99,63 @@ class WelcomePageState extends State<WelcomePage> {
     );
   }
 
-  Widget buildPage(
-      {required String image,
-      required String title,
-      required String subtitle}) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 40.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Image.asset(image, height: 250), // Image widget for the page's image
-          SizedBox(height: 24),
-          Text(
-            title,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-                fontFamily: 'Inter',
-                fontSize: 32,
-                fontWeight: FontWeight.w700, // Use Bold
-                color: dark50),
+  Widget buildPage({
+    required String image,
+    required String title,
+    required String subtitle,
+  }) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return SingleChildScrollView(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              minHeight:
+                  constraints.maxHeight, // Ensure it fills available space
+            ),
+            child: IntrinsicHeight(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 24.0, vertical: 40.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      flex: 2, // Add flexibility for scaling
+                      child: Image.asset(image, height: 250), // Page's image
+                    ),
+                    SizedBox(height: 24),
+                    Expanded(
+                      flex: 1, // Add flexibility for title
+                      child: Text(
+                        title,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            fontFamily: 'Inter',
+                            fontSize: 32,
+                            fontWeight: FontWeight.w700, // Bold
+                            color: dark50),
+                      ),
+                    ),
+                    SizedBox(height: 16),
+                    Expanded(
+                      flex: 1, // Add flexibility for subtitle
+                      child: Text(
+                        subtitle,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            fontFamily: 'Inter',
+                            fontSize: 18,
+                            fontWeight: FontWeight.w500, // ExtraLight
+                            color: purple200),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ),
-          SizedBox(height: 16),
-          Text(
-            subtitle,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-                fontFamily: 'Inter',
-                fontSize: 18,
-                fontWeight: FontWeight.w500, // Use ExtraLight
-                color: purple200),
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 }
