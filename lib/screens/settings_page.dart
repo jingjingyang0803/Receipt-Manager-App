@@ -287,14 +287,28 @@ class SettingsPageState extends State<SettingsPage> {
                                   ],
                                 )
                               else
-                                IconButton(
-                                  icon: Icon(Icons.edit, color: purple100),
-                                  onPressed: () {
-                                    // Start editing
-                                    setState(() {
-                                      _isEditingName = true;
-                                    });
-                                  },
+                                Container(
+                                    decoration: BoxDecoration(
+                                      color: purple100, // Purple background
+                                      shape: BoxShape.circle,
+                                        boxShadow:[
+                                          BoxShadow(
+                                            color: Colors.black26, // Shadow color
+                                            offset: Offset(2, 2), // Shadow offset for 3D effect
+                                            blurRadius: 4, // Blur for soft shadow edges
+                                          ),
+                                        ],
+                                    ),
+                                  child: IconButton(
+                                    icon: Icon(Icons.edit, color: Colors.white),
+                                    onPressed: (){
+                                      setState(() {
+                                        _isEditingName = true;
+                                      });
+                                    },
+                                  ),
+
+
                                 ),
                             ],
                           ),
