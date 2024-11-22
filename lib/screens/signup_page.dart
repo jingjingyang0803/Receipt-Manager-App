@@ -12,6 +12,10 @@ import '../services/auth_service.dart';
 import '../services/user_service.dart';
 import 'login_page.dart';
 
+import 'package:receipt_manager/screens/legal/terms_of_service_page.dart';
+import 'package:receipt_manager/screens/legal/privacy_policy_page.dart';
+
+
 class SignUpPage extends StatefulWidget {
   static const String id = 'sign_up_page';
 
@@ -172,6 +176,11 @@ class SignUpPageState extends State<SignUpPage> {
                           TextSpan(
                             text: "Terms of Service",
                             style: TextStyle(color: purple100),
+
+                            recognizer: TapGestureRecognizer()
+                              ..onTap = () {
+                                Navigator.pushNamed(context, TermsOfServicePage.id);
+                              },
                           ),
                           TextSpan(
                             text: " and ",
@@ -180,6 +189,13 @@ class SignUpPageState extends State<SignUpPage> {
                           TextSpan(
                             text: "Privacy Policy",
                             style: TextStyle(color: purple100),
+
+                            recognizer: TapGestureRecognizer()
+                              ..onTap = () {
+                                Navigator.pushNamed(context, PrivacyPolicyPage.id);
+                              },
+
+
                           ),
                         ],
                       ),

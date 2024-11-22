@@ -1,22 +1,22 @@
 import 'package:flutter/material.dart';
 
-class TermsOfServicePage extends StatelessWidget {
-  static const String id = 'terms_of_service_page';
+class PrivacyPolicyPage extends StatelessWidget {
+  static const String id = 'privacy_policy_page';
 
-  const TermsOfServicePage({super.key});
+  const PrivacyPolicyPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Terms of Service"),
+        title: const Text("Privacy Policy"),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Text(
-          // Terms of Service content
-          "xiaosi   xxxxxxxxxxxx",
+          //  Privacy Policy content
+          "xiaosi  xxxxxxxxxxx",
           style: const TextStyle(fontSize: 16),
         ),
       ),
