@@ -229,17 +229,7 @@ class SignUpPageState extends State<SignUpPage> {
                     : () {}, // No-op function when unchecked
               ),
               const SizedBox(height: 30),//SizedBox(height: 16),
-              Center(
-                child: Text(
-                  "Or with",
-                  style: TextStyle(
-                    color: purple200,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),//SizedBox(height: 16),
+
               Center(
                 child: Text.rich(
                   TextSpan(
