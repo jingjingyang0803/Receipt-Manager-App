@@ -148,14 +148,14 @@ class SignUpPageState extends State<SignUpPage> {
                   email = value;
                 },
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 20),//SizedBox(height: 16),
               CustomPasswordFormField(
                 labelText: "Password",
                 onChanged: (value) {
                   password = value;
                 },
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 20),
               Row(
                 children: [
                   Checkbox(
@@ -166,6 +166,11 @@ class SignUpPageState extends State<SignUpPage> {
                       });
                     },
                     activeColor: purple100,
+
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(4), // Checkbox rounded corners
+                    ),
+
                   ),
                   Expanded(
                     child: RichText(
@@ -211,10 +216,11 @@ class SignUpPageState extends State<SignUpPage> {
                     style: TextStyle(color: Colors.red),
                   ),
                 ),
-              SizedBox(height: 20),
+              const SizedBox(height: 30), // Increase the top spacing of the button - SizedBox(height: 20),
+
               CustomButton(
                 text: "Sign Up",
-                backgroundColor: _isChecked ? purple100 : Colors.grey,
+                backgroundColor: _isChecked ? purple100 : Colors.grey.shade300,
                 textColor: _isChecked ? light80 : Colors.black54,
                 onPressed: _isChecked
                     ? () async {
@@ -222,7 +228,7 @@ class SignUpPageState extends State<SignUpPage> {
                       }
                     : () {}, // No-op function when unchecked
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 30),//SizedBox(height: 16),
               Center(
                 child: Text(
                   "Or with",
@@ -233,7 +239,7 @@ class SignUpPageState extends State<SignUpPage> {
                   ),
                 ),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 20),//SizedBox(height: 16),
               Center(
                 child: Text.rich(
                   TextSpan(
@@ -250,6 +256,7 @@ class SignUpPageState extends State<SignUpPage> {
                   ),
                 ),
               ),
+              const SizedBox(height: 40), // Increase bottom margin
             ],
           ),
         ),
