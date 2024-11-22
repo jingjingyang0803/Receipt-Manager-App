@@ -16,6 +16,8 @@ import 'screens/settings_page.dart';
 import 'screens/signup_page.dart';
 import 'screens/verification_link_page.dart';
 import 'screens/welcome_page.dart';
+import 'screens/legal/terms_of_service_page.dart';
+import 'screens/legal/privacy_policy_page.dart';
 
 Map<String, WidgetBuilder> appRoutes = {
   WelcomePage.id: (context) => WelcomePage(),
@@ -35,4 +37,6 @@ Map<String, WidgetBuilder> appRoutes = {
   CategoryPage.id: (context) => CategoryPage(),
   BudgetPage.id: (context) => BudgetPage(),
   SummaryPage.id: (context) => SummaryPage(),
+  TermsOfServicePage.id: (context) => TermsOfServicePage(),
+  PrivacyPolicyPage.id: (context) => PrivacyPolicyPage(),
 };
