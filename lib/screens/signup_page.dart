@@ -122,7 +122,7 @@ class SignUpPageState extends State<SignUpPage> {
           "Sign Up",
           style: TextStyle(
             color: dark50,
-            fontSize: 20,
+            fontSize: 24, // here was 20
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -134,14 +134,14 @@ class SignUpPageState extends State<SignUpPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(height: 20),
+              const SizedBox(height: 30), // Increase top spacing-SizedBox(height: 20),
               CustomTextFormField(
                 labelText: "Name",
                 onChanged: (value) {
                   userName = value;
                 },
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 20), // Increase the input box spacing - SizedBox(height: 16),
               CustomTextFormField(
                 labelText: "Email",
                 onChanged: (value) {
