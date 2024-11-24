@@ -15,8 +15,8 @@ import 'screens/welcome_page.dart';
 import 'screens/signup_page.dart';
 import 'screens/login_page.dart';
 import 'screens/forgot_password_page.dart';
-import 'package:receipt_manager/screens/terms_of_service_page.dart';
-import 'package:receipt_manager/screens/privacy_policy_page.dart';
+import 'package:receipt_manager/screens/legal/terms_of_service_page.dart';
+import 'package:receipt_manager/screens/legal/privacy_policy_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
