@@ -59,15 +59,16 @@ class WelcomePageState extends State<WelcomePage> {
                   children: [
                     buildPage(
                       image: "assets/images/control.png",
-                      title: "Effortless Expense Tracking",
+                      title: "Effortless Expense Tracking", // Text updated - "Gain total control of your money"
                       subtitle:
-                      "Snap a photo of your receipts, and let us handle the rest. Simplify your expense management like never before.",
+                      "Snap a photo of your receipts, and let us handle the rest. Simplify your expense management like never before.", // Text updated -  "Become your own money manager and make every cent count",
                     ),
                     buildPage(
                       image: "assets/images/track.png",
-                      title: "Turn Receipts into Insights",
+
+                      title: "Turn Receipts into Insights", // Text updated - "Know where your money goes",
                       subtitle:
-                      "Automatically categorize your spending and unlock detailed reports for smarter financial decisions.",
+                      "Automatically categorize your spending and unlock detailed reports for smarter financial decisions.", // Text updated -  "Track your transactions easily with categories and reports",
                     ),
                     buildPage(
                       image: "assets/images/plan.png",
@@ -99,11 +100,11 @@ class WelcomePageState extends State<WelcomePage> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF7F3DFF),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(50.0),
+                          borderRadius: BorderRadius.circular(28.0), // Smooth rounded corners
                         ),
-                        shadowColor: Colors.black.withOpacity(0.2),
-                        elevation: 10,
-                        minimumSize: const Size.fromHeight(56),
+                        shadowColor: Colors.black.withOpacity(0.15), // Subtle shadow
+                        elevation: 8, // Elevated look
+                        minimumSize: const Size.fromHeight(56), // Button height
                       ),
                       onPressed: () async {
                         await showLoadingDialog(context);
@@ -124,11 +125,11 @@ class WelcomePageState extends State<WelcomePage> {
                     const SizedBox(height: 16),
                     OutlinedButton(
                       style: OutlinedButton.styleFrom(
-                        side: const BorderSide(color: Color(0xFF7F3DFF)),
+                        side: const BorderSide(color: Color(0xFF7F3DFF), width: 2), // Border styling
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(50.0),
+                          borderRadius: BorderRadius.circular(28.0), // Smooth rounded corners
                         ),
-                        minimumSize: const Size.fromHeight(56),
+                        minimumSize: const Size.fromHeight(56), // Button height
                       ),
                       onPressed: () async {
                         await showLoadingDialog(context);
@@ -149,6 +150,7 @@ class WelcomePageState extends State<WelcomePage> {
                   ],
                 ),
               ),
+
               const SizedBox(height: 50), // Adjusted bottom spacing
             ],
           ),
