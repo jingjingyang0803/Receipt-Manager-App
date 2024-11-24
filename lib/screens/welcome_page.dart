@@ -84,31 +84,7 @@ class WelcomePageState extends State<WelcomePage> {
                 padding: const EdgeInsets.symmetric(horizontal: 24.0),
                 child: Column(
                   children: [
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF7F3DFF),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(50.0),
-                        ),
-                        shadowColor: Colors.black.withOpacity(0.2),
-                        elevation: 10,
-                        minimumSize: const Size.fromHeight(56),
-                      ),
-                      onPressed: () async {
-                        await showLoadingDialog(context);
-                        if (mounted) {
-                          Navigator.pushNamed(context, 'signup_page'); // Ensure navigation
-                        }
-                      },
-                      child: Text(
-                        "Sign Up",
-                        style: TextStyle(
-                          fontSize: 20.sp,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
+
                     const SizedBox(height: 16),
                     OutlinedButton(
                       style: OutlinedButton.styleFrom(
