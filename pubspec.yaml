@@ -61,6 +61,8 @@ dependencies:
   provider: ^6.1.2
   flutter_speed_dial: ^7.0.0
 
+  flutter_screenutil: ^5.0.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -115,3 +117,6 @@ flutter:
           weight: 700 # Use an appropriate weight (Bold)
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+
+
+

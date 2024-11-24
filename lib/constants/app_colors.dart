@@ -25,3 +25,7 @@ const Color light80 = Color(0xFFFCFCFC); // #FCFCFC - Light 80%
 const Color light60 = Color(0xFFF1F1FA); // #F1F1FA - Light 60%
 const Color light40 = Color(0xFFE3E5E5); // #E3E5E5 - Light 40%
 const Color purple200 = Color(0xFF91919F); // #91919F - Light 20%
+
+
+
+

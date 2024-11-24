@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:receipt_manager/constants/app_colors.dart';
-import 'package:receipt_manager/screens/login_page.dart';
-import 'package:receipt_manager/screens/signup_page.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
-
-import '../components/custom_button.dart';
 
 class WelcomePage extends StatefulWidget {
   static const String id = 'welcome_page';
@@ -26,74 +22,123 @@ class WelcomePageState extends State<WelcomePage> {
 
   @override
   Widget build(BuildContext context) {
+    // Initialize ScreenUtil for responsive font and size
+    ScreenUtil.init(context, designSize: const Size(375, 812));
+
     return Scaffold(
-      backgroundColor: Colors.white,
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+      body: Stack(
         children: [
-          Expanded(
-            child: PageView(
-              controller: _pageController,
-              children: [
-                buildPage(
-                  image: "assets/images/control.png",
-                  title: "Gain total control of your money",
-                  subtitle:
-                      "Become your own money manager and make every cent count",
-                ),
-                buildPage(
-                  image: "assets/images/track.png",
-                  title: "Know where your money goes",
-                  subtitle:
-                      "Track your transaction easily, with categories and financial report",
-                ),
-                buildPage(
-                  image: "assets/images/plan.png",
-                  title: "Planning ahead",
-                  subtitle:
-                      "Setup your budget for each category so you stay in control",
-                ),
-              ],
+          // Enhanced background: diagonal gradient with shadow
+          Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Color(0xFF7F3DFF), Color(0xFFF2F2F9)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
             ),
           ),
-          SmoothPageIndicator(
-            controller: _pageController,
-            count: 3,
-            effect: WormEffect(
-              dotColor: purple20, // Inactive dot color
-              activeDotColor: purple100, // Active dot color
-              dotHeight: 8,
-              dotWidth: 8,
-            ),
-          ),
-          SizedBox(height: 24),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0),
-            child: Column(
-              children: [
-                CustomButton(
-                  text: "Sign Up",
-                  backgroundColor: purple100,
-                  textColor: light80,
-                  onPressed: () {
-                    // Navigate to Sign Up page
-                    Navigator.pushNamed(context, SignUpPage.id);
-                  },
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Expanded(
+                child: PageView(
+                  controller: _pageController,
+                  physics: const BouncingScrollPhysics(),
+                  children: [
+                    buildPage(
+                      image: "assets/images/control.png",
+                      title: "Effortless Expense Tracking",
+                      subtitle:
+                      "Snap a photo of your receipts, and let us handle the rest. Simplify your expense management like never before.",
+                    ),
+                    buildPage(
+                      image: "assets/images/track.png",
+                      title: "Turn Receipts into Insights",
+                      subtitle:
+                      "Automatically categorize your spending and unlock detailed reports for smarter financial decisions.",
+                    ),
+                    buildPage(
+                      image: "assets/images/plan.png",
+                      title: "Plan Ahead",
+                      subtitle: "Set budgets for each category to stay in control.",
+                    ),
+                  ],
                 ),
-                SizedBox(height: 12),
-                CustomButton(
-                  text: "Login",
-                  backgroundColor: purple20,
-                  textColor: purple100,
-                  onPressed: () {
-                    // Navigate to Login page
-                    Navigator.pushNamed(context, LogInPage.id);
-                  },
+              ),
+              // Smooth Page Indicator
+              SmoothPageIndicator(
+                controller: _pageController,
+                count: 3,
+                effect: ExpandingDotsEffect(
+                  dotColor: const Color(0xFFE0E0E0),
+                  activeDotColor: const Color(0xFF7F3DFF),
+                  dotHeight: 10.h,
+                  dotWidth: 10.w,
+                  expansionFactor: 4,
                 ),
-              ],
-            ),
+              ),
+              const SizedBox(height: 24),
+              // Enhanced buttons
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                child: Column(
+                  children: [
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF7F3DFF),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(50.0),
+                        ),
+                        shadowColor: Colors.black.withOpacity(0.2),
+                        elevation: 10,
+                        minimumSize: const Size.fromHeight(56),
+                      ),
+                      onPressed: () async {
+                        await showLoadingDialog(context);
+                        if (mounted) {
+                          Navigator.pushNamed(context, 'signup_page'); // Ensure navigation
+                        }
+                      },
+                      child: Text(
+                        "Sign Up",
+                        style: TextStyle(
+                          fontSize: 20.sp,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    OutlinedButton(
+                      style: OutlinedButton.styleFrom(
+                        side: const BorderSide(color: Color(0xFF7F3DFF)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(50.0),
+                        ),
+                        minimumSize: const Size.fromHeight(56),
+                      ),
+                      onPressed: () async {
+                        await showLoadingDialog(context);
+                        if (mounted) {
+                          Navigator.pushNamed(context, 'login_page'); // Ensure navigation
+                        }
+                      },
+                      child: Text(
+                        "Login",
+                        style: TextStyle(
+                          fontSize: 20.sp,
+                          fontWeight: FontWeight.w600,
+                          color: const Color(0xFF7F3DFF),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 32),
+            ],
           ),
-          SizedBox(height: 24),
         ],
       ),
     );
@@ -104,58 +149,60 @@ class WelcomePageState extends State<WelcomePage> {
     required String title,
     required String subtitle,
   }) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        return SingleChildScrollView(
-          child: ConstrainedBox(
-            constraints: BoxConstraints(
-              minHeight:
-                  constraints.maxHeight, // Ensure it fills available space
-            ),
-            child: IntrinsicHeight(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 24.0, vertical: 40.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Expanded(
-                      flex: 2, // Add flexibility for scaling
-                      child: Image.asset(image, height: 250), // Page's image
-                    ),
-                    SizedBox(height: 24),
-                    Expanded(
-                      flex: 1, // Add flexibility for title
-                      child: Text(
-                        title,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            fontFamily: 'Inter',
-                            fontSize: 32,
-                            fontWeight: FontWeight.w700, // Bold
-                            color: dark50),
-                      ),
-                    ),
-                    SizedBox(height: 16),
-                    Expanded(
-                      flex: 1, // Add flexibility for subtitle
-                      child: Text(
-                        subtitle,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            fontFamily: 'Inter',
-                            fontSize: 18,
-                            fontWeight: FontWeight.w500, // ExtraLight
-                            color: purple200),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Expanded(
+          flex: 2,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 40.0),
+            child: Image.asset(
+              image,
+              fit: BoxFit.contain,
+              height: 220.h,
             ),
           ),
+        ),
+        const SizedBox(height: 24),
+        Text(
+          title,
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 28.sp,
+            fontWeight: FontWeight.w700,
+            color: const Color(0xFF212325),
+          ),
+        ),
+        const SizedBox(height: 16),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 40.0),
+          child: Text(
+            subtitle,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 16.sp,
+              fontWeight: FontWeight.w400,
+              color: const Color(0xFF616161),
+            ),
+          ),
+        ),
+        const SizedBox(height: 32),
+      ],
+    );
+  }
+
+  // Updated loading dialog with Future handling
+  Future<void> showLoadingDialog(BuildContext context) async {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return const Center(
+          child: CircularProgressIndicator(),
         );
       },
     );
+    await Future.delayed(const Duration(seconds: 1)); // Simulate loading delay
+    Navigator.pop(context); // Close dialog
   }
 }
