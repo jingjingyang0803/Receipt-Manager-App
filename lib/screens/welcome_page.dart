@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
+import 'signup_page.dart';
+import 'login_page.dart';
+
 class WelcomePage extends StatefulWidget {
   static const String id = 'welcome_page';
 
@@ -84,7 +87,31 @@ class WelcomePageState extends State<WelcomePage> {
                 padding: const EdgeInsets.symmetric(horizontal: 24.0),
                 child: Column(
                   children: [
-
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF7F3DFF),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(50.0),
+                        ),
+                        shadowColor: Colors.black.withOpacity(0.2),
+                        elevation: 10,
+                        minimumSize: const Size.fromHeight(56),
+                      ),
+                      onPressed: () async {
+                        await showLoadingDialog(context);
+                        if (mounted) {
+                          Navigator.pushNamed(context, SignUpPage.id); // Fixed navigation
+                        }
+                      },
+                      child: Text(
+                        "Sign Up",
+                        style: TextStyle(
+                          fontSize: 20.sp,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
                     const SizedBox(height: 16),
                     OutlinedButton(
                       style: OutlinedButton.styleFrom(
@@ -97,7 +124,7 @@ class WelcomePageState extends State<WelcomePage> {
                       onPressed: () async {
                         await showLoadingDialog(context);
                         if (mounted) {
-                          Navigator.pushNamed(context, 'login_page'); // Ensure navigation
+                          Navigator.pushNamed(context, LogInPage.id); // Fixed navigation
                         }
                       },
                       child: Text(
