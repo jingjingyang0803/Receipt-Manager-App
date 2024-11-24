@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
@@ -31,7 +33,7 @@ class WelcomePageState extends State<WelcomePage> {
     return Scaffold(
       body: Stack(
         children: [
-          // Enhanced background: diagonal gradient with shadow
+          // Enhanced background: diagonal gradient with subtle blur
           Container(
             decoration: const BoxDecoration(
               gradient: LinearGradient(
@@ -39,6 +41,12 @@ class WelcomePageState extends State<WelcomePage> {
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
+            ),
+          ),
+          Positioned.fill(
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+              child: Container(color: Colors.transparent),
             ),
           ),
           Column(
@@ -81,7 +89,7 @@ class WelcomePageState extends State<WelcomePage> {
                   expansionFactor: 4,
                 ),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 40), // Adjusted spacing
               // Enhanced buttons
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24.0),
@@ -108,6 +116,7 @@ class WelcomePageState extends State<WelcomePage> {
                         style: TextStyle(
                           fontSize: 20.sp,
                           fontWeight: FontWeight.w600,
+                          fontFamily: 'SF Pro Rounded',
                           color: Colors.white,
                         ),
                       ),
@@ -132,6 +141,7 @@ class WelcomePageState extends State<WelcomePage> {
                         style: TextStyle(
                           fontSize: 20.sp,
                           fontWeight: FontWeight.w600,
+                          fontFamily: 'SF Pro Rounded',
                           color: const Color(0xFF7F3DFF),
                         ),
                       ),
@@ -139,7 +149,7 @@ class WelcomePageState extends State<WelcomePage> {
                   ],
                 ),
               ),
-              const SizedBox(height: 32),
+              const SizedBox(height: 50), // Adjusted bottom spacing
             ],
           ),
         ],
@@ -153,27 +163,26 @@ class WelcomePageState extends State<WelcomePage> {
     required String subtitle,
   }) {
     return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.start, // Adjusted alignment
       children: [
-        Expanded(
-          flex: 2,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 40.0),
-            child: Image.asset(
-              image,
-              fit: BoxFit.contain,
-              height: 220.h,
-            ),
-          ),
+        const SizedBox(height: 80), // Add more spacing at the top
+        Image.asset(
+          image,
+          fit: BoxFit.contain,
+          height: 240.h, // Increased image height
         ),
-        const SizedBox(height: 24),
+        const SizedBox(height: 30), // Add spacing between image and text
         Text(
           title,
           textAlign: TextAlign.center,
           style: TextStyle(
-            fontSize: 28.sp,
-            fontWeight: FontWeight.w700,
-            color: const Color(0xFF212325),
+            fontSize: 30.sp,
+            fontWeight: FontWeight.bold,
+            fontFamily: 'SF Pro Rounded', // Modern Apple-like font
+            foreground: Paint()
+              ..shader = const LinearGradient(
+                colors: [Color(0xFF7F3DFF), Color(0xFFB84DFF)],
+              ).createShader(const Rect.fromLTWH(0, 0, 200, 70)), // Gradient text
           ),
         ),
         const SizedBox(height: 16),
@@ -189,7 +198,7 @@ class WelcomePageState extends State<WelcomePage> {
             ),
           ),
         ),
-        const SizedBox(height: 32),
+        const SizedBox(height: 40),
       ],
     );
   }
