@@ -378,228 +378,236 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
       resizeToAvoidBottomInset: true,
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text(widget.receiptId != null ? 'Update Receipt' : 'New Receipt',
-            style: TextStyle(color: Colors.black)),
+        title: Text(
+          widget.receiptId != null ? 'Update Receipt' : 'New Receipt',
+          style: TextStyle(color: Colors.black),
+        ),
         backgroundColor: Colors.white,
         elevation: 0,
         iconTheme: IconThemeData(color: Colors.black),
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Divider(
-                color: Colors.grey.shade300,
-                thickness: 1,
-                height: 1,
-              ),
-              SizedBox(height: 20),
-              TextField(
-                controller: _merchantController,
-                decoration: InputDecoration(labelText: 'Merchant'),
-              ),
-              SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Static Divider
+          Divider(color: Colors.grey.shade300, thickness: 1, height: 1),
+
+          // Scrollable Content
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            // Show payment method picker (you need to implement this)
-                            _showPaymentMethodPicker(context);
-                          },
+                  TextField(
+                    controller: _merchantController,
+                    decoration: InputDecoration(labelText: 'Merchant'),
+                  ),
+                  SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            GestureDetector(
+                              onTap: () {
+                                // Show payment method picker (you need to implement this)
+                                _showPaymentMethodPicker(context);
+                              },
+                              child: AbsorbPointer(
+                                child: TextField(
+                                  decoration: buildDynamicLabelDecoration(
+                                    label: 'Select Payment',
+                                    isSelected:
+                                        _selectedPaymentMethod != null &&
+                                            _selectedPaymentMethod!.isNotEmpty,
+                                    selectedValue: _selectedPaymentMethod,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(width: 20),
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () => _selectDate(context),
                           child: AbsorbPointer(
                             child: TextField(
-                              decoration: buildDynamicLabelDecoration(
-                                label: 'Select Payment',
-                                isSelected: _selectedPaymentMethod != null &&
-                                    _selectedPaymentMethod!.isNotEmpty,
-                                selectedValue: _selectedPaymentMethod,
-                              ),
+                              controller: _dateController,
+                              decoration: buildRequiredFieldDecoration('Date'),
                             ),
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                  SizedBox(width: 20),
-                  Expanded(
-                    child: GestureDetector(
-                      onTap: () => _selectDate(context),
-                      child: AbsorbPointer(
+                  SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            GestureDetector(
+                              onTap: () => _showCurrencyPicker(context),
+                              child: AbsorbPointer(
+                                child: TextField(
+                                  decoration: InputDecoration(
+                                    labelText:
+                                        _selectedCurrencyCode?.isNotEmpty ==
+                                                true
+                                            ? _selectedCurrencyCode
+                                            : 'Select Currency',
+                                    border: OutlineInputBorder(),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(width: 20),
+                      Expanded(
                         child: TextField(
-                          controller: _dateController,
-                          decoration: buildRequiredFieldDecoration('Date'),
+                          controller: _totalController,
+                          decoration: buildRequiredFieldDecoration('Total'),
                         ),
                       ),
-                    ),
+                    ],
                   ),
-                ],
-              ),
-              SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        GestureDetector(
-                          onTap: () => _showCurrencyPicker(context),
-                          child: AbsorbPointer(
-                            child: TextField(
-                              decoration: InputDecoration(
-                                labelText:
-                                    _selectedCurrencyCode?.isNotEmpty == true
-                                        ? _selectedCurrencyCode
-                                        : 'Select Currency',
-                                border: OutlineInputBorder(),
+                  SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            GestureDetector(
+                              onTap: () => _showCategoryBottomSheet(context),
+                              child: AbsorbPointer(
+                                child: TextField(
+                                  decoration: buildDynamicLabelDecoration(
+                                    label: 'Select Category',
+                                    isSelected:
+                                        _selectedCategoryId?.isNotEmpty == true,
+                                    selectedValue: _selectedCategoryId
+                                                ?.isNotEmpty ==
+                                            true
+                                        ? '$_selectedCategoryIcon $_selectedCategoryName'
+                                        : null,
+                                  ),
+                                ),
                               ),
                             ),
-                          ),
+                          ],
                         ),
-                      ],
+                      ),
+                      SizedBox(width: 20),
+                      Expanded(
+                        child: TextField(
+                          controller: _itemNameController,
+                          decoration: InputDecoration(labelText: 'Item Name'),
+                        ),
+                      ),
+                    ],
+                  ),
+                  TextField(
+                    controller: _descriptionController,
+                    decoration: InputDecoration(labelText: 'Description'),
+                  ),
+                  SizedBox(height: 20),
+                  Center(
+                    child: ElevatedButton(
+                      onPressed: uploadReceiptImage,
+                      child: Text('Upload Receipt Image'),
                     ),
                   ),
-                  SizedBox(width: 20),
-                  Expanded(
-                    child: TextField(
-                      controller: _totalController,
-                      decoration: buildRequiredFieldDecoration('Total'),
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                  if (_uploadedImageUrl != null &&
+                      _uploadedImageUrl!.isNotEmpty) ...[
+                    SizedBox(height: 20),
+                    Stack(
+                      alignment: Alignment.topRight,
                       children: [
-                        GestureDetector(
-                          onTap: () => _showCategoryBottomSheet(context),
-                          child: AbsorbPointer(
-                            child: TextField(
-                              decoration: buildDynamicLabelDecoration(
-                                label: 'Select Category',
-                                isSelected:
-                                    _selectedCategoryId?.isNotEmpty == true,
-                                selectedValue: _selectedCategoryId
-                                            ?.isNotEmpty ==
-                                        true
-                                    ? '$_selectedCategoryIcon $_selectedCategoryName'
-                                    : null,
+                        Column(
+                          children: [
+                            Align(
+                              alignment: Alignment.topRight,
+                              child: GestureDetector(
+                                onTap: () => setState(() {
+                                  _uploadedImageUrl = null;
+                                }),
+                                child: Icon(
+                                  Icons.close,
+                                  color: Colors.red,
+                                  size: 24,
+                                ),
                               ),
                             ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(width: 20),
-                  Expanded(
-                    child: TextField(
-                      controller: _itemNameController,
-                      decoration: InputDecoration(labelText: 'Item Name'),
-                    ),
-                  ),
-                ],
-              ),
-              TextField(
-                controller: _descriptionController,
-                decoration: InputDecoration(labelText: 'Description'),
-              ),
-              SizedBox(height: 20),
-              Center(
-                child: ElevatedButton(
-                  onPressed: uploadReceiptImage,
-                  child: Text('Upload Receipt Image'),
-                ),
-              ),
-              if (_uploadedImageUrl != null &&
-                  _uploadedImageUrl!.isNotEmpty) ...[
-                SizedBox(height: 20),
-                Stack(
-                  alignment: Alignment.topRight,
-                  children: [
-                    Column(
-                      children: [
-                        Align(
-                          alignment: Alignment.topRight,
-                          child: GestureDetector(
-                            onTap: () => setState(() {
-                              _uploadedImageUrl = null;
-                            }),
-                            child: Icon(
-                              Icons.close,
-                              color: Colors.red,
-                              size: 24,
+                            SizedBox(height: 8),
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(8.0),
+                              child: _uploadedImageUrl!.startsWith('http')
+                                  ? Image.network(_uploadedImageUrl!.trim())
+                                  : Image.file(File(_uploadedImageUrl!)),
                             ),
-                          ),
-                        ),
-                        SizedBox(height: 8),
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(8.0),
-                          child: _uploadedImageUrl!.startsWith('http')
-                              ? Image.network(_uploadedImageUrl!.trim())
-                              : Image.file(File(_uploadedImageUrl!)),
+                          ],
                         ),
                       ],
                     ),
                   ],
-                ),
-              ],
-              SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                      child: CustomButton(
-                        text: "Cancel",
-                        backgroundColor: purple20,
-                        textColor: purple100,
-                        onPressed: () => Navigator.pop(context),
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                      child: CustomButton(
-                        text: widget.receiptId != null ? 'Update' : 'Save',
-                        backgroundColor: purple100,
-                        textColor: light80,
-                        onPressed: _saveReceipt,
-                      ),
-                    ),
-                  ),
-                  if (widget.receiptId != null) ...[
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                        child: CustomButton(
-                          text: 'Delete',
-                          backgroundColor: red100,
-                          textColor: light80,
-                          onPressed: _confirmDelete,
+                  SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                          child: CustomButton(
+                            text: "Cancel",
+                            backgroundColor: purple20,
+                            textColor: purple100,
+                            onPressed: () => Navigator.pop(context),
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                          child: CustomButton(
+                            text: widget.receiptId != null ? 'Update' : 'Save',
+                            backgroundColor: purple100,
+                            textColor: light80,
+                            onPressed: _saveReceipt,
+                          ),
+                        ),
+                      ),
+                      if (widget.receiptId != null) ...[
+                        Expanded(
+                          child: Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 8.0),
+                            child: CustomButton(
+                              text: 'Delete',
+                              backgroundColor: red100,
+                              textColor: light80,
+                              onPressed: _confirmDelete,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
                 ],
               ),
-            ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
