@@ -68,28 +68,101 @@ class HomePageState extends State<HomePage> {
     return Consumer<ReceiptProvider>(
       builder: (context, receiptProvider, child) {
         final receiptCount = receiptProvider.receiptCount ?? 0;
-        final oldestDate = receiptProvider.oldestDate;
-        final newestDate = receiptProvider.newestDate;
+        final oldestDate = receiptProvider.oldestDate ?? DateTime.now();
+        final newestDate = receiptProvider.newestDate ?? DateTime.now();
 
         return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const Text(
-              'Welcome back!',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            const SizedBox(height: 16),
+
+            // Total Receipts Section
+            Text(
+              'Total Receipts',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w400,
+                color: Colors.grey[600],
+              ),
             ),
             const SizedBox(height: 8),
             Text(
-              receiptCount > 0
-                  ? 'Here’s a quick snapshot of your finances:\n'
-                      '- Total Receipts: $receiptCount\n'
-                      '- Tracking Period: ${DateFormat.yMMMd().format(oldestDate ?? DateTime.now())} to ${DateFormat.yMMMd().format(newestDate ?? DateTime.now())}'
-                  : 'You haven\'t created any expenses yet.',
-              style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+              receiptCount.toString(),
+              style: const TextStyle(
+                fontSize: 36,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
+            ),
+            const SizedBox(height: 16),
+
+            // Tracking Period Section
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                _buildTrackingCard(
+                  icon: Icons.calendar_today_outlined,
+                  label: 'From',
+                  date: DateFormat.yMMMd().format(oldestDate),
+                  backgroundColor: Colors.blue.shade100,
+                  iconColor: Colors.blue.shade600,
+                ),
+                _buildTrackingCard(
+                  icon: Icons.calendar_today_outlined,
+                  label: 'To',
+                  date: DateFormat.yMMMd().format(newestDate),
+                  backgroundColor: Colors.orange.shade100,
+                  iconColor: Colors.orange.shade600,
+                ),
+              ],
             ),
           ],
         );
       },
+    );
+  }
+
+// Helper Widget to Build the Date Cards
+  Widget _buildTrackingCard({
+    required IconData icon,
+    required String label,
+    required String date,
+    required Color backgroundColor,
+    required Color iconColor,
+  }) {
+    return Container(
+      width: 140, // Fixed width for consistency
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Icon(icon, color: iconColor, size: 32),
+          const SizedBox(height: 8),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: Colors.grey[800],
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            date,
+            style: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.normal,
+              color: Colors.black,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
     );
   }
 
