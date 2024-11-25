@@ -102,7 +102,11 @@ class HomePageState extends State<HomePage> {
             icon: Icons.add,
             label: "Add Expense",
             onPressed: () {
-              Navigator.pushNamed(context, AddOrUpdateReceiptPage.id);
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => AddOrUpdateReceiptPage(),
+                  ));
             },
           ),
           _buildActionButton(
@@ -126,7 +130,11 @@ class HomePageState extends State<HomePage> {
             icon: Icons.attach_money,
             label: "Set Budget",
             onPressed: () {
-              Navigator.pushNamed(context, BudgetPage.id);
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => BudgetPage(),
+                  ));
             },
           ),
           _buildActionButton(
