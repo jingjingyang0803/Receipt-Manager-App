@@ -237,7 +237,7 @@ class SettingsPageState extends State<SettingsPage> {
                                       .center, // Align buttons in center
                                   children: [
                                     // Check Button
-                                    Container(
+                                    SizedBox(
                                       height: 32, // Small height
                                       width: 32, // Small width
                                       child: ElevatedButton(
@@ -265,7 +265,7 @@ class SettingsPageState extends State<SettingsPage> {
                                     SizedBox(
                                         width: 8), // Adjust gap between buttons
                                     // Cross Button
-                                    Container(
+                                    SizedBox(
                                       height: 32, // Small height
                                       width: 32, // Small width
                                       child: ElevatedButton(
