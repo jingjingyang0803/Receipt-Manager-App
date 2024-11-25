@@ -417,205 +417,218 @@ class ExtractPageState extends State<ExtractPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: true,
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text('Auto Extract', style: TextStyle(color: Colors.black)),
         backgroundColor: Colors.white,
         elevation: 0,
         iconTheme: IconThemeData(color: Colors.black),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            // Check if an image is selected
-            if (_imageFile == null) ...[
-              // Center the capture and pick buttons when no image is selected
-              Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    CustomButton(
-                      text: 'Capture from Camera',
-                      backgroundColor: purple100,
-                      textColor: light80,
-                      onPressed: _captureFromCamera,
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Static Divider
+          Divider(color: Colors.grey.shade300, thickness: 1, height: 1),
+
+          // Scrollable Content
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  // Check if an image is selected
+                  if (_imageFile == null) ...[
+                    // Center the capture and pick buttons when no image is selected
+                    Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          SizedBox(height: 30), // Space between buttons
+                          CustomButton(
+                            text: 'Capture from Camera',
+                            backgroundColor: purple20,
+                            textColor: purple100,
+                            onPressed: _captureFromCamera,
+                          ),
+                          SizedBox(height: 30), // Space between buttons
+                          CustomButton(
+                            text: 'Pick from Gallery',
+                            backgroundColor: purple100,
+                            textColor: light80,
+                            onPressed: _pickFromGallery,
+                          ),
+                        ],
+                      ),
                     ),
-                    SizedBox(height: 10), // Space between buttons
-                    CustomButton(
-                      text: 'Pick from Gallery',
-                      backgroundColor: purple100,
-                      textColor: light80,
-                      onPressed: _pickFromGallery,
+                  ] else ...[
+                    // Display the image preview and extracted data when an image is selected
+                    Container(
+                      height: 200,
+                      width: double.infinity, // Full screen width
+                      padding: const EdgeInsets.all(8.0),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey),
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis
+                            .vertical, // Enable vertical scrolling for the image
+                        child: Image.file(
+                          _imageFile!,
+                          fit: BoxFit
+                              .contain, // Show the entire image without cropping
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 20),
+                    Container(
+                      height: 200,
+                      width:
+                          double.infinity, // Makes it take full width available
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey),
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      child: SingleChildScrollView(
+                        child: SelectableText(
+                          _extractedText,
+                          style: TextStyle(fontSize: 16),
+                          textAlign: TextAlign
+                              .start, // Align text to the start (left) by default
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 20),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Language
+                        Row(
+                          children: [
+                            Icon(Icons.language, color: Colors.lightBlue),
+                            SizedBox(width: 8),
+                            Text('Language:', style: infoTextStyle),
+                            SizedBox(width: 4),
+                            Expanded(
+                              child: Text(
+                                _language,
+                                style: infoTextStyle.copyWith(
+                                    fontWeight: FontWeight.normal),
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 8), // Add spacing between rows
+
+                        // Merchant
+                        Row(
+                          children: [
+                            Icon(Icons.store, color: Colors.lightBlue),
+                            SizedBox(width: 8),
+                            Text('Merchant:', style: infoTextStyle),
+                            SizedBox(width: 4),
+                            Expanded(
+                              child: Text(
+                                _merchantName,
+                                style: infoTextStyle.copyWith(
+                                    fontWeight: FontWeight.normal),
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 8), // Add spacing between rows
+
+                        // Date
+                        Row(
+                          children: [
+                            Icon(Icons.calendar_today, color: Colors.lightBlue),
+                            SizedBox(width: 8),
+                            Text('Date:', style: infoTextStyle),
+                            SizedBox(width: 4),
+                            Text(
+                              _receiptDate,
+                              style: infoTextStyle.copyWith(
+                                  fontWeight: FontWeight.normal),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 8),
+
+                        // Currency
+                        Row(
+                          children: [
+                            Icon(Icons.attach_money, color: Colors.lightBlue),
+                            SizedBox(width: 8),
+                            Text('Currency:', style: infoTextStyle),
+                            SizedBox(width: 4),
+                            Text(
+                              _currency,
+                              style: infoTextStyle.copyWith(
+                                  fontWeight: FontWeight.normal),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 8),
+
+                        // Total Amount
+                        Row(
+                          children: [
+                            Icon(Icons.monetization_on,
+                                color: Colors.lightBlue),
+                            SizedBox(width: 8),
+                            Text('Total:', style: infoTextStyle),
+                            SizedBox(width: 4),
+                            Text(
+                              _totalPrice,
+                              style: infoTextStyle.copyWith(
+                                  fontWeight: FontWeight.normal),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 8.0),
+                            child: CustomButton(
+                              text: "Cancel",
+                              backgroundColor: purple20,
+                              textColor: purple100,
+                              onPressed: () {
+                                Navigator.pop(context); // Close ScanScreen
+                              }, // Close the popup},
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 8.0),
+                            child: CustomButton(
+                              text: "OK",
+                              backgroundColor: purple100,
+                              textColor: light80,
+                              onPressed:
+                                  _confirmDataAndNavigate, // Confirm and navigate
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
-                ),
-              ),
-            ] else ...[
-              // Display the image preview and extracted data when an image is selected
-              Container(
-                height: 200,
-                width: double.infinity, // Full screen width
-                padding: const EdgeInsets.all(8.0),
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey),
-                  borderRadius: BorderRadius.circular(5),
-                ),
-                child: SingleChildScrollView(
-                  scrollDirection:
-                      Axis.vertical, // Enable vertical scrolling for the image
-                  child: Image.file(
-                    _imageFile!,
-                    fit: BoxFit
-                        .contain, // Show the entire image without cropping
-                  ),
-                ),
-              ),
-              SizedBox(height: 20),
-              Container(
-                height: 200,
-                width: double.infinity, // Makes it take full width available
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey),
-                  borderRadius: BorderRadius.circular(5),
-                ),
-                child: SingleChildScrollView(
-                  child: SelectableText(
-                    _extractedText,
-                    style: TextStyle(fontSize: 16),
-                    textAlign: TextAlign
-                        .start, // Align text to the start (left) by default
-                  ),
-                ),
-              ),
-              SizedBox(height: 20),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Language
-                  Row(
-                    children: [
-                      Icon(Icons.language, color: Colors.lightBlue),
-                      SizedBox(width: 8),
-                      Text('Language:', style: infoTextStyle),
-                      SizedBox(width: 4),
-                      Expanded(
-                        child: Text(
-                          _language,
-                          style: infoTextStyle.copyWith(
-                              fontWeight: FontWeight.normal),
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 8), // Add spacing between rows
-
-                  // Merchant
-                  Row(
-                    children: [
-                      Icon(Icons.store, color: Colors.lightBlue),
-                      SizedBox(width: 8),
-                      Text('Merchant:', style: infoTextStyle),
-                      SizedBox(width: 4),
-                      Expanded(
-                        child: Text(
-                          _merchantName,
-                          style: infoTextStyle.copyWith(
-                              fontWeight: FontWeight.normal),
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 8), // Add spacing between rows
-
-                  // Date
-                  Row(
-                    children: [
-                      Icon(Icons.calendar_today, color: Colors.lightBlue),
-                      SizedBox(width: 8),
-                      Text('Date:', style: infoTextStyle),
-                      SizedBox(width: 4),
-                      Text(
-                        _receiptDate,
-                        style: infoTextStyle.copyWith(
-                            fontWeight: FontWeight.normal),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 8),
-
-                  // Currency
-                  Row(
-                    children: [
-                      Icon(Icons.attach_money, color: Colors.lightBlue),
-                      SizedBox(width: 8),
-                      Text('Currency:', style: infoTextStyle),
-                      SizedBox(width: 4),
-                      Text(
-                        _currency,
-                        style: infoTextStyle.copyWith(
-                            fontWeight: FontWeight.normal),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 8),
-
-                  // Total Amount
-                  Row(
-                    children: [
-                      Icon(Icons.monetization_on, color: Colors.lightBlue),
-                      SizedBox(width: 8),
-                      Text('Total:', style: infoTextStyle),
-                      SizedBox(width: 4),
-                      Text(
-                        _totalPrice,
-                        style: infoTextStyle.copyWith(
-                            fontWeight: FontWeight.normal),
-                      ),
-                    ],
-                  ),
                 ],
               ),
-              SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  // Cancel Button
-                  Flexible(
-                    child: SizedBox(
-                      width: 120, // Control button width
-                      height: 40, // Control button height
-                      child: CustomButton(
-                        text: 'Cancel',
-                        backgroundColor: purple100,
-                        textColor: light80,
-                        onPressed: () {
-                          Navigator.pop(context); // Close ScanScreen
-                        },
-                      ),
-                    ),
-                  ),
-                  // Add spacing between buttons
-                  const SizedBox(width: 16),
-                  // OK Button
-                  Flexible(
-                    child: SizedBox(
-                      width: 120, // Control button width
-                      height: 40, // Control button height
-                      child: CustomButton(
-                        text: 'OK',
-                        backgroundColor: purple100,
-                        textColor: light80,
-                        onPressed:
-                            _confirmDataAndNavigate, // Confirm and navigate
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ],
-        ),
+            ),
+          ),
+        ],
       ),
     );
   }
