@@ -5,16 +5,9 @@ import 'custom_button.dart';
 import 'custom_divider.dart';
 
 class FeedbackDialog extends StatelessWidget {
-  final VoidCallback onCancel;
-  final VoidCallback onSubmit;
-  final TextEditingController feedbackController;
+  FeedbackDialog({super.key});
 
-  const FeedbackDialog({
-    required this.onCancel,
-    required this.onSubmit,
-    required this.feedbackController,
-    super.key,
-  });
+  final TextEditingController _feedbackController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +51,7 @@ class FeedbackDialog extends StatelessWidget {
             ),
             SizedBox(height: 12),
             TextField(
-              controller: feedbackController,
+              controller: _feedbackController,
               maxLines: 3,
               decoration: InputDecoration(
                 border: OutlineInputBorder(
@@ -99,7 +92,9 @@ class FeedbackDialog extends StatelessWidget {
                       text: "Cancel",
                       backgroundColor: purple20,
                       textColor: purple100,
-                      onPressed: onCancel,
+                      onPressed: () {
+                        Navigator.of(context).pop(); // Close the dialog
+                      },
                     ),
                   ),
                 ),
@@ -110,7 +105,22 @@ class FeedbackDialog extends StatelessWidget {
                       text: "Submit",
                       backgroundColor: purple100,
                       textColor: light80,
-                      onPressed: onSubmit,
+                      onPressed: () async {
+                        final feedback = _feedbackController.text.trim();
+                        if (feedback.isNotEmpty) {
+                          Navigator.of(context).pop(); // Close the dialog
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                                content: Text('Thank you for your feedback!')),
+                          );
+                          // Handle your feedback submission logic here
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                                content: Text('Feedback cannot be empty!')),
+                          );
+                        }
+                      },
                     ),
                   ),
                 ),
@@ -120,6 +130,18 @@ class FeedbackDialog extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+
+  /// Static method to show the feedback dialog
+  static Future<void> showFeedbackDialog(BuildContext context) async {
+    await showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (BuildContext context) {
+        return FeedbackDialog();
+      },
     );
   }
 }
