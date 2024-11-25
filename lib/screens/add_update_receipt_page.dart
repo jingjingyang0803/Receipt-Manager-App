@@ -199,7 +199,12 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
         );
         _clearForm();
       }
-      Navigator.pushReplacementNamed(context, BasePage.id);
+      // Navigator.pushReplacementNamed(context, BasePage.id);
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => BasePage(),
+          ));
     } catch (e) {
       messenger.showSnackBar(
         SnackBar(content: Text('Failed to save receipt. Try again.')),
