@@ -63,6 +63,25 @@ class FeedbackDialog extends StatelessWidget {
               decoration: InputDecoration(
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(
+                    color: Colors.grey, // Default border color
+                    width: 1.0,
+                  ),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(
+                    color: Colors
+                        .grey, // Border color when enabled but not focused
+                    width: 1.0,
+                  ),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(
+                    color: purple80, // Border color when the field is focused
+                    width: 2.0,
+                  ),
                 ),
                 hintText: 'Enter your feedback here...',
                 contentPadding:
