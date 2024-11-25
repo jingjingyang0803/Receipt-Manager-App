@@ -373,7 +373,7 @@ class ReportPageState extends State<ReportPage> {
       final categoryId = entry.key;
       return LineChartBarData(
         spots: entry.value,
-        isCurved: true,
+        isCurved: false,
         color: categoryColors[categoryId],
         barWidth: 2,
         isStrokeCapRound: true,
