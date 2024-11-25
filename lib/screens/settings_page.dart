@@ -28,8 +28,8 @@ class SettingsPageState extends State<SettingsPage> {
   XFile? _profileImage;
   late TextEditingController _nameController;
   late UserProvider userProvider;
-  bool _isEditingName = false; // Track whether the "Your Name" field is in edit mode
-
+  bool _isEditingName =
+      false; // Track whether the "Your Name" field is in edit mode
 
   String? currencyCode;
   String? currencySymbol;
@@ -96,7 +96,6 @@ class SettingsPageState extends State<SettingsPage> {
     }
   }
 
-
   Future<void> _showCurrencyPicker(BuildContext context) async {
     await showModalBottomSheet(
       context: context,
@@ -130,14 +129,14 @@ class SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     final authProvider =
-    Provider.of<AuthenticationProvider>(context, listen: false);
+        Provider.of<AuthenticationProvider>(context, listen: false);
     final userEmail = authProvider.user?.email;
 
     return Scaffold(
       backgroundColor: light90,
       appBar: AppBar(
         automaticallyImplyLeading:
-        false, // Removes the default back arrowbackgroundColor: light90,
+            false, // Removes the default back arrowbackgroundColor: light90,
         backgroundColor: light90,
         elevation: 0,
         iconTheme: IconThemeData(color: Colors.black),
@@ -148,7 +147,7 @@ class SettingsPageState extends State<SettingsPage> {
 
           return Padding(
             padding:
-            const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+                const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -177,12 +176,12 @@ class SettingsPageState extends State<SettingsPage> {
                               backgroundImage: _profileImage != null
                                   ? FileImage(File(_profileImage!.path))
                                   : profileImagePath != null
-                                  ? NetworkImage(profileImagePath)
-                                  : null,
+                                      ? NetworkImage(profileImagePath)
+                                      : null,
                               radius: 45.0,
                               child: profileImagePath == null
                                   ? Icon(Icons.person,
-                                  size: 50, color: Colors.grey)
+                                      size: 50, color: Colors.grey)
                                   : null,
                             ),
                           ),
@@ -198,7 +197,6 @@ class SettingsPageState extends State<SettingsPage> {
                             userEmail ?? "Email not available",
                             style: TextStyle(color: purple200, fontSize: 16),
                           ),
-
                           Row(
                             children: [
                               if (_isEditingName)
@@ -221,7 +219,9 @@ class SettingsPageState extends State<SettingsPage> {
                               else
                                 Expanded(
                                   child: Text(
-                                    _nameController.text.isEmpty ? 'Your Name' : _nameController.text,
+                                    _nameController.text.isEmpty
+                                        ? 'Your Name'
+                                        : _nameController.text,
                                     style: TextStyle(
                                       color: dark75,
                                       fontSize: 20,
@@ -230,20 +230,23 @@ class SettingsPageState extends State<SettingsPage> {
                                   ),
                                 ),
                               if (_isEditingName)
-
                                 Row(
-                                  mainAxisSize: MainAxisSize.min, // Shrink row to fit content
-                                  crossAxisAlignment: CrossAxisAlignment.center, // Align buttons in center
+                                  mainAxisSize: MainAxisSize
+                                      .min, // Shrink row to fit content
+                                  crossAxisAlignment: CrossAxisAlignment
+                                      .center, // Align buttons in center
                                   children: [
                                     // Check Button
                                     Container(
                                       height: 32, // Small height
-                                      width: 32,  // Small width
+                                      width: 32, // Small width
                                       child: ElevatedButton(
                                         style: ElevatedButton.styleFrom(
                                           shape: CircleBorder(),
-                                          padding: EdgeInsets.zero, // No extra padding
-                                          backgroundColor: Colors.green, // Green background for "Save"
+                                          padding: EdgeInsets
+                                              .zero, // No extra padding
+                                          backgroundColor: Colors
+                                              .green, // Green background for "Save"
                                           elevation: 3, // Slight 3D effect
                                         ),
                                         onPressed: () async {
@@ -259,22 +262,26 @@ class SettingsPageState extends State<SettingsPage> {
                                         ),
                                       ),
                                     ),
-                                    SizedBox(width: 8), // Adjust gap between buttons
+                                    SizedBox(
+                                        width: 8), // Adjust gap between buttons
                                     // Cross Button
                                     Container(
                                       height: 32, // Small height
-                                      width: 32,  // Small width
+                                      width: 32, // Small width
                                       child: ElevatedButton(
                                         style: ElevatedButton.styleFrom(
                                           shape: CircleBorder(),
-                                          padding: EdgeInsets.zero, // No extra padding
-                                          backgroundColor: Colors.red, // Red background for "Cancel"
+                                          padding: EdgeInsets
+                                              .zero, // No extra padding
+                                          backgroundColor: Colors
+                                              .red, // Red background for "Cancel"
                                           elevation: 3, // Slight 3D effect
                                         ),
                                         onPressed: () {
                                           setState(() {
                                             _isEditingName = false;
-                                            _nameController.text = userProvider.userName ?? '';
+                                            _nameController.text =
+                                                userProvider.userName ?? '';
                                           });
                                         },
                                         child: Icon(
@@ -288,33 +295,30 @@ class SettingsPageState extends State<SettingsPage> {
                                 )
                               else
                                 Container(
-                                    decoration: BoxDecoration(
-                                      color: purple100, // Purple background
-                                      shape: BoxShape.circle,
-                                        boxShadow:[
-                                          BoxShadow(
-                                            color: Colors.black26, // Shadow color
-                                            offset: Offset(2, 2), // Shadow offset for 3D effect
-                                            blurRadius: 4, // Blur for soft shadow edges
-                                          ),
-                                        ],
-                                    ),
+                                  decoration: BoxDecoration(
+                                    color: purple100, // Purple background
+                                    shape: BoxShape.circle,
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black26, // Shadow color
+                                        offset: Offset(2,
+                                            2), // Shadow offset for 3D effect
+                                        blurRadius:
+                                            4, // Blur for soft shadow edges
+                                      ),
+                                    ],
+                                  ),
                                   child: IconButton(
                                     icon: Icon(Icons.edit, color: Colors.white),
-                                    onPressed: (){
+                                    onPressed: () {
                                       setState(() {
                                         _isEditingName = true;
                                       });
                                     },
                                   ),
-
-
                                 ),
                             ],
                           ),
-
-
-
                         ],
                       ),
                     ),
@@ -337,7 +341,11 @@ class SettingsPageState extends State<SettingsPage> {
                             iconBackgroundColor: purple20,
                             iconColor: purple100,
                             onTap: () {
-                              Navigator.pushNamed(context, CategoryPage.id);
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => CategoryPage(),
+                                  ));
                             },
                           ),
                           Divider(thickness: 1, color: light90),
@@ -347,7 +355,11 @@ class SettingsPageState extends State<SettingsPage> {
                             iconBackgroundColor: purple20,
                             iconColor: purple100,
                             onTap: () {
-                              Navigator.pushNamed(context, BudgetPage.id);
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => BudgetPage(),
+                                  ));
                             },
                           ),
                           Divider(thickness: 1, color: light90),
@@ -358,7 +370,7 @@ class SettingsPageState extends State<SettingsPage> {
                             iconColor: purple100,
                             onTap: () => _showCurrencyPicker(context),
                             trailingTextBuilder: () =>
-                            "$currencyCode $currencySymbol",
+                                "$currencyCode $currencySymbol",
                           ),
                           Divider(thickness: 1, color: light90),
                           SettingsMenuItem(
@@ -433,7 +445,7 @@ class SettingsMenuItem extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
         child: Row(
           mainAxisAlignment:
-          MainAxisAlignment.spaceBetween, // Space between elements
+              MainAxisAlignment.spaceBetween, // Space between elements
           children: [
             Row(
               children: [
