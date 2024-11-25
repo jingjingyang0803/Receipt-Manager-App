@@ -12,11 +12,6 @@ import 'providers/user_provider.dart';
 import 'routes.dart';
 import 'screens/base_page.dart';
 import 'screens/welcome_page.dart';
-import 'screens/signup_page.dart';
-import 'screens/login_page.dart';
-import 'screens/forgot_password_page.dart';
-import 'package:receipt_manager/screens/legal/terms_of_service_page.dart';
-import 'package:receipt_manager/screens/legal/privacy_policy_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -81,16 +76,8 @@ class MyApp extends StatelessWidget {
         builder: (context, authProvider, child) {
           return MaterialApp(
             initialRoute:
-            authProvider.isAuthenticated ? BasePage.id : WelcomePage.id,
-            routes: {
-              WelcomePage.id: (context) => const WelcomePage(),
-              SignUpPage.id: (context) => const SignUpPage(),
-              LogInPage.id: (context) => const LogInPage(),
-              ForgotPasswordPage.id: (context) => const ForgotPasswordPage(),
-              BasePage.id: (context) => const BasePage(),
-              TermsOfServicePage.id: (context) => const TermsOfServicePage(),
-              PrivacyPolicyPage.id: (context) => const PrivacyPolicyPage(),
-            },
+                authProvider.isAuthenticated ? BasePage.id : WelcomePage.id,
+            routes: appRoutes,
           );
         },
       ),

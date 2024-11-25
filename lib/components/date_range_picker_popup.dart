@@ -93,7 +93,6 @@ class CalendarFilterWidgetState extends State<CalendarFilterWidget> {
         Provider.of<ReceiptProvider>(context, listen: false);
     final oldestDate = receiptProvider.oldestDate;
     final newestDate = receiptProvider.newestDate;
-    print(oldestDate);
 
     setState(() {
       final now = DateTime.now();
