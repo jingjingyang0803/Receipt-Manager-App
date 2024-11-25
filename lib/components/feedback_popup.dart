@@ -9,7 +9,7 @@ class FeedbackDialog extends StatelessWidget {
   final VoidCallback onSubmit;
   final TextEditingController feedbackController;
 
-  FeedbackDialog({
+  const FeedbackDialog({
     required this.onCancel,
     required this.onSubmit,
     required this.feedbackController,
