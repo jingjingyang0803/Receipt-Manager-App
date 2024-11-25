@@ -423,7 +423,11 @@ class ReceiptListPageState extends State<ReceiptListPage> {
             labelStyle: TextStyle(fontSize: 16),
             onTap: () {
               // Handle extracting text from image
-              Navigator.pushNamed(context, ExtractPage.id);
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ExtractPage(),
+                  ));
             },
           ),
           SpeedDialChild(
@@ -433,7 +437,11 @@ class ReceiptListPageState extends State<ReceiptListPage> {
             labelStyle: TextStyle(fontSize: 16),
             onTap: () {
               // Handle manual input
-              Navigator.pushNamed(context, AddOrUpdateReceiptPage.id);
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => AddOrUpdateReceiptPage(),
+                  ));
             },
           ),
         ],
