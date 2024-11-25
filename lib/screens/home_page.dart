@@ -44,7 +44,7 @@ class HomePageState extends State<HomePage> {
         backgroundColor: light90,
         elevation: 0,
         title: const Text(
-          'Home',
+          'Welcome',
           style: TextStyle(color: Colors.black),
         ),
         centerTitle: true,
@@ -74,8 +74,6 @@ class HomePageState extends State<HomePage> {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const SizedBox(height: 16),
-
             // Total Receipts Section
             Text(
               'Total Receipts',
@@ -231,23 +229,38 @@ class HomePageState extends State<HomePage> {
     required String label,
     required VoidCallback onPressed,
   }) {
-    return Column(
-      children: [
-        ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            shape: const CircleBorder(),
-            padding: const EdgeInsets.all(16),
-            backgroundColor: Colors.white,
+    return Expanded(
+      child: GestureDetector(
+        onTap: onPressed,
+        child: Container(
+          margin: const EdgeInsets.symmetric(horizontal: 8), // Add spacing
+          padding: const EdgeInsets.all(16), // Add internal padding
+          decoration: BoxDecoration(
+            color: purple20, // Light purple background
+            borderRadius: BorderRadius.circular(16), // Rounded rectangle
           ),
-          onPressed: onPressed,
-          child: Icon(icon, color: purple80),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                icon,
+                color: purple100, // Purple icon color
+                size: 40, // Larger icon size
+              ),
+              const SizedBox(height: 8),
+              Text(
+                label,
+                textAlign: TextAlign.center, // Center-align the text
+                style: const TextStyle(
+                  color: purple100,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600, // Slightly bolder text
+                ),
+              ),
+            ],
+          ),
         ),
-        const SizedBox(height: 8),
-        Text(
-          label,
-          style: const TextStyle(color: Colors.black54, fontSize: 12),
-        ),
-      ],
+      ),
     );
   }
 }
