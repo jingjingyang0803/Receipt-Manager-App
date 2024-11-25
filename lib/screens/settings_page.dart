@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:receipt_manager/screens/budget_page.dart';
 
 import '../components/currency_roller_picker_popup.dart';
+import '../components/feedback_popup.dart';
 import '../components/logout_popup.dart';
 import '../constants/app_colors.dart';
 import '../logger.dart';
@@ -120,6 +121,29 @@ class SettingsPageState extends State<SettingsPage> {
                         .currencySymbol;
               });
             }
+          },
+        );
+      },
+    );
+  }
+
+  Future<void> _showFeedbackDialog(BuildContext context) async {
+    await showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (BuildContext context) {
+        return FeedbackDialog(
+          feedbackController: TextEditingController(),
+          onCancel: () {
+            Navigator.of(context).pop(); // Close the dialog
+          },
+          onSubmit: () async {
+            // Handle feedback submission logic
+            Navigator.of(context).pop(); // Close the dialog
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Thank you for your feedback!')),
+            );
           },
         );
       },
@@ -374,11 +398,11 @@ class SettingsPageState extends State<SettingsPage> {
                           ),
                           Divider(thickness: 1, color: light90),
                           SettingsMenuItem(
-                            icon: Icons.file_download_outlined,
-                            text: "Export Data",
+                            icon: Icons.feedback_outlined,
+                            text: "Feedback",
                             iconBackgroundColor: purple20,
                             iconColor: purple100,
-                            onTap: () {},
+                            onTap: () => _showFeedbackDialog(context),
                           ),
                           Divider(thickness: 1, color: light90),
                           SettingsMenuItem(
