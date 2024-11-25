@@ -9,7 +9,7 @@ class FeedbackDialog extends StatelessWidget {
   final VoidCallback onSubmit;
   final TextEditingController feedbackController;
 
-  const FeedbackDialog({
+  FeedbackDialog({
     required this.onCancel,
     required this.onSubmit,
     required this.feedbackController,
@@ -18,79 +18,88 @@ class FeedbackDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(20),
-          topRight: Radius.circular(20),
+    return SingleChildScrollView(
+      child: Container(
+        padding: EdgeInsets.only(
+          left: 20,
+          right: 20,
+          top: 12,
+          bottom: MediaQuery.of(context).viewInsets.bottom +
+              12, // Adjust for keyboard
         ),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const CustomDivider(),
-          SizedBox(height: 8),
-          Text(
-            'Submit Feedback',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Colors.black,
-            ),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(20),
+            topRight: Radius.circular(20),
           ),
-          SizedBox(height: 8),
-          Text(
-            'We value your feedback! Please share your thoughts below.',
-            style: TextStyle(
-              fontSize: 16,
-              color: purple200,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          SizedBox(height: 12),
-          TextField(
-            controller: feedbackController,
-            maxLines: 3,
-            decoration: InputDecoration(
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const CustomDivider(),
+            SizedBox(height: 8),
+            Text(
+              'Submit Feedback',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
               ),
-              hintText: 'Enter your feedback here...',
-              contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             ),
-          ),
-          SizedBox(height: 20),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: CustomButton(
-                    text: "Cancel",
-                    backgroundColor: purple20,
-                    textColor: purple100,
-                    onPressed: onCancel,
+            SizedBox(height: 8),
+            Text(
+              'We value your feedback! Please share your thoughts below.',
+              style: TextStyle(
+                fontSize: 16,
+                color: purple200,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: 12),
+            TextField(
+              controller: feedbackController,
+              maxLines: 3,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                hintText: 'Enter your feedback here...',
+                contentPadding:
+                    EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              ),
+            ),
+            SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: CustomButton(
+                      text: "Cancel",
+                      backgroundColor: purple20,
+                      textColor: purple100,
+                      onPressed: onCancel,
+                    ),
                   ),
                 ),
-              ),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: CustomButton(
-                    text: "Submit",
-                    backgroundColor: purple100,
-                    textColor: light80,
-                    onPressed: onSubmit,
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: CustomButton(
+                      text: "Submit",
+                      backgroundColor: purple100,
+                      textColor: light80,
+                      onPressed: onSubmit,
+                    ),
                   ),
                 ),
-              ),
-            ],
-          ),
-          SizedBox(height: 10),
-        ],
+              ],
+            ),
+            SizedBox(height: 10),
+          ],
+        ),
       ),
     );
   }
