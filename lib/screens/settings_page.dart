@@ -127,29 +127,6 @@ class SettingsPageState extends State<SettingsPage> {
     );
   }
 
-  Future<void> _showFeedbackDialog(BuildContext context) async {
-    await showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      isScrollControlled: true,
-      builder: (BuildContext context) {
-        return FeedbackDialog(
-          feedbackController: TextEditingController(),
-          onCancel: () {
-            Navigator.of(context).pop(); // Close the dialog
-          },
-          onSubmit: () async {
-            // Handle feedback submission logic
-            Navigator.of(context).pop(); // Close the dialog
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Thank you for your feedback!')),
-            );
-          },
-        );
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final authProvider =
@@ -402,7 +379,9 @@ class SettingsPageState extends State<SettingsPage> {
                             text: "Feedback",
                             iconBackgroundColor: purple20,
                             iconColor: purple100,
-                            onTap: () => _showFeedbackDialog(context),
+                            onTap: () {
+                              FeedbackDialog.showFeedbackDialog(context);
+                            },
                           ),
                           Divider(thickness: 1, color: light90),
                           SettingsMenuItem(
