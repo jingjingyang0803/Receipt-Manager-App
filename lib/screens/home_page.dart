@@ -280,9 +280,9 @@ class HomePageState extends State<HomePage> {
           borderRadius: BorderRadius.circular(12), // Rounded corners
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.1), // 阴影颜色
-              blurRadius: 10, // 模糊半径
-              offset: const Offset(0, 4), // 阴影偏移
+              color: Colors.black.withOpacity(0.05), // softer changes
+              blurRadius: 20,
+              offset: const Offset(0, 10),
             ),
           ],
         ),
