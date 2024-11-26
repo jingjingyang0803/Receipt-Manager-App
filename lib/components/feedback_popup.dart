@@ -31,28 +31,10 @@ class FeedbackDialog extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             const CustomDivider(),
-            SizedBox(height: 8),
-            Text(
-              'Submit Feedback',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
-              ),
-            ),
-            SizedBox(height: 8),
-            Text(
-              'We value your feedback! Please share your thoughts below.',
-              style: TextStyle(
-                fontSize: 16,
-                color: purple200,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            SizedBox(height: 12),
+            SizedBox(height: 18),
             TextField(
               controller: _feedbackController,
-              maxLines: 3,
+              maxLines: 5,
               decoration: InputDecoration(
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -72,16 +54,21 @@ class FeedbackDialog extends StatelessWidget {
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                   borderSide: BorderSide(
-                    color: purple80, // Border color when the field is focused
+                    color: purple60, // Border color when the field is focused
                     width: 2.0,
                   ),
                 ),
-                hintText: 'Enter your feedback here...',
+                hintText:
+                    'We value your feedback! Please share your thoughts here...',
+                hintStyle: TextStyle(
+                  color: Colors.grey, // Set hint text color to grey
+                  fontSize: 16, // Optional: Adjust font size
+                ),
                 contentPadding:
                     EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               ),
             ),
-            SizedBox(height: 20),
+            SizedBox(height: 24),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
