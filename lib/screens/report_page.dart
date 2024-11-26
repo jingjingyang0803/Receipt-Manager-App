@@ -249,6 +249,9 @@ class ReportPageState extends State<ReportPage> {
               border: Border(
                 left: BorderSide(color: Colors.black, width: 1),
                 bottom: BorderSide(color: Colors.black, width: 1),
+                top: BorderSide(
+                    color: Colors.transparent,
+                    width: 8), // Add extra space at the top
               ),
             ),
             titlesData: FlTitlesData(
