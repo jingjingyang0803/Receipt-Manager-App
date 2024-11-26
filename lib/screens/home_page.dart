@@ -44,12 +44,12 @@ class HomePageState extends State<HomePage> {
         backgroundColor: light90,
         elevation: 0,
         title: const Text(
-          '🤑 Welcome 🤑',
+          'Welcome',
           style: TextStyle(
-            fontSize: 24, // 更大的字体
-            fontWeight: FontWeight.bold, // 加粗
-            color: Colors.black, // 黑色字体
-            fontFamily: 'SF Pro Display', // 苹果风格字体
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+            fontFamily: 'SF Pro Display',
           ),
         ),
         centerTitle: true,
