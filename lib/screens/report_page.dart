@@ -244,7 +244,13 @@ class ReportPageState extends State<ReportPage> {
           child: BarChart(BarChartData(
             maxY: maxY, // Set maxY based on calculated max value
             alignment: BarChartAlignment.spaceEvenly,
-            borderData: FlBorderData(show: false),
+            borderData: FlBorderData(
+              show: true,
+              border: Border(
+                left: BorderSide(color: Colors.black, width: 1),
+                bottom: BorderSide(color: Colors.black, width: 1),
+              ),
+            ),
             titlesData: FlTitlesData(
               topTitles: AxisTitles(
                 sideTitles: SideTitles(
