@@ -81,31 +81,33 @@ class HomePageState extends State<HomePage> {
                 fontSize: 18,
                 fontWeight: FontWeight.w400,
                 color: Colors.grey[600],
+                fontFamily: 'Roboto',
               ),
             ),
             const SizedBox(height: 8),
             Text(
               receiptCount.toString(),
               style: const TextStyle(
-                fontSize: 36,
+                fontSize: 42,
                 fontWeight: FontWeight.bold,
                 color: Colors.black,
+                fontFamily: 'Roboto',
               ),
             ),
             const SizedBox(height: 16),
 
-            // Tracking Period Card
+            // Modern Tracking Period Card
             Container(
-              padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+              padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
               margin: const EdgeInsets.symmetric(horizontal: 16),
               decoration: BoxDecoration(
-                color: Colors.white, // Card background color
-                borderRadius: BorderRadius.circular(12), // Rounded corners
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.05), // Subtle shadow
-                    blurRadius: 10, // Shadow blur
-                    offset: const Offset(0, 4), // Shadow position
+                    color: Colors.black.withOpacity(0.08),
+                    blurRadius: 12,
+                    offset: const Offset(0, 6),
                   ),
                 ],
               ),
@@ -114,12 +116,13 @@ class HomePageState extends State<HomePage> {
                   Text(
                     'Tracking Period',
                     style: TextStyle(
-                      fontSize: 16,
+                      fontSize: 18,
                       fontWeight: FontWeight.w600,
-                      color: Colors.grey[800],
+                      color: Colors.grey[700],
+                      fontFamily: 'Roboto',
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 20),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -130,35 +133,36 @@ class HomePageState extends State<HomePage> {
                           Row(
                             children: [
                               Icon(
-                                Icons.arrow_back,
-                                size: 20,
-                                color: Colors.grey[600],
+                                Icons.arrow_back_ios,
+                                size: 18,
+                                color: Colors.grey[500],
                               ),
-                              const SizedBox(width: 8),
+                              const SizedBox(width: 6),
                               Text(
                                 'From',
                                 style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w600,
-                                  color: Colors.grey[600],
+                                  color: Colors.grey[500],
                                 ),
                               ),
                             ],
                           ),
-                          const SizedBox(height: 4),
+                          const SizedBox(height: 6),
                           Text(
                             DateFormat.yMMMd().format(oldestDate),
                             style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.normal,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w500,
                               color: Colors.black,
+                              fontFamily: 'Roboto',
                             ),
                           ),
                         ],
                       ),
                       // Vertical Divider
                       Container(
-                        height: 40,
+                        height: 50,
                         width: 1,
                         color: Colors.grey.shade300,
                       ),
@@ -169,29 +173,30 @@ class HomePageState extends State<HomePage> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
-                              Icon(
-                                Icons.arrow_forward, 
-                                size: 20,
-                                color: Colors.grey[600],
-                              ),
-                              const SizedBox(width: 8),
                               Text(
                                 'To',
                                 style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w600,
-                                  color: Colors.grey[600],
+                                  color: Colors.grey[500],
                                 ),
+                              ),
+                              const SizedBox(width: 6),
+                              Icon(
+                                Icons.arrow_forward_ios,
+                                size: 18,
+                                color: Colors.grey[500],
                               ),
                             ],
                           ),
-                          const SizedBox(height: 4),
+                          const SizedBox(height: 6),
                           Text(
                             DateFormat.yMMMd().format(newestDate),
                             style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.normal,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w500,
                               color: Colors.black,
+                              fontFamily: 'Roboto',
                             ),
                           ),
                         ],
@@ -206,6 +211,7 @@ class HomePageState extends State<HomePage> {
       },
     );
   }
+
 
 
   Widget _buildTrackingCard({
