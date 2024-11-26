@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:receipt_manager/providers/category_provider.dart';
-import 'package:receipt_manager/screens/report_page.dart';
 import 'package:receipt_manager/screens/summary_page.dart';
 
 import '../constants/app_colors.dart';
 import '../providers/receipt_provider.dart';
 import 'add_update_receipt_page.dart';
 import 'budget_page.dart';
+import 'category_page.dart';
 
 class HomePage extends StatefulWidget {
   static const String id = 'home_page';
@@ -221,13 +221,13 @@ class HomePageState extends State<HomePage> {
               },
             ),
             _buildActionButton(
-              icon: Icons.bar_chart,
-              label: "View Reports",
+              icon: Icons.category_outlined,
+              label: "Set category",
               onPressed: () {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => ReportPage(),
+                      builder: (context) => CategoryPage(),
                     ));
               },
             ),
