@@ -278,6 +278,13 @@ class HomePageState extends State<HomePage> {
         decoration: BoxDecoration(
           color: purple20, // Light purple background
           borderRadius: BorderRadius.circular(12), // Rounded corners
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1), // 阴影颜色
+              blurRadius: 10, // 模糊半径
+              offset: const Offset(0, 4), // 阴影偏移
+            ),
+          ],
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
