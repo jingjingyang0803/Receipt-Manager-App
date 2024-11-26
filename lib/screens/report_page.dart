@@ -269,6 +269,24 @@ class ReportPageState extends State<ReportPage> {
                   reservedSize: 42,
                 ),
               ),
+              leftTitles: AxisTitles(
+                sideTitles: SideTitles(
+                  showTitles: true,
+                  reservedSize: 60, // Space for Y-axis labels
+                  getTitlesWidget: (value, meta) {
+                    return Padding(
+                      padding: const EdgeInsets.only(
+                          right: 8.0), // Add space to the left of Y-axis labels
+                      child: Text(
+                        meta.formattedValue, // Automatically formatted by the library
+                        style:
+                            const TextStyle(fontSize: 12, color: Colors.black),
+                        textAlign: TextAlign.right,
+                      ),
+                    );
+                  },
+                ),
+              ),
               rightTitles: AxisTitles(
                 sideTitles: SideTitles(
                   showTitles: false, // Hide the left axis values
