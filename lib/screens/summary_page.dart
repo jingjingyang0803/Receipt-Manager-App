@@ -272,7 +272,7 @@ class SummaryPageState extends State<SummaryPage> {
                     return Card(
                       color: Colors.white,
                       margin: const EdgeInsets.symmetric(
-                          vertical: 4, horizontal: 8),
+                          vertical: 4, horizontal: 18),
                       elevation: 2,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
