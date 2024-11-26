@@ -76,7 +76,7 @@ class HomePageState extends State<HomePage> {
           children: [
             // Total Receipts Section
             Text(
-              'Total Receipts',
+              'Your Total Receipts',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w400,
@@ -99,14 +99,14 @@ class HomePageState extends State<HomePage> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 _buildTrackingCard(
-                  icon: Icons.calendar_today_outlined,
+                  icon: Icons.history,
                   label: 'From',
                   date: DateFormat.yMMMd().format(oldestDate),
                   backgroundColor: Colors.blue.shade100,
                   iconColor: Colors.blue.shade600,
                 ),
                 _buildTrackingCard(
-                  icon: Icons.calendar_today_outlined,
+                  icon: Icons.history,
                   label: 'To',
                   date: DateFormat.yMMMd().format(newestDate),
                   backgroundColor: Colors.orange.shade100,
