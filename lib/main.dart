@@ -72,7 +72,15 @@ class MyApp extends StatelessWidget {
           },
         ),
       ],
-
+      child: Consumer<AuthenticationProvider>(
+        builder: (context, authProvider, child) {
+          return MaterialApp(
+            initialRoute:
+                authProvider.isAuthenticated ? BasePage.id : WelcomePage.id,
+            routes: appRoutes,
+          );
+        },
+      ),
     );
   }
 }
