@@ -462,50 +462,64 @@ class ReportPageState extends State<ReportPage> {
         // Line chart widget
         SizedBox(
           height: 300,
-          child: LineChart(LineChartData(
-            gridData: FlGridData(show: true),
-            titlesData: FlTitlesData(
-              leftTitles: AxisTitles(
-                sideTitles: SideTitles(
-                  showTitles: true, // Show the left titles
-                  reservedSize: 40, // Adjust this as needed for proper spacing
-                ),
-              ),
-              rightTitles: AxisTitles(
-                sideTitles: SideTitles(
-                  showTitles: true, // Show the right titles
-                  reservedSize: 40, // Adjust this as needed for proper spacing
-                ),
-              ),
-              topTitles: AxisTitles(
-                sideTitles: SideTitles(
-                  showTitles: false, // Hide the top titles
-                ),
-              ),
-              bottomTitles: AxisTitles(
-                sideTitles: SideTitles(
-                  showTitles: true,
-                  getTitlesWidget: (value, meta) {
-                    final index = value.toInt();
-                    if (index >= 0 && index < continuousMonths.length) {
-                      final month = continuousMonths[index];
-                      final date = DateTime.parse('$month-01');
-                      return Text(
-                        '${date.year}/${date.month.toString().padLeft(2, '0')}', // Format as YYYY/MM
-                        style: const TextStyle(fontSize: 10),
+          child: LineChart(
+            LineChartData(
+              gridData: FlGridData(show: true),
+              titlesData: FlTitlesData(
+                leftTitles: AxisTitles(
+                  sideTitles: SideTitles(
+                    showTitles: true,
+                    reservedSize: 60, // Space for Y-axis labels
+                    getTitlesWidget: (value, meta) {
+                      return Padding(
+                        padding: const EdgeInsets.only(
+                            right:
+                                8.0), // Add space to the right of Y-axis labels
+                        child: Text(
+                          meta.formattedValue, // Automatically formatted by the library
+                          style: const TextStyle(
+                              fontSize: 12, color: Colors.black),
+                          textAlign: TextAlign.right,
+                        ),
                       );
-                    }
-                    return const SizedBox.shrink();
-                  },
-                  reservedSize: 32,
+                    },
+                  ),
+                ),
+                rightTitles: AxisTitles(
+                  sideTitles: SideTitles(
+                    showTitles: false, // Hide right titles
+                  ),
+                ),
+                topTitles: AxisTitles(
+                  sideTitles: SideTitles(
+                    showTitles: false, // Hide top titles
+                  ),
+                ),
+                bottomTitles: AxisTitles(
+                  sideTitles: SideTitles(
+                    showTitles: true,
+                    getTitlesWidget: (value, meta) {
+                      final index = value.toInt();
+                      if (index >= 0 && index < continuousMonths.length) {
+                        final month = continuousMonths[index];
+                        final date = DateTime.parse('$month-01');
+                        return Text(
+                          '${date.year}/${date.month.toString().padLeft(2, '0')}', // Format as YYYY/MM
+                          style: const TextStyle(fontSize: 10),
+                        );
+                      }
+                      return const SizedBox.shrink();
+                    },
+                    reservedSize: 32,
+                  ),
                 ),
               ),
+              lineBarsData: lines,
             ),
-            lineBarsData: lines,
-          )),
+          ),
         ),
-        const SizedBox(height: 20),
 
+        const SizedBox(height: 20),
         // Legend
         Wrap(
           spacing: 8,
