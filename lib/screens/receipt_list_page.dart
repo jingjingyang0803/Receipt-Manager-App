@@ -80,6 +80,8 @@ class ReceiptListPageState extends State<ReceiptListPage> {
               ...receipts.map((receipt) => ExpenseItem(
                     categoryIcon: receipt['categoryIcon'] ?? Icons.category,
                     categoryName: receipt['categoryName'] ?? 'Unknown Category',
+                    categoryColor:
+                        receipt['categoryColor'] ?? Colors.grey.shade200,
                     merchantName: receipt['merchant'] ?? 'Unknown Merchant',
                     receiptDate: receipt['date'] != null
                         ? DateFormat('MMM d, yyyy')

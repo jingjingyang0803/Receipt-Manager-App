@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 class ExpenseItem extends StatelessWidget {
   final dynamic categoryIcon; // Use dynamic to accept both String and IconData
   final String categoryName;
+  final Color categoryColor;
   final String merchantName;
   final String receiptDate;
   final String currencySymbol;
@@ -14,6 +15,7 @@ class ExpenseItem extends StatelessWidget {
     super.key,
     required this.categoryIcon,
     required this.categoryName,
+    required this.categoryColor,
     required this.merchantName,
     required this.receiptDate,
     required this.currencySymbol,
@@ -47,7 +49,7 @@ class ExpenseItem extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: Colors.orange.shade100, // Background color for the icon
+                color: categoryColor, // Background color for the icon
                 borderRadius: BorderRadius.circular(10),
               ),
               child: categoryIcon is IconData
