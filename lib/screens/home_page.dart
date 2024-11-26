@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:receipt_manager/providers/category_provider.dart';
+import 'package:receipt_manager/screens/report_page.dart';
 import 'package:receipt_manager/screens/summary_page.dart';
 
 import '../constants/app_colors.dart';
 import '../providers/receipt_provider.dart';
 import 'add_update_receipt_page.dart';
 import 'budget_page.dart';
-import 'category_page.dart';
 
 class HomePage extends StatefulWidget {
   static const String id = 'home_page';
@@ -94,31 +94,119 @@ class HomePageState extends State<HomePage> {
             ),
             const SizedBox(height: 16),
 
-            // Tracking Period Section
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                _buildTrackingCard(
-                  icon: Icons.history,
-                  label: 'From',
-                  date: DateFormat.yMMMd().format(oldestDate),
-                  backgroundColor: Colors.blue.shade100,
-                  iconColor: Colors.blue.shade600,
-                ),
-                _buildTrackingCard(
-                  icon: Icons.history,
-                  label: 'To',
-                  date: DateFormat.yMMMd().format(newestDate),
-                  backgroundColor: Colors.orange.shade100,
-                  iconColor: Colors.orange.shade600,
-                ),
-              ],
+            // Tracking Period Card
+            Container(
+              padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+              margin: const EdgeInsets.symmetric(horizontal: 16),
+              decoration: BoxDecoration(
+                color: Colors.white, // Card background color
+                borderRadius: BorderRadius.circular(12), // Rounded corners
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05), // Subtle shadow
+                    blurRadius: 10, // Shadow blur
+                    offset: const Offset(0, 4), // Shadow position
+                  ),
+                ],
+              ),
+              child: Column(
+                children: [
+                  Text(
+                    'Tracking Period',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.grey[800],
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      // "From" Section with Icon
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.arrow_back,
+                                size: 20,
+                                color: Colors.grey[600],
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                'From',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.grey[600],
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            DateFormat.yMMMd().format(oldestDate),
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.normal,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ],
+                      ),
+                      // Vertical Divider
+                      Container(
+                        height: 40,
+                        width: 1,
+                        color: Colors.grey.shade300,
+                      ),
+                      // "To" Section with Icon
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              Icon(
+                                Icons.arrow_forward, 
+                                size: 20,
+                                color: Colors.grey[600],
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                'To',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.grey[600],
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            DateFormat.yMMMd().format(newestDate),
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.normal,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ],
         );
       },
     );
   }
+
 
   Widget _buildTrackingCard({
     required IconData icon,
@@ -221,13 +309,13 @@ class HomePageState extends State<HomePage> {
               },
             ),
             _buildActionButton(
-              icon: Icons.category_outlined,
-              label: "Set category",
+              icon: Icons.bar_chart,
+              label: "View Reports",
               onPressed: () {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => CategoryPage(),
+                      builder: (context) => ReportPage(),
                     ));
               },
             ),
