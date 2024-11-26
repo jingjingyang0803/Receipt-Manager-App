@@ -229,7 +229,7 @@ class ReportPageState extends State<ReportPage> {
             .map((entry) =>
                 entry['total'] as double) // Extract the 'total' field
             .fold(0.0, (prev, next) => prev > next ? prev : next) *
-        1.1; // Find max and add 10%
+        1.2; // Find max and add 10%
 
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
@@ -249,15 +249,17 @@ class ReportPageState extends State<ReportPage> {
               border: Border(
                 left: BorderSide(color: Colors.black, width: 1),
                 bottom: BorderSide(color: Colors.black, width: 1),
-                top: BorderSide(
-                    color: Colors.transparent,
-                    width: 8), // Add extra space at the top
               ),
             ),
             titlesData: FlTitlesData(
               topTitles: AxisTitles(
                 sideTitles: SideTitles(
-                  showTitles: false, // Hide the top axis titles
+                  showTitles: true,
+                  reservedSize: 30, // Space for top labels
+                  getTitlesWidget: (value, meta) {
+                    // Customize top labels if needed, or just hide them.
+                    return const SizedBox.shrink();
+                  },
                 ),
               ),
               bottomTitles: AxisTitles(
