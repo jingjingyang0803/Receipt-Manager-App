@@ -281,9 +281,32 @@ class SummaryPageState extends State<SummaryPage> {
                         contentPadding: const EdgeInsets.symmetric(
                             vertical: 10, horizontal: 16),
                         leading: Container(
-                          width: 8,
-                          height: double.infinity,
-                          color: getColor(ratio),
+                          width: 16, // Bar width
+                          height: 50, // Fixed total bar height
+                          child: Stack(
+                            alignment: Alignment
+                                .bottomCenter, // Ensure the bar grows from bottom to top
+                            children: [
+                              // Background bar
+                              Container(
+                                width: 8,
+                                height: 50,
+                                color: Colors.grey[300], // Background bar color
+                              ),
+                              // Foreground bar
+                              Align(
+                                alignment: Alignment.bottomCenter,
+                                child: Container(
+                                  width: 8,
+                                  height: 50 *
+                                      ratio.clamp(0.0,
+                                          1.0), // Height proportional to percentage
+                                  color:
+                                      getColor(ratio), // Color based on ratio
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                         title: Row(
                           children: [
