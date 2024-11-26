@@ -187,7 +187,7 @@ class SummaryPageState extends State<SummaryPage> {
               // Month and Year Picker
               Container(
                 color: light90,
-                padding: const EdgeInsets.all(20),
+                padding: const EdgeInsets.all(10),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
