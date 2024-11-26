@@ -280,11 +280,17 @@ class HomePageState extends State<HomePage> {
           borderRadius: BorderRadius.circular(12), // Rounded corners
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05), // softer changes
+              color: Colors.black.withOpacity(0.05), // Diffuse Shadow
               blurRadius: 20,
               offset: const Offset(0, 10),
             ),
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1), // Slightly darker short shadows
+              blurRadius: 4,
+              offset: const Offset(0, 2),
+            ),
           ],
+
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
