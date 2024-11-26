@@ -247,7 +247,7 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
     );
 
     if (confirm == true) {
-      await _deleteReceipt();
+
     }
   }
 
