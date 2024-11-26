@@ -518,17 +518,27 @@ class ReportPageState extends State<ReportPage> {
                     showTitles: true,
                     getTitlesWidget: (value, meta) {
                       final index = value.toInt();
-                      if (index >= 0 && index < continuousMonths.length) {
+
+                      // Check if the value is a whole number
+                      if (value == index.toDouble() &&
+                          index >= 0 &&
+                          index < continuousMonths.length) {
                         final month = continuousMonths[index];
                         final date = DateTime.parse('$month-01');
-                        return Text(
-                          '${date.year}/${date.month.toString().padLeft(2, '0')}', // Format as YYYY/MM
-                          style: const TextStyle(fontSize: 10),
+                        return Padding(
+                          padding: const EdgeInsets.only(
+                              top: 8.0), // Space above labels
+                          child: Text(
+                            '${date.year}/${date.month.toString().padLeft(2, '0')}', // Format as YYYY/MM
+                            style: const TextStyle(fontSize: 10),
+                          ),
                         );
                       }
+
+                      // Return an empty widget for non-whole numbers
                       return const SizedBox.shrink();
                     },
-                    reservedSize: 32,
+                    reservedSize: 40, // Reserve enough space for the labels
                   ),
                 ),
               ),
