@@ -49,7 +49,7 @@ class HomePageState extends State<HomePage> {
         ),
         centerTitle: true,
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -120,7 +120,6 @@ class HomePageState extends State<HomePage> {
     );
   }
 
-// Helper Widget to Build the Date Cards
   Widget _buildTrackingCard({
     required IconData icon,
     required String label,
@@ -129,7 +128,8 @@ class HomePageState extends State<HomePage> {
     required Color iconColor,
   }) {
     return Container(
-      width: 140, // Fixed width for consistency
+      width: 140, // Explicitly set the width
+      height: 140, // Explicitly set the height
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: backgroundColor,
@@ -164,103 +164,104 @@ class HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildQuickActions(BuildContext context) {
-    return Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-      Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          _buildActionButton(
-            icon: Icons.add,
-            label: "Add Expense",
-            onPressed: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => AddOrUpdateReceiptPage(),
-                  ));
-            },
-          ),
-          _buildActionButton(
-            icon: Icons.bar_chart,
-            label: "View Reports",
-            onPressed: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => ReportPage(),
-                  ));
-            },
-          ),
-        ],
-      ),
-      SizedBox(height: 26), // Add spacing between rows
-      Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          _buildActionButton(
-            icon: Icons.attach_money,
-            label: "Set Budget",
-            onPressed: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => BudgetPage(),
-                  ));
-            },
-          ),
-          _buildActionButton(
-            icon: Icons.analytics,
-            label: "View Summary",
-            onPressed: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => SummaryPage(),
-                  ));
-            },
-          ),
-        ],
-      ),
-    ]);
-  }
-
   Widget _buildActionButton({
     required IconData icon,
     required String label,
     required VoidCallback onPressed,
   }) {
-    return Expanded(
-      child: GestureDetector(
-        onTap: onPressed,
-        child: Container(
-          margin: const EdgeInsets.symmetric(horizontal: 8), // Add spacing
-          padding: const EdgeInsets.all(16), // Add internal padding
-          decoration: BoxDecoration(
-            color: purple20, // Light purple background
-            borderRadius: BorderRadius.circular(16), // Rounded rectangle
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                icon,
-                color: purple100, // Purple icon color
-                size: 40, // Larger icon size
+    return GestureDetector(
+      onTap: onPressed,
+      child: Container(
+        width: 140, // Explicitly set the same width as the tracking cards
+        height: 120, // Explicitly set the same height as the tracking cards
+        padding: const EdgeInsets.all(16), // Internal padding for the content
+        decoration: BoxDecoration(
+          color: purple20, // Light purple background
+          borderRadius: BorderRadius.circular(12), // Rounded corners
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              icon,
+              color: purple100, // Icon color
+              size: 32, // Icon size
+            ),
+            const SizedBox(height: 8),
+            Text(
+              label,
+              textAlign: TextAlign.center, // Center align the text
+              style: const TextStyle(
+                color: purple100,
+                fontSize: 16,
+                fontWeight: FontWeight.w600, // Slightly bold text
               ),
-              const SizedBox(height: 8),
-              Text(
-                label,
-                textAlign: TextAlign.center, // Center-align the text
-                style: const TextStyle(
-                  color: purple100,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600, // Slightly bolder text
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
+    );
+  }
+
+  Widget _buildQuickActions(BuildContext context) {
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            _buildActionButton(
+              icon: Icons.add,
+              label: "Add Expense",
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => AddOrUpdateReceiptPage(),
+                    ));
+              },
+            ),
+            _buildActionButton(
+              icon: Icons.bar_chart,
+              label: "View Reports",
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ReportPage(),
+                    ));
+              },
+            ),
+          ],
+        ),
+        const SizedBox(height: 26), // Spacing between rows
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            _buildActionButton(
+              icon: Icons.attach_money,
+              label: "Set Budget",
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => BudgetPage(),
+                    ));
+              },
+            ),
+            _buildActionButton(
+              icon: Icons.analytics,
+              label: "View Summary",
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => SummaryPage(),
+                    ));
+              },
+            ),
+          ],
+        ),
+      ],
     );
   }
 }
