@@ -128,7 +128,7 @@ class HomePageState extends State<HomePage> {
     required Color iconColor,
   }) {
     return Container(
-      width: 140, // Explicitly set the width
+      width: 150, // Explicitly set the width
       height: 140, // Explicitly set the height
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -172,7 +172,7 @@ class HomePageState extends State<HomePage> {
     return GestureDetector(
       onTap: onPressed,
       child: Container(
-        width: 140, // Explicitly set the same width as the tracking cards
+        width: 150, // Explicitly set the same width as the tracking cards
         height: 120, // Explicitly set the same height as the tracking cards
         padding: const EdgeInsets.all(16), // Internal padding for the content
         decoration: BoxDecoration(
