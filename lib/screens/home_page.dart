@@ -44,8 +44,13 @@ class HomePageState extends State<HomePage> {
         backgroundColor: light90,
         elevation: 0,
         title: const Text(
-          'Welcome',
-          style: TextStyle(color: Colors.black),
+          '🤑 Welcome 🤑',
+          style: TextStyle(
+            fontSize: 24, // 更大的字体
+            fontWeight: FontWeight.bold, // 加粗
+            color: Colors.black, // 黑色字体
+            fontFamily: 'SF Pro Display', // 苹果风格字体
+          ),
         ),
         centerTitle: true,
       ),
@@ -63,6 +68,7 @@ class HomePageState extends State<HomePage> {
       ),
     );
   }
+
 
   Widget _buildWelcomeSection() {
     return Consumer<ReceiptProvider>(
@@ -96,7 +102,7 @@ class HomePageState extends State<HomePage> {
             ),
             const SizedBox(height: 16),
 
-            // Modern Tracking Period Card
+            // Tracking Period Card
             Container(
               padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
               margin: const EdgeInsets.symmetric(horizontal: 16),
