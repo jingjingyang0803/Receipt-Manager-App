@@ -11,7 +11,6 @@ import 'add_update_receipt_page.dart';
 import 'budget_page.dart';
 import 'category_page.dart';
 
-
 class HomePage extends StatefulWidget {
   static const String id = 'home_page';
 
@@ -27,16 +26,15 @@ class HomePageState extends State<HomePage> {
     super.initState();
 
     final categoryProvider =
-        Provider.of<CategoryProvider>(context, listen: false);
+    Provider.of<CategoryProvider>(context, listen: false);
     categoryProvider.loadUserCategories();
 
     final receiptProvider =
-        Provider.of<ReceiptProvider>(context, listen: false);
+    Provider.of<ReceiptProvider>(context, listen: false);
     receiptProvider.fetchAllReceipts(); // Call once during initialization
     receiptProvider.loadReceiptCount();
     receiptProvider.loadOldestAndNewestDates();
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -58,32 +56,22 @@ class HomePageState extends State<HomePage> {
         centerTitle: true,
       ),
       body: SafeArea(
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            return SingleChildScrollView(
-              child: ConstrainedBox(
-                constraints: BoxConstraints(
-                  minHeight: constraints.maxHeight,
-                ),
-                child: IntrinsicHeight(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildWelcomeSection(),
-                      const SizedBox(height: 26),
-                      _buildQuickActions(context),
-                      const Spacer(),
-                    ],
-                  ),
-                ),
-              ),
-            );
-          },
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.only(bottom: 32), // Add more bottom space
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildWelcomeSection(),
+                const SizedBox(height: 26),
+                _buildQuickActions(context),
+              ],
+            ),
+          ),
         ),
       ),
     );
   }
-
 
   Widget _buildWelcomeSection() {
     return Consumer<ReceiptProvider>(
@@ -95,7 +83,6 @@ class HomePageState extends State<HomePage> {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // Total Receipts Section
             Text(
               'Your Total Receipts',
               style: TextStyle(
@@ -116,14 +103,11 @@ class HomePageState extends State<HomePage> {
               ),
             ),
             const SizedBox(height: 16),
-
-
-        // Tracking Period Card
             Container(
               padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
               margin: const EdgeInsets.symmetric(horizontal: 16),
               decoration: BoxDecoration(
-                color: purple20, // Match the button background color
+                color: purple20,
                 borderRadius: BorderRadius.circular(12),
                 boxShadow: [
                   BoxShadow(
@@ -153,7 +137,6 @@ class HomePageState extends State<HomePage> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      // "From" Section
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -187,13 +170,11 @@ class HomePageState extends State<HomePage> {
                           ),
                         ],
                       ),
-                      // Vertical Divider
                       Container(
                         height: 50,
                         width: 1,
                         color: Colors.grey.shade300,
                       ),
-                      // "To" Section
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
@@ -238,52 +219,6 @@ class HomePageState extends State<HomePage> {
     );
   }
 
-
-
-  Widget _buildTrackingCard({
-    required IconData icon,
-    required String label,
-    required String date,
-    required Color backgroundColor,
-    required Color iconColor,
-  }) {
-    return Container(
-      width: 150, // Explicitly set the width
-      height: 140, // Explicitly set the height
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: backgroundColor,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Icon(icon, color: iconColor, size: 32),
-          const SizedBox(height: 8),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: Colors.grey[800],
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            date,
-            style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.normal,
-              color: Colors.black,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildActionButton({
     required IconData icon,
     required String label,
@@ -292,19 +227,19 @@ class HomePageState extends State<HomePage> {
     return GestureDetector(
       onTap: onPressed,
       child: Container(
-        height: 120, // Button height
-        padding: const EdgeInsets.all(16), // Padding for internal content
+        height: 100, // Reduced button height
+        padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: purple20, // Light purple background
-          borderRadius: BorderRadius.circular(12), // Rounded corners
+          color: purple20,
+          borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.1), // Outer shadow
+              color: Colors.black.withOpacity(0.1),
               blurRadius: 25,
               offset: const Offset(0, 10),
             ),
             BoxShadow(
-              color: Colors.white.withOpacity(0.5), // Subtle highlight
+              color: Colors.white.withOpacity(0.5),
               blurRadius: 10,
               offset: const Offset(0, -5),
             ),
@@ -313,40 +248,39 @@ class HomePageState extends State<HomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Enhanced recessed effect for the icon
             Container(
-              width: 54, // Larger container for a more pronounced effect
-              height: 54,
+              width: 48,
+              height: 48,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: purple20, // Match the button background
+                color: purple20,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.3), // Deeper lower shadow
-                    offset: const Offset(4, 4), // More pronounced offset
-                    blurRadius: 10, // Increase blur for softness
+                    color: Colors.black.withOpacity(0.3),
+                    offset: const Offset(4, 4),
+                    blurRadius: 10,
                   ),
                   BoxShadow(
-                    color: Colors.white.withOpacity(0.9), // Bright upper highlight
-                    offset: const Offset(-4, -4), // Offset opposite to the shadow
-                    blurRadius: 10, // Increase blur for softness
+                    color: Colors.white.withOpacity(0.9),
+                    offset: const Offset(-4, -4),
+                    blurRadius: 10,
                   ),
                 ],
               ),
               child: Icon(
                 icon,
-                size: 30, // Slightly larger icon
-                color: purple100, // Icon color
+                size: 24, // Reduced icon size
+                color: purple100,
               ),
             ),
-            const SizedBox(height: 10), // Increase spacing between icon and text
+            const SizedBox(height: 8),
             Text(
               label,
-              textAlign: TextAlign.center, // Center-align the text
+              textAlign: TextAlign.center,
               style: const TextStyle(
                 color: purple100,
-                fontSize: 16,
-                fontWeight: FontWeight.w600, // Bold text
+                fontSize: 14, // Reduced font size
+                fontWeight: FontWeight.w600,
               ),
             ),
           ],
@@ -355,10 +289,9 @@ class HomePageState extends State<HomePage> {
     );
   }
 
-
   Widget _buildQuickActions(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0), // Match horizontal padding with Tracking Period
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: Column(
         children: [
           Row(
@@ -370,10 +303,11 @@ class HomePageState extends State<HomePage> {
                   label: "Add Expense",
                   onPressed: () {
                     Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => AddOrUpdateReceiptPage(),
-                        ));
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => AddOrUpdateReceiptPage(),
+                      ),
+                    );
                   },
                 ),
               ),
@@ -384,16 +318,17 @@ class HomePageState extends State<HomePage> {
                   label: "Set Categories",
                   onPressed: () {
                     Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => CategoryPage(),
-                        ));
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => CategoryPage(),
+                      ),
+                    );
                   },
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 16), // Spacing between rows
+          const SizedBox(height: 16),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -403,24 +338,26 @@ class HomePageState extends State<HomePage> {
                   label: "Set Budget",
                   onPressed: () {
                     Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => BudgetPage(),
-                        ));
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => BudgetPage(),
+                      ),
+                    );
                   },
                 ),
               ),
-              const SizedBox(width: 16), // Spacing between buttons
+              const SizedBox(width: 16),
               Expanded(
                 child: _buildActionButton(
                   icon: Icons.analytics,
                   label: "View Summary",
                   onPressed: () {
                     Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => SummaryPage(),
-                        ));
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => SummaryPage(),
+                      ),
+                    );
                   },
                 ),
               ),
