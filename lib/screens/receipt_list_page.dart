@@ -31,6 +31,8 @@ class ReceiptListPageState extends State<ReceiptListPage> {
 
   String _currencySymbolToDisplay = ' ';
 
+  late VoidCallback _receiptProviderListener;
+
   @override
   void initState() {
     super.initState();
@@ -52,13 +54,31 @@ class ReceiptListPageState extends State<ReceiptListPage> {
       }
     });
 
-    // Listen for changes in ReceiptProvider and update _searchedReceipts
-    Provider.of<ReceiptProvider>(context, listen: false).addListener(() {
-      setState(() {
-        _searchedReceipts = Provider.of<ReceiptProvider>(context, listen: false)
-            .filteredReceipts;
-      });
-    });
+    // Add listener to update receipts dynamically
+    final receiptProvider =
+        Provider.of<ReceiptProvider>(context, listen: false);
+
+    _receiptProviderListener = () {
+      if (mounted) {
+        setState(() {
+          _searchedReceipts = receiptProvider.filteredReceipts;
+        });
+      }
+    };
+
+    receiptProvider.addListener(_receiptProviderListener);
+  }
+
+  @override
+  void dispose() {
+    // Remove the listener to prevent calls after dispose
+    final receiptProvider =
+        Provider.of<ReceiptProvider>(context, listen: false);
+    receiptProvider.removeListener(_receiptProviderListener);
+
+    _searchController.dispose();
+    _searchFocusNode.dispose();
+    super.dispose();
   }
 
   // Builds each receipt section
@@ -110,14 +130,6 @@ class ReceiptListPageState extends State<ReceiptListPage> {
             ],
           )
         : const SizedBox.shrink();
-  }
-
-  // check this later
-  @override
-  void dispose() {
-    _searchController.dispose();
-    _searchFocusNode.dispose();
-    super.dispose();
   }
 
   Widget buildNoResultsFound() {
