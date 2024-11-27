@@ -36,37 +36,36 @@ class SettingsPageState extends State<SettingsPage> {
   String? currencySymbol;
 
   @override
-  @override
   void initState() {
     super.initState();
 
     // Access the UserProvider instance
     userProvider = Provider.of<UserProvider>(context, listen: false);
+
+    // Fetch the user profile data
     userProvider.fetchUserProfile();
 
-    // Initialize the controller with the current user name from provider
+    // Initialize the name controller
     _nameController = TextEditingController(text: userProvider.userName);
-
-    // Initialize _profileImage with the saved profile image path, if available
-    final profileImagePath = userProvider.profileImagePath;
-    if (profileImagePath != null && profileImagePath.isNotEmpty) {
-      _profileImage =
-          XFile(profileImagePath); // Wrap the path in XFile for consistency
-    }
 
     // Initialize currency code and symbol
     currencyCode = userProvider.currencyCode;
     if (currencyCode != null && currencyCode!.isNotEmpty) {
-      // Use the Intl package to get the currency symbol
       currencySymbol =
           NumberFormat.simpleCurrency(name: currencyCode).currencySymbol;
     } else {
-      currencySymbol = '€'; // Fallback default currency symbol
+      currencySymbol = '€'; // Default symbol
     }
 
-    // Fetch the user profile after the widget is built
+    // Wait for user profile to fetch and reflect updates after widget builds
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      userProvider.fetchUserProfile();
+      setState(() {
+        // Fetch updated profile image from Firestore
+        final profileImagePath = userProvider.profileImagePath;
+        if (profileImagePath != null && profileImagePath.isNotEmpty) {
+          _profileImage = null; // Ensure local path is not used
+        }
+      });
     });
   }
 
@@ -80,12 +79,11 @@ class SettingsPageState extends State<SettingsPage> {
     final image = await _picker.pickImage(source: ImageSource.gallery);
     if (image != null) {
       setState(() {
-        _profileImage = image;
+        _profileImage = image; // Temporarily show the image
       });
 
       try {
-        // Update profile image in provider
-        userProvider = Provider.of<UserProvider>(context, listen: false);
+        // Upload the image and update the profile image path
         await userProvider.updateProfileImage(image.path);
 
         ScaffoldMessenger.of(context).showSnackBar(
@@ -186,11 +184,13 @@ class SettingsPageState extends State<SettingsPage> {
                               backgroundColor: Colors.transparent,
                               backgroundImage: _profileImage != null
                                   ? FileImage(File(_profileImage!.path))
-                                  : profileImagePath != null
-                                      ? NetworkImage(profileImagePath)
+                                  : userProvider.profileImagePath != null
+                                      ? NetworkImage(
+                                              userProvider.profileImagePath!)
+                                          as ImageProvider
                                       : null,
                               radius: 45.0,
-                              child: profileImagePath == null
+                              child: userProvider.profileImagePath == null
                                   ? Icon(Icons.person,
                                       size: 50, color: Colors.grey)
                                   : null,
