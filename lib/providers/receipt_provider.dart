@@ -95,13 +95,34 @@ class ReceiptProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  // Setter for categoryProvider
   set categoryProvider(CategoryProvider categoryProvider) {
     _categoryProvider = categoryProvider;
-    _selectedCategoryIds = _categoryProvider!.categories
+
+    // Get all category IDs from the provider
+    final allCategoryIds = _categoryProvider!.categories
         .map((cat) => cat['id'] as String)
         .toList();
-    _selectedCategoryIds.add('null');
-    notifyListeners();
+
+    // Add "null" for uncategorized items if not already present
+    if (!allCategoryIds.contains('null')) {
+      allCategoryIds.add('null');
+    }
+
+    if (_selectedCategoryIds.isEmpty) {
+      // First time initialization
+      _selectedCategoryIds = allCategoryIds;
+    } else {
+      // Merge new categories with the current selection for subsequent updates
+      final currentCategoryIds = Set<String>.from(_selectedCategoryIds);
+
+      // Remove any categories no longer available
+      _selectedCategoryIds = _selectedCategoryIds
+          .where((id) => allCategoryIds.contains(id))
+          .toList();
+    }
+
+    notifyListeners(); // Notify listeners of the change
   }
 
   set currencyProvider(CurrencyProvider currencyProvider) {
