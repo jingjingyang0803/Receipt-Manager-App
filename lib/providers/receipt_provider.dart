@@ -95,9 +95,15 @@ class ReceiptProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Setter for categoryProvider
   set categoryProvider(CategoryProvider categoryProvider) {
     _categoryProvider = categoryProvider;
+    _initializeCategoryProvider(); // Call the asynchronous initialization
+  }
+
+  // Setter for categoryProvider
+  Future<void> _initializeCategoryProvider() async {
+    if (_categoryProvider == null) return;
+    await _categoryProvider?.loadUserCategories();
 
     // Get all category IDs from the provider
     final allCategoryIds = _categoryProvider!.categories
