@@ -624,42 +624,57 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
                     children: [
                       Expanded(
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                          padding: const EdgeInsets.symmetric(horizontal: 4.0), // Reduced spacing between buttons
                           child: CustomButton(
                             text: "Cancel",
                             backgroundColor: purple20,
                             textColor: purple100,
+                            textStyle: const TextStyle(
+                              fontSize: 14, // Reduced font size
+                              fontWeight: FontWeight.w500,
+                            ),
                             onPressed: () => Navigator.pop(context),
+                            padding: const EdgeInsets.symmetric(vertical: 12), // Adjust button padding
                           ),
                         ),
                       ),
                       Expanded(
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                          padding: const EdgeInsets.symmetric(horizontal: 4.0), // Reduced spacing between buttons
                           child: CustomButton(
                             text: widget.receiptId != null ? 'Update' : 'Save',
                             backgroundColor: purple100,
                             textColor: light80,
+                            textStyle: const TextStyle(
+                              fontSize: 14, // Reduced font size
+                              fontWeight: FontWeight.w500,
+                            ),
                             onPressed: _saveReceipt,
+                            padding: const EdgeInsets.symmetric(vertical: 12), // Adjust button padding
                           ),
                         ),
                       ),
                       if (widget.receiptId != null) ...[
                         Expanded(
                           child: Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 8.0),
+                            padding: const EdgeInsets.symmetric(horizontal: 4.0), // Reduced spacing between buttons
                             child: CustomButton(
                               text: 'Delete',
                               backgroundColor: red100,
                               textColor: light80,
+                              textStyle: const TextStyle(
+                                fontSize: 14, // Reduced font size
+                                fontWeight: FontWeight.w500,
+                              ),
                               onPressed: _confirmDelete,
+                              padding: const EdgeInsets.symmetric(vertical: 12), // Adjust button padding
                             ),
                           ),
                         ),
                       ],
                     ],
                   ),
+
                 ],
               ),
             ),

@@ -37,7 +37,7 @@ class SummaryPageState extends State<SummaryPage> {
   ];
 
   final List<int> years =
-      List<int>.generate(20, (index) => 2000 + index); // From 2020 to 2039
+  List<int>.generate(20, (index) => 2000 + index); // From 2020 to 2039
 
   @override
   void initState() {
@@ -45,11 +45,11 @@ class SummaryPageState extends State<SummaryPage> {
     // Load data when the widget is initialized
     Future.microtask(() {
       final budgetProvider =
-          Provider.of<BudgetProvider>(context, listen: false);
+      Provider.of<BudgetProvider>(context, listen: false);
       budgetProvider.loadUserBudgets();
 
       final receiptProvider =
-          Provider.of<ReceiptProvider>(context, listen: false);
+      Provider.of<ReceiptProvider>(context, listen: false);
       receiptProvider.fetchAllReceipts();
       setState(() {
         _currencySymbolToDisplay = receiptProvider.currencySymbolToDisplay!;
@@ -63,7 +63,7 @@ class SummaryPageState extends State<SummaryPage> {
 
   void _loadDataForSelectedDate() {
     final receiptProvider =
-        Provider.of<ReceiptProvider>(context, listen: false);
+    Provider.of<ReceiptProvider>(context, listen: false);
 
     logger.i("Loading data for Month: $_month, Year: $_year");
 
@@ -85,7 +85,7 @@ class SummaryPageState extends State<SummaryPage> {
               height: 200,
               child: CupertinoPicker(
                 scrollController:
-                    FixedExtentScrollController(initialItem: _month - 1),
+                FixedExtentScrollController(initialItem: _month - 1),
                 itemExtent: 36.0,
                 onSelectedItemChanged: (int index) {
                   tempSelectedMonth = index + 1;
@@ -132,7 +132,7 @@ class SummaryPageState extends State<SummaryPage> {
                 },
                 children: years
                     .map((year) =>
-                        Text(year.toString(), style: TextStyle(fontSize: 24)))
+                    Text(year.toString(), style: TextStyle(fontSize: 24)))
                     .toList(),
               ),
             ),
@@ -260,7 +260,7 @@ class SummaryPageState extends State<SummaryPage> {
                     final budgetAmount = budget['amount'];
 
                     final spent =
-                        (expenses?[categoryId]?['total'] ?? 0.0) as double;
+                    (expenses?[categoryId]?['total'] ?? 0.0) as double;
 
                     double ratio = budgetAmount == 0
                         ? (spent > 0 ? 1.0 : 0.0)
@@ -302,7 +302,7 @@ class SummaryPageState extends State<SummaryPage> {
                                       ratio.clamp(0.0,
                                           1.0), // Height proportional to percentage
                                   color:
-                                      getColor(ratio), // Color based on ratio
+                                  getColor(ratio), // Color based on ratio
                                 ),
                               ),
                             ],
