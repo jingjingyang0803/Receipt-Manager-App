@@ -119,9 +119,6 @@ class ReceiptProvider extends ChangeNotifier {
       // First time initialization
       _selectedCategoryIds = allCategoryIds;
     } else {
-      // Merge new categories with the current selection for subsequent updates
-      final currentCategoryIds = Set<String>.from(_selectedCategoryIds);
-
       // Remove any categories no longer available
       _selectedCategoryIds = _selectedCategoryIds
           .where((id) => allCategoryIds.contains(id))
