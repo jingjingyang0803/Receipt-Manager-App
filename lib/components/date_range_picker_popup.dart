@@ -30,6 +30,8 @@ class CalendarFilterWidgetState extends State<CalendarFilterWidget> {
   DateTime? _endDate;
   int _selectedDays = 90;
 
+  late VoidCallback _receiptProviderListener;
+
   @override
   void initState() {
     super.initState();
@@ -43,17 +45,30 @@ class CalendarFilterWidgetState extends State<CalendarFilterWidget> {
         .loadOldestAndNewestDates(); // Ensure oldest and newest dates are loaded
 
     // Add listener to update dates dynamically when provider changes
-    receiptProvider.addListener(() {
+    _receiptProviderListener = () {
       if (_selectedDays == -1) {
         // Update only if "All History" is selected
-        setState(() {
-          _startDate = receiptProvider.oldestDate;
-          _endDate = receiptProvider.newestDate;
-        });
+        if (mounted) {
+          setState(() {
+            _startDate = receiptProvider.oldestDate;
+            _endDate = receiptProvider.newestDate;
+          });
+        }
       }
-    });
+    };
+    receiptProvider.addListener(_receiptProviderListener);
 
     _initializeDates(receiptProvider);
+  }
+
+  @override
+  void dispose() {
+    // Remove the listener
+    final receiptProvider =
+        Provider.of<ReceiptProvider>(context, listen: false);
+    receiptProvider.removeListener(_receiptProviderListener);
+
+    super.dispose();
   }
 
   void _initializeDates(ReceiptProvider receiptProvider) {
