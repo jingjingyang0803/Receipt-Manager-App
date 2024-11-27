@@ -73,22 +73,23 @@ class UserService {
   // Update profile image only
   Future<void> updateProfileImage(String email, String localImagePath) async {
     try {
-      // Reference to Firebase Storage
-      final profileImageRef = _storage
-          .ref()
-          .child('users/$email/profile_image.jpg'); // Organize by user email
-
-      // Upload the image
+      // Upload the image to Firebase Storage
+      final storageRef = FirebaseStorage.instance.ref();
+      final profileImageRef =
+          storageRef.child('users/$email/profile_image.jpg');
       await profileImageRef.putFile(File(localImagePath));
 
-      // Get the image download URL
+      // Get the download URL of the uploaded image
       final imageUrl = await profileImageRef.getDownloadURL();
 
-      // Update Firestore document with the image URL
-      await updateUserProfile(
-          email: email, userName: '', profileImagePath: imageUrl);
+      // Update the Firestore document with the new profileImagePath
+      final userDocRef =
+          FirebaseFirestore.instance.collection('users').doc(email);
+      await userDocRef.update({
+        'profileImagePath': imageUrl,
+      });
     } catch (e) {
-      throw Exception('Failed to upload profile image: $e');
+      throw Exception('Failed to update profile image: $e');
     }
   }
 

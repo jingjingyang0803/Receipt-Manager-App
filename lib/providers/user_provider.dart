@@ -84,6 +84,10 @@ class UserProvider extends ChangeNotifier {
         profileImagePath: profileImagePath ?? this.profileImagePath ?? '',
         currencyCode: currencyCode ?? this.currencyCode ?? '',
       );
+
+      // Refresh local data
+      _userProfile = await _userService.fetchUserProfileOnce(_userEmail!);
+
       notifyListeners();
     }
   }
@@ -92,13 +96,13 @@ class UserProvider extends ChangeNotifier {
   Future<void> updateProfileImage(String localImagePath) async {
     if (_userEmail != null) {
       try {
-        // Upload the image and update the profile in Firestore
+        // Update the profile image in the backend
         await _userService.updateProfileImage(_userEmail!, localImagePath);
 
-        // Fetch the updated profile data once
+        // Fetch the updated profile to refresh local data
         _userProfile = await _userService.fetchUserProfileOnce(_userEmail!);
 
-        notifyListeners(); // Notify UI of the update
+        notifyListeners();
       } catch (e) {
         throw Exception('Failed to update profile image: $e');
       }
