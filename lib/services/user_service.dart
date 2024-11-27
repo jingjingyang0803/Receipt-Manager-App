@@ -1,9 +1,13 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 import '../logger.dart';
 
 class UserService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseStorage _storage = FirebaseStorage.instance;
 
   // Fetch user profile data for a specified user by email
   Stream<DocumentSnapshot<Map<String, dynamic>>> fetchUserProfile(
@@ -40,24 +44,52 @@ class UserService {
     String? profileImagePath,
     String? currencyCode,
   }) async {
-    // Reference to the user's document in Firestore using their email as document ID
-    DocumentReference userDocRef = _firestore.collection('users').doc(email);
+    // Reference to the user's document in Firestore
+    final userDocRef = _firestore.collection('users').doc(email);
 
-    // Set or update the user's profile data
-    await userDocRef.set({
+    // Prepare update data
+    final Map<String, dynamic> updateData = {
       'userName': userName,
-      if (profileImagePath != null) 'profileImagePath': profileImagePath,
-      if (currencyCode != null) 'currencyCode': currencyCode,
-    }, SetOptions(merge: true));
+      if (profileImagePath != null && profileImagePath.isNotEmpty)
+        'profileImagePath': profileImagePath,
+      if (currencyCode != null && currencyCode.isNotEmpty)
+        'currencyCode': currencyCode,
+    };
+
+    // Update Firestore document with merge option
+    await userDocRef.set(updateData, SetOptions(merge: true));
+  }
+
+  Future<DocumentSnapshot<Map<String, dynamic>>> fetchUserProfileOnce(
+      String email) async {
+    // Reference to the user's document in Firestore
+    final userDocRef =
+        FirebaseFirestore.instance.collection('users').doc(email);
+
+    // Fetch the document once
+    return await userDocRef.get();
   }
 
   // Update profile image only
-  Future<void> updateProfileImage(String email, String profileImagePath) async {
-    DocumentReference userDocRef = _firestore.collection('users').doc(email);
+  Future<void> updateProfileImage(String email, String localImagePath) async {
+    try {
+      // Reference to Firebase Storage
+      final profileImageRef = _storage
+          .ref()
+          .child('users/$email/profile_image.jpg'); // Organize by user email
 
-    await userDocRef.update({
-      'profileImagePath': profileImagePath,
-    });
+      // Upload the image
+      await profileImageRef.putFile(File(localImagePath));
+
+      // Get the image download URL
+      final imageUrl = await profileImageRef.getDownloadURL();
+
+      // Update Firestore document with the image URL
+      await updateUserProfile(
+          email: email, userName: '', profileImagePath: imageUrl);
+    } catch (e) {
+      throw Exception('Failed to upload profile image: $e');
+    }
   }
 
   // Delete the user profile data

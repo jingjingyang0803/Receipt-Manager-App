@@ -71,7 +71,7 @@ class UserProvider extends ChangeNotifier {
     }
   }
 
-  // Update user profile data
+  // Update user profile with all fields
   Future<void> updateUserProfile({
     String? userName,
     String? profileImagePath,
@@ -89,10 +89,19 @@ class UserProvider extends ChangeNotifier {
   }
 
   // Update profile image only
-  Future<void> updateProfileImage(String profileImagePath) async {
+  Future<void> updateProfileImage(String localImagePath) async {
     if (_userEmail != null) {
-      await _userService.updateProfileImage(_userEmail!, profileImagePath);
-      notifyListeners();
+      try {
+        // Upload the image and update the profile in Firestore
+        await _userService.updateProfileImage(_userEmail!, localImagePath);
+
+        // Fetch the updated profile data once
+        _userProfile = await _userService.fetchUserProfileOnce(_userEmail!);
+
+        notifyListeners(); // Notify UI of the update
+      } catch (e) {
+        throw Exception('Failed to update profile image: $e');
+      }
     }
   }
 

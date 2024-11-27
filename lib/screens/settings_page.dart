@@ -83,9 +83,19 @@ class SettingsPageState extends State<SettingsPage> {
         _profileImage = image;
       });
 
-      // Update profile image in provider
-      userProvider = Provider.of<UserProvider>(context, listen: false);
-      userProvider.updateProfileImage(image.path);
+      try {
+        // Update profile image in provider
+        userProvider = Provider.of<UserProvider>(context, listen: false);
+        await userProvider.updateProfileImage(image.path);
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Profile image updated successfully')),
+        );
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to update profile image: $e')),
+        );
+      }
     }
   }
 
