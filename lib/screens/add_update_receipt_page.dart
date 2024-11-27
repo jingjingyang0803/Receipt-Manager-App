@@ -62,7 +62,7 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
   Future<void> _loadUserCategories() async {
     // Fetch categories from the provider
     final categoryProvider =
-        Provider.of<CategoryProvider>(context, listen: false);
+    Provider.of<CategoryProvider>(context, listen: false);
     await categoryProvider.loadUserCategories();
     setState(() {
       _userCategories = categoryProvider.categories;
@@ -76,10 +76,10 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
 
       _selectedPaymentMethod = widget.existingReceipt!['paymentMethod'] ?? '';
       _dateController.text = widget.existingReceipt!['date']
-              ?.toDate()
-              .toLocal()
-              .toString()
-              .split(' ')[0] ??
+          ?.toDate()
+          .toLocal()
+          .toString()
+          .split(' ')[0] ??
           '';
 
       _selectedCurrencyCode = widget.existingReceipt!['currencyCode'];
@@ -155,10 +155,10 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
   Future<void> _saveReceipt() async {
     final messenger = ScaffoldMessenger.of(context);
     final receiptProvider =
-        Provider.of<ReceiptProvider>(context, listen: false);
+    Provider.of<ReceiptProvider>(context, listen: false);
 
     double? amount =
-        double.tryParse(_totalController.text.replaceAll(',', '.'));
+    double.tryParse(_totalController.text.replaceAll(',', '.'));
 
     if (_dateController.text.isEmpty ||
         amount == null ||
@@ -310,7 +310,7 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
 
   Future<void> _deleteReceipt() async {
     final receiptProvider =
-        Provider.of<ReceiptProvider>(context, listen: false);
+    Provider.of<ReceiptProvider>(context, listen: false);
     if (widget.receiptId != null) {
       await receiptProvider.deleteReceipt(widget.receiptId!);
       Navigator.pushReplacementNamed(context, BasePage.id);
@@ -333,7 +333,7 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
     ).then((selectedCategoryId) {
       if (selectedCategoryId != null) {
         final selectedCategory = _userCategories.firstWhere(
-          (category) => category['id'] == selectedCategoryId,
+              (category) => category['id'] == selectedCategoryId,
           orElse: () => {},
         );
 
@@ -478,8 +478,8 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
                                   decoration: buildDynamicLabelDecoration(
                                     label: 'Select Payment',
                                     isSelected:
-                                        _selectedPaymentMethod != null &&
-                                            _selectedPaymentMethod!.isNotEmpty,
+                                    _selectedPaymentMethod != null &&
+                                        _selectedPaymentMethod!.isNotEmpty,
                                     selectedValue: _selectedPaymentMethod,
                                   ),
                                 ),
@@ -516,10 +516,10 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
                                 child: TextField(
                                   decoration: InputDecoration(
                                     labelText:
-                                        _selectedCurrencyCode?.isNotEmpty ==
-                                                true
-                                            ? _selectedCurrencyCode
-                                            : 'Select Currency',
+                                    _selectedCurrencyCode?.isNotEmpty ==
+                                        true
+                                        ? _selectedCurrencyCode
+                                        : 'Select Currency',
                                     border: OutlineInputBorder(),
                                   ),
                                 ),
@@ -552,10 +552,10 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
                                   decoration: buildDynamicLabelDecoration(
                                     label: 'Select Category',
                                     isSelected:
-                                        _selectedCategoryId?.isNotEmpty == true,
+                                    _selectedCategoryId?.isNotEmpty == true,
                                     selectedValue: _selectedCategoryId
-                                                ?.isNotEmpty ==
-                                            true
+                                        ?.isNotEmpty ==
+                                        true
                                         ? '$_selectedCategoryIcon $_selectedCategoryName'
                                         : null,
                                   ),
@@ -627,11 +627,11 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
                           padding: const EdgeInsets.symmetric(horizontal: 4.0), // Reduced spacing between buttons
                           child: CustomButton(
                             text: "Cancel",
-                            backgroundColor: purple20,
-                            textColor: purple100,
+                            backgroundColor: Colors.blueGrey,
                             textStyle: const TextStyle(
                               fontSize: 14, // Reduced font size
                               fontWeight: FontWeight.w500,
+                              color: Colors.white, // Explicitly set text color to white
                             ),
                             onPressed: () => Navigator.pop(context),
                             padding: const EdgeInsets.symmetric(vertical: 12), // Adjust button padding
@@ -644,10 +644,10 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
                           child: CustomButton(
                             text: widget.receiptId != null ? 'Update' : 'Save',
                             backgroundColor: purple100,
-                            textColor: light80,
                             textStyle: const TextStyle(
                               fontSize: 14, // Reduced font size
                               fontWeight: FontWeight.w500,
+                              color: Colors.white, // Explicitly set text color to white
                             ),
                             onPressed: _saveReceipt,
                             padding: const EdgeInsets.symmetric(vertical: 12), // Adjust button padding
@@ -661,10 +661,10 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
                             child: CustomButton(
                               text: 'Delete',
                               backgroundColor: red100,
-                              textColor: light80,
                               textStyle: const TextStyle(
                                 fontSize: 14, // Reduced font size
                                 fontWeight: FontWeight.w500,
+                                color: Colors.white, // Explicitly set text color to white
                               ),
                               onPressed: _confirmDelete,
                               padding: const EdgeInsets.symmetric(vertical: 12), // Adjust button padding
@@ -674,6 +674,8 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
                       ],
                     ],
                   ),
+
+
 
                 ],
               ),
