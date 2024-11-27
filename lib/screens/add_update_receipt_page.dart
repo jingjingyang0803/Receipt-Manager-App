@@ -9,6 +9,7 @@ import 'package:receipt_manager/providers/receipt_provider.dart';
 import '../components/category_select_popup.dart';
 import '../components/currency_roller_picker_popup.dart';
 import '../components/custom_button.dart';
+import '../components/custom_divider.dart';
 import '../components/date_picker_popup.dart';
 import '../components/payment_roller_picker_popup.dart';
 import '../constants/app_colors.dart';
@@ -226,28 +227,83 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
   }
 
   Future<void> _confirmDelete() async {
-    bool? confirm = await showDialog(
+    bool? confirm = await showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Delete Receipt'),
-          content: Text('Are you sure you want to delete this receipt?'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(false),
-              child: Text('Cancel'),
+        return Container(
+          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(20),
+              topRight: Radius.circular(20),
             ),
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(true),
-              child: Text('Delete', style: TextStyle(color: Colors.redAccent)),
-            ),
-          ],
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const CustomDivider(),
+              SizedBox(height: 8),
+              Text(
+                'Delete Receipt?',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+              ),
+              SizedBox(height: 8),
+              Text(
+                'Are you sure you want to delete this receipt?',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: purple200,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(height: 32),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: CustomButton(
+                        text: "Cancel",
+                        backgroundColor: purple20,
+                        textColor: purple100,
+                        onPressed: () {
+                          Navigator.of(context).pop(false); // Return false
+                        },
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: CustomButton(
+                        text: "Delete",
+                        backgroundColor: Colors.redAccent,
+                        textColor: Colors.white,
+                        onPressed: () {
+                          Navigator.of(context).pop(true); // Return true
+                        },
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 10),
+            ],
+          ),
         );
       },
     );
 
-
     if (confirm == true) {
+      // Perform delete operation
       await _deleteReceipt();
     }
   }
