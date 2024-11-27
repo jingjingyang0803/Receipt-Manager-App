@@ -33,14 +33,30 @@ class CalendarFilterWidgetState extends State<CalendarFilterWidget> {
   @override
   void initState() {
     super.initState();
-    _endDate = widget.initialEndDate;
     _startDate = widget.initialStartDate;
+    _endDate = widget.initialEndDate;
 
+    // Initialize ReceiptProvider and listen for updates
     final receiptProvider =
         Provider.of<ReceiptProvider>(context, listen: false);
-    receiptProvider.fetchAllReceipts();
     receiptProvider
-        .loadOldestAndNewestDates(); // Call once during initialization
+        .loadOldestAndNewestDates(); // Ensure oldest and newest dates are loaded
+
+    // Add listener to update dates dynamically when provider changes
+    receiptProvider.addListener(() {
+      if (_selectedDays == -1) {
+        // Update only if "All History" is selected
+        setState(() {
+          _startDate = receiptProvider.oldestDate;
+          _endDate = receiptProvider.newestDate;
+        });
+      }
+    });
+
+    _initializeDates(receiptProvider);
+  }
+
+  void _initializeDates(ReceiptProvider receiptProvider) {
     final oldestDate = receiptProvider.oldestDate;
     final newestDate = receiptProvider.newestDate;
 
@@ -48,33 +64,34 @@ class CalendarFilterWidgetState extends State<CalendarFilterWidget> {
       _startDate ??= oldestDate;
       _endDate ??= newestDate;
 
-      // Check for All History dynamically
+      // Dynamically set _selectedDays based on the initial dates
       if (_startDate == oldestDate && _endDate == newestDate) {
         _selectedDays = -1; // All History
-      }
-      // Check for Current Year
-      else if (_startDate?.day == 1 &&
-          _startDate?.month == 1 &&
-          _startDate?.year == DateTime.now().year &&
-          _endDate?.day == DateTime.now().day &&
-          _endDate?.month == DateTime.now().month &&
-          _endDate?.year == DateTime.now().year) {
+      } else if (_isCurrentYear()) {
         _selectedDays = -2; // Current Year
-      }
-      // Check for Current Month
-      else if (_startDate?.day == 1 &&
-          _startDate?.month == DateTime.now().month &&
-          _startDate?.year == DateTime.now().year &&
-          _endDate?.day == DateTime.now().day &&
-          _endDate?.month == DateTime.now().month &&
-          _endDate?.year == DateTime.now().year) {
+      } else if (_isCurrentMonth()) {
         _selectedDays = -3; // Current Month
-      }
-      // Otherwise, calculate days difference
-      else if (_endDate != null && _startDate != null) {
+      } else if (_startDate != null && _endDate != null) {
         _selectedDays = _endDate!.difference(_startDate!).inDays;
       }
     });
+  }
+
+  bool _isCurrentYear() {
+    final now = DateTime.now();
+    return _startDate?.year == now.year &&
+        _startDate?.month == 1 &&
+        _startDate?.day == 1 &&
+        _endDate?.year == now.year;
+  }
+
+  bool _isCurrentMonth() {
+    final now = DateTime.now();
+    return _startDate?.year == now.year &&
+        _startDate?.month == now.month &&
+        _startDate?.day == 1 &&
+        _endDate?.year == now.year &&
+        _endDate?.month == now.month;
   }
 
   void _updateRange(int days) {

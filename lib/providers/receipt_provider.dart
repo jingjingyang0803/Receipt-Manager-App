@@ -650,6 +650,10 @@ class ReceiptProvider extends ChangeNotifier {
     if (_userEmail != null) {
       await _receiptService.addReceipt(
           email: _userEmail!, receiptData: receiptData);
+
+      // Update oldest and newest dates
+      loadOldestAndNewestDates();
+
       notifyListeners();
     }
   }
@@ -665,6 +669,10 @@ class ReceiptProvider extends ChangeNotifier {
         receiptId: receiptId,
         updatedData: updatedData,
       );
+
+      // Update oldest and newest dates
+      loadOldestAndNewestDates();
+
       notifyListeners();
     }
   }
@@ -673,6 +681,10 @@ class ReceiptProvider extends ChangeNotifier {
   Future<void> deleteReceipt(String receiptId) async {
     if (_userEmail != null) {
       await _receiptService.deleteReceipt(_userEmail!, receiptId);
+
+      // Update oldest and newest dates
+      loadOldestAndNewestDates();
+
       notifyListeners();
     }
   }
