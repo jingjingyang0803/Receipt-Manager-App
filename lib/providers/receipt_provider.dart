@@ -392,18 +392,22 @@ class ReceiptProvider extends ChangeNotifier {
 
     // Apply filtering logic
     _filteredReceipts = _allReceipts.where((receipt) {
-      final categoryId = receipt['categoryId'] ?? 'unknown';
+      final categoryId = receipt['categoryId'];
       final paymentMethod = receipt['paymentMethod'] ?? 'unknown';
       final date = (receipt['date'] as Timestamp?)?.toDate() ?? DateTime(2000);
 
+      // Match categories
       final matchesCategory = _selectedCategoryIds.isEmpty ||
-          _selectedCategoryIds.contains(categoryId);
+          _selectedCategoryIds.contains(categoryId) ||
+          (categoryId == null && _selectedCategoryIds.contains('null'));
 
-      bool matchesPaymentMethod = _selectedPaymentMethods.isEmpty ||
+      // Match payment methods
+      final matchesPaymentMethod = _selectedPaymentMethods.isEmpty ||
           _selectedPaymentMethods.contains(paymentMethod) ||
           (_selectedPaymentMethods.contains('Others') &&
               !primaryMethods.contains(paymentMethod));
 
+      // Match date range
       final matchesDate = (_startDate == null || !date.isBefore(_startDate!)) &&
           (_endDate == null || !date.isAfter(_endDate!));
 
