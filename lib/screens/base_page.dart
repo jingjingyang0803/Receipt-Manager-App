@@ -34,7 +34,7 @@ class BasePageState extends State<BasePage> {
 
     final categoryProvider =
         Provider.of<CategoryProvider>(context, listen: false);
-    categoryProvider.loadUserCategories();
+    await categoryProvider.loadUserCategories();
 
     final receiptProvider =
         Provider.of<ReceiptProvider>(context, listen: false);
