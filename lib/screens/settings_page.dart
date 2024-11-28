@@ -72,12 +72,14 @@ class SettingsPageState extends State<SettingsPage> {
   @override
   void dispose() {
     _nameController.dispose(); // Dispose controller when the widget is disposed
+    debugPrint('Disposing SettingsPage widget...');
     super.dispose();
   }
 
   Future<void> _pickImage() async {
     final image = await _picker.pickImage(source: ImageSource.gallery);
-    if (image != null) {
+    if (image != null && mounted) {
+      if (!mounted) return;
       setState(() {
         _profileImage = image; // Temporarily show the image
       });
@@ -85,14 +87,17 @@ class SettingsPageState extends State<SettingsPage> {
       try {
         // Upload the image and update the profile image path
         await userProvider.updateProfileImage(image.path);
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Profile image updated successfully')),
-        );
+        if (mounted) { // Check again before showing the Snackbar
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Profile image updated successfully')),
+          );
+        }
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to update profile image: $e')),
-        );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Failed to update profile image: $e')),
+          );
+        }
       }
     }
   }
@@ -102,6 +107,11 @@ class SettingsPageState extends State<SettingsPage> {
     if (newName.isNotEmpty && newName != userProvider.userName) {
       // Save the updated name to the UserProvider
       await userProvider.updateUserProfile(userName: newName);
+    }
+    if (mounted) {
+      setState(() {
+        _isEditingName = false;
+      });
     }
   }
 
@@ -137,298 +147,286 @@ class SettingsPageState extends State<SettingsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final authProvider =
-        Provider.of<AuthenticationProvider>(context, listen: false);
+    final authProvider = Provider.of<AuthenticationProvider>(context, listen: false);
     final userEmail = authProvider.user?.email;
 
     return Scaffold(
       backgroundColor: light90,
       appBar: AppBar(
-        automaticallyImplyLeading:
-            false, // Removes the default back arrowbackgroundColor: light90,
+        automaticallyImplyLeading: false, // Removes the default back arrow
         backgroundColor: light90,
         elevation: 0,
         iconTheme: IconThemeData(color: Colors.black),
       ),
-      body: Consumer<UserProvider>(
-        builder: (context, userProvider, _) {
-          final profileImagePath = userProvider.profileImagePath;
-
-          return Padding(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+      body: Column(
+        children: [
+          // Profile Section
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8), // Reduced padding
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                // Profile Header
-                Row(
+                // Profile Picture
+                Stack(
+                  alignment: Alignment.bottomRight,
                   children: [
-                    Stack(
-                      alignment: Alignment.bottomRight,
-                      children: [
-                        GestureDetector(
-                          onTap: _pickImage,
-                          child: Container(
-                            width: 80,
-                            height: 80,
-                            padding: const EdgeInsets.all(3),
-                            decoration: BoxDecoration(
-                              color: Colors.transparent,
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: purple80,
-                                width: 2.0,
-                              ),
-                            ),
-                            child: CircleAvatar(
-                              backgroundColor: Colors.transparent,
-                              backgroundImage: _profileImage != null
-                                  ? FileImage(File(_profileImage!.path))
-                                  : userProvider.profileImagePath != null
-                                      ? NetworkImage(
-                                              userProvider.profileImagePath!)
-                                          as ImageProvider
-                                      : null,
-                              radius: 45.0,
-                              child: userProvider.profileImagePath == null
-                                  ? Icon(Icons.person,
-                                      size: 50, color: Colors.grey)
-                                  : null,
-                            ),
-                          ),
+                    GestureDetector(
+                      onTap: _pickImage, // Opens the image picker for changing the profile picture
+                      child: Container(
+                        width: 60, // Reduced size
+                        height: 60, // Reduced size
+                        padding: const EdgeInsets.all(3),
+                        decoration: BoxDecoration(
+                          color: Colors.transparent,
+                          shape: BoxShape.circle,
+                          border: Border.all(color: purple80, width: 2.0),
                         ),
-                      ],
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            userEmail ?? "Email not available",
-                            style: TextStyle(color: purple200, fontSize: 16),
-                          ),
-                          Row(
-                            children: [
-                              if (_isEditingName)
-                                Expanded(
-                                  child: TextFormField(
-                                    controller: _nameController,
-                                    style: TextStyle(
-                                      color: dark75,
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                    decoration: InputDecoration(
-                                      border: InputBorder.none,
-                                      isDense: true,
-                                      hintText: 'Your Name',
-                                      hintStyle: TextStyle(color: Colors.grey),
-                                    ),
-                                  ),
-                                )
-                              else
-                                Expanded(
-                                  child: Text(
-                                    _nameController.text.isEmpty
-                                        ? 'Your Name'
-                                        : _nameController.text,
-                                    style: TextStyle(
-                                      color: dark75,
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                              if (_isEditingName)
-                                Row(
-                                  mainAxisSize: MainAxisSize
-                                      .min, // Shrink row to fit content
-                                  crossAxisAlignment: CrossAxisAlignment
-                                      .center, // Align buttons in center
-                                  children: [
-                                    // Check Button
-                                    SizedBox(
-                                      height: 32, // Small height
-                                      width: 32, // Small width
-                                      child: ElevatedButton(
-                                        style: ElevatedButton.styleFrom(
-                                          shape: CircleBorder(),
-                                          padding: EdgeInsets
-                                              .zero, // No extra padding
-                                          backgroundColor: Colors
-                                              .green, // Green background for "Save"
-                                          elevation: 3, // Slight 3D effect
-                                        ),
-                                        onPressed: () async {
-                                          await _saveUserName();
-                                          setState(() {
-                                            _isEditingName = false;
-                                          });
-                                        },
-                                        child: Icon(
-                                          Icons.check,
-                                          color: Colors.white,
-                                          size: 18, // Small icon size
-                                        ),
-                                      ),
-                                    ),
-                                    SizedBox(
-                                        width: 8), // Adjust gap between buttons
-                                    // Cross Button
-                                    SizedBox(
-                                      height: 32, // Small height
-                                      width: 32, // Small width
-                                      child: ElevatedButton(
-                                        style: ElevatedButton.styleFrom(
-                                          shape: CircleBorder(),
-                                          padding: EdgeInsets
-                                              .zero, // No extra padding
-                                          backgroundColor: Colors
-                                              .red, // Red background for "Cancel"
-                                          elevation: 3, // Slight 3D effect
-                                        ),
-                                        onPressed: () {
-                                          setState(() {
-                                            _isEditingName = false;
-                                            _nameController.text =
-                                                userProvider.userName ?? '';
-                                          });
-                                        },
-                                        child: Icon(
-                                          Icons.close,
-                                          color: Colors.white,
-                                          size: 18, // Small icon size
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                )
-                              else
-                                Container(
-                                  decoration: BoxDecoration(
-                                    color: purple100, // Purple background
-                                    shape: BoxShape.circle,
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black26, // Shadow color
-                                        offset: Offset(2,
-                                            2), // Shadow offset for 3D effect
-                                        blurRadius:
-                                            4, // Blur for soft shadow edges
-                                      ),
-                                    ],
-                                  ),
-                                  child: IconButton(
-                                    icon: Icon(Icons.edit, color: Colors.white),
-                                    onPressed: () {
-                                      setState(() {
-                                        _isEditingName = true;
-                                      });
-                                    },
-                                  ),
-                                ),
-                            ],
-                          ),
-                        ],
+                        child: CircleAvatar(
+                          backgroundColor: Colors.transparent,
+                          backgroundImage: _profileImage != null
+                              ? FileImage(File(_profileImage!.path))
+                              : userProvider.profileImagePath != null
+                              ? NetworkImage(userProvider.profileImagePath!) as ImageProvider
+                              : null,
+                          radius: 30,
+                          child: userProvider.profileImagePath == null
+                              ? Icon(Icons.person, size: 30, color: Colors.grey)
+                              : null,
+                        ),
                       ),
                     ),
                   ],
                 ),
-
-                const SizedBox(height: 20),
+                const SizedBox(width: 12), // Reduced spacing
+                // User Info
                 Expanded(
-                  child: SingleChildScrollView(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: light80,
-                        borderRadius: BorderRadius.circular(20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        userEmail ?? "Email not available",
+                        style: TextStyle(color: purple200, fontSize: 14), // Reduced font size
                       ),
-                      child: Column(
-                        children: [
-                          SettingsMenuItem(
-                            icon: Icons.category_outlined,
-                            text: "Manage Categories",
-                            iconBackgroundColor: purple20,
-                            iconColor: purple100,
-                            onTap: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => CategoryPage(),
-                                  ));
-                            },
-                          ),
-                          Divider(thickness: 1, color: light90),
-                          SettingsMenuItem(
-                            icon: Icons.savings_outlined,
-                            text: "Manage Budgets",
-                            iconBackgroundColor: purple20,
-                            iconColor: purple100,
-                            onTap: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => BudgetPage(),
-                                  ));
-                            },
-                          ),
-                          Divider(thickness: 1, color: light90),
-                          SettingsMenuItem(
-                            icon: Icons.attach_money,
-                            text: "Choose Currency",
-                            iconBackgroundColor: purple20,
-                            iconColor: purple100,
-                            onTap: () => _showCurrencyPicker(context),
-                            trailingTextBuilder: () =>
-                                "$currencyCode $currencySymbol",
-                          ),
-                          Divider(thickness: 1, color: light90),
-                          SettingsMenuItem(
-                            icon: Icons.feedback_outlined,
-                            text: "Feedback",
-                            iconBackgroundColor: purple20,
-                            iconColor: purple100,
-                            onTap: () {
-                              FeedbackDialog.showFeedbackDialog(context);
-                            },
-                          ),
-                          Divider(thickness: 1, color: light90),
-                          SettingsMenuItem(
-                            icon: Icons.logout,
-                            text: "Logout",
-                            iconBackgroundColor: red20,
-                            iconColor: red100,
-                            onTap: () {
-                              showModalBottomSheet(
-                                context: context,
-                                backgroundColor: Colors.transparent,
-                                isScrollControlled: true,
-                                builder: (BuildContext context) {
-                                  return LogoutPopup(
-                                    onConfirm: () {
-                                      Navigator.of(context).pop();
-                                    },
-                                    onCancel: () {
-                                      Navigator.of(context).pop();
-                                    },
-                                  );
-                                },
-                              );
-                            },
-                          ),
-                        ],
+                      _isEditingName
+                          ? TextFormField(
+                        controller: _nameController,
+                        style: TextStyle(
+                          color: dark75,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        decoration: InputDecoration(
+                          border: InputBorder.none,
+                          isDense: true,
+                          hintText: 'Your Name',
+                          hintStyle: TextStyle(color: Colors.grey),
+                        ),
+                      )
+                          : Text(
+                        _nameController.text.isEmpty ? 'Your Name' : _nameController.text,
+                        style: TextStyle(
+                          color: dark75,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                _isEditingName
+                    ? Row(
+                  mainAxisSize: MainAxisSize.min, // Shrink row to fit content
+                  crossAxisAlignment: CrossAxisAlignment.center, // Align buttons in center
+                  children: [
+                    // Check Button
+                    SizedBox(
+                      height: 32, // Small height
+                      width: 32, // Small width
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          shape: CircleBorder(),
+                          padding: EdgeInsets.zero, // No extra padding
+                          backgroundColor: Colors.green, // Green background for "Save"
+                          elevation: 3, // Slight 3D effect
+                        ),
+                        onPressed: () async {
+                          await _saveUserName();
+                          setState(() {
+                            _isEditingName = false;
+                          });
+                        },
+                        child: Icon(
+                          Icons.check,
+                          color: Colors.white,
+                          size: 18, // Small icon size
+                        ),
                       ),
                     ),
+                    SizedBox(width: 8), // Adjust gap between buttons
+                    // Cross Button
+                    SizedBox(
+                      height: 32, // Small height
+                      width: 32, // Small width
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          shape: CircleBorder(),
+                          padding: EdgeInsets.zero, // No extra padding
+                          backgroundColor: Colors.red, // Red background for "Cancel"
+                          elevation: 3, // Slight 3D effect
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _isEditingName = false;
+                            _nameController.text = userProvider.userName ?? '';
+                          });
+                        },
+                        child: Icon(
+                          Icons.close,
+                          color: Colors.white,
+                          size: 18, // Small icon size
+                        ),
+                      ),
+                    ),
+                  ],
+                )
+                    : Container(
+                  decoration: BoxDecoration(
+                    color: purple100, // Purple background
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black26, // Shadow color
+                        offset: Offset(2, 2), // Shadow offset for 3D effect
+                        blurRadius: 4, // Blur for soft shadow edges
+                      ),
+                    ],
+                  ),
+                  width: 40, // Smaller circle size
+                  height: 40, // Smaller circle size
+                  child: IconButton(
+                    icon: Icon(Icons.edit, color: Colors.white, size: 18), // Smaller icon size
+                    onPressed: () {
+                      setState(() {
+                        _isEditingName = true;
+                      });
+                    },
                   ),
                 ),
               ],
             ),
-          );
-        },
+          ),
+
+          // Middle Section: Settings
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.only(top: 8), // Adjust padding to move the section up
+              child: Container(
+                decoration: BoxDecoration(
+                  color: light80,
+                  borderRadius: BorderRadius.vertical(
+                    top: Radius.circular(20), // Rounded corners
+                  ),
+                ),
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SettingsMenuItem(
+                        icon: Icons.category_outlined,
+                        text: "Manage Categories",
+                        iconBackgroundColor: purple20,
+                        iconColor: purple100,
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => CategoryPage()),
+                          ).then((_){
+                           if(mounted){
+                             setState(() {
+                                  // Perform updates only if the widget is still active
+                             });
+                           }
+                          } );
+                        },
+                      ),
+                      SizedBox(height: 1), // Adjusted spacing
+                      SettingsMenuItem(
+                        icon: Icons.savings_outlined,
+                        text: "Manage Budgets",
+                        iconBackgroundColor: purple20,
+                        iconColor: purple100,
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => BudgetPage()),
+                              ). then((_)  {
+                                if (mounted){
+                                  setState(() {
+                                    // Perform updates only if the widget is still active
+                                  });
+                                }
+                          }
+                          );
+                        },
+                      ),
+                      SizedBox(height: 1), // Adjusted spacing
+                      SettingsMenuItem(
+                        icon: Icons.attach_money,
+                        text: "Choose Currency",
+                        iconBackgroundColor: purple20,
+                        iconColor: purple100,
+                        onTap: () => _showCurrencyPicker(context),
+                        trailingTextBuilder: () => "$currencyCode $currencySymbol",
+                      ),
+                      SizedBox(height: 1), // Adjusted spacing
+                      SettingsMenuItem(
+                        icon: Icons.feedback_outlined,
+                        text: "Feedback",
+                        iconBackgroundColor: purple20,
+                        iconColor: purple100,
+                        onTap: () {
+                          FeedbackDialog.showFeedbackDialog(context);
+                        },
+                      ),
+                      SizedBox(height: 1), // Adjusted spacing
+                      SettingsMenuItem(
+                        icon: Icons.logout,
+                        text: "Logout",
+                        iconBackgroundColor: red20,
+                        iconColor: red100,
+                        onTap: () {
+                          showModalBottomSheet(
+                            context: context,
+                            backgroundColor: Colors.transparent,
+                            isScrollControlled: true,
+                            builder: (BuildContext context) {
+                              return LogoutPopup(
+                                onConfirm: () {
+                                  Navigator.of(context).pop();
+                                },
+                                onCancel: () {
+                                  Navigator.of(context).pop();
+                                },
+                              );
+                            },
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
+
+
 }
 
 // Widget for Profile Menu Item
@@ -455,36 +453,43 @@ class SettingsMenuItem extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
-        child: Row(
-          mainAxisAlignment:
-              MainAxisAlignment.spaceBetween, // Space between elements
-          children: [
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: iconBackgroundColor,
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                  child: Icon(icon, color: iconColor, size: 32),
-                ),
-                const SizedBox(width: 16),
-                Text(
-                  text,
-                  style: TextStyle(fontSize: 18, color: Colors.black87),
-                ),
-              ],
-            ),
-            if (trailingTextBuilder != null)
-              Text(
-                trailingTextBuilder!(),
-                style: TextStyle(fontSize: 16, color: Colors.grey.shade700),
+        padding: const EdgeInsets.symmetric(vertical: 6.0), // Compact padding
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white, // White background for cards
+            borderRadius: BorderRadius.circular(12), // Rounded corners
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.shade200, // Light shadow
+                blurRadius: 6, // Soften edges
+                offset: Offset(0, 4), // Vertical shadow
               ),
-          ],
+            ],
+          ),
+          child: ListTile(
+            leading: Container(
+              height: 40,
+              width: 40,
+              decoration: BoxDecoration(
+                color: iconBackgroundColor,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(icon, color: iconColor, size: 20),
+            ),
+            title: Text(
+              text,
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+            ),
+            trailing: trailingTextBuilder != null
+                ? Text(
+              trailingTextBuilder!(),
+              style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
+            )
+                : null,
+          ),
         ),
       ),
     );
   }
 }
+
