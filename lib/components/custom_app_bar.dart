@@ -50,11 +50,38 @@ class CustomAppBarState extends State<CustomAppBar> {
 
         const SizedBox(width: 8),
 
-        // Filter Button
-        IconButton(
-          icon: const Icon(Icons.filter_list_rounded, color: Colors.black),
-          onPressed: () => _openFilterPopup(context),
+        // Filter and Sort Button
+        ElevatedButton.icon(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.transparent, // Match background
+            elevation: 0, // Flat style
+            side: BorderSide(color: purple80), // Border style
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8), // Match corners
+            ),
+            padding: EdgeInsets.symmetric(
+                horizontal: 16, vertical: 8), // Match padding
+            minimumSize: Size(
+                0, 48), // Explicitly set height to match DateRangeContainer
+          ),
+          onPressed: () {
+            _openFilterPopup(context);
+          },
+          icon: Icon(
+            Icons.tune,
+            color: purple80, // Match icon color
+          ),
+          label: Text(
+            'Filter & Sort',
+            style: TextStyle(
+              color: purple80,
+              fontWeight: FontWeight.w500,
+              fontSize: 14,
+            ),
+          ),
         ),
+
+        const SizedBox(width: 8),
       ],
     );
   }
