@@ -97,15 +97,8 @@ class ReceiptProvider extends ChangeNotifier {
 
   set categoryProvider(CategoryProvider categoryProvider) {
     _categoryProvider = categoryProvider;
-    _initializeCategoryProvider(); // Call the asynchronous initialization
-  }
 
-  // Setter for categoryProvider
-  Future<void> _initializeCategoryProvider() async {
-    if (_categoryProvider == null) return;
-    await _categoryProvider?.loadUserCategories();
-
-    // Get all category IDs from the provider
+    // Generate _selectedCategoryIds from the current categories in the provider
     final allCategoryIds = _categoryProvider!.categories
         .map((cat) => cat['id'] as String)
         .toList();
@@ -115,17 +108,19 @@ class ReceiptProvider extends ChangeNotifier {
       allCategoryIds.add('null');
     }
 
+    // Assign to _selectedCategoryIds
     if (_selectedCategoryIds.isEmpty) {
-      // First time initialization
+      // If this is the first initialization, use all available categories
       _selectedCategoryIds = allCategoryIds;
     } else {
-      // Remove any categories no longer available
+      // Otherwise, retain only those IDs that still exist in the updated categories
       _selectedCategoryIds = _selectedCategoryIds
           .where((id) => allCategoryIds.contains(id))
           .toList();
     }
 
-    notifyListeners(); // Notify listeners of the change
+    // Notify listeners to rebuild dependent widgets
+    notifyListeners();
   }
 
   set currencyProvider(CurrencyProvider currencyProvider) {
