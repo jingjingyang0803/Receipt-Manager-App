@@ -78,21 +78,21 @@ class BudgetPageState extends State<BudgetPage> {
                       );
 
                       return Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 6.0), // Adjusted spacing between cards
+                        padding: const EdgeInsets.symmetric(vertical: 6.0), // Spacing between cards
                         child: Container(
                           decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.95), // Slightly reduce the whiteness
+                            color: Colors.grey.shade100,// Slightly brighter box color for contrast
                             borderRadius: BorderRadius.circular(12), // Rounded corners
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.grey.shade300, // Shadow color
-                                blurRadius: 4, // Reduced blur for shadow
-                                offset: Offset(0, 2), // Adjusted shadow position
+                                color: Colors.grey.shade200, // Subtle shadow for depth
+                                blurRadius: 6, // Blurred shadow
+                                offset: Offset(0, 2), // Light shadow offset
                               ),
                             ],
                           ),
                           child: SizedBox(
-                            height: 55, // Reduced height of the box
+                            height: 55, // Adjusted height
                             child: Padding(
                               padding: const EdgeInsets.symmetric(horizontal: 12), // Inner padding
                               child: Row(
@@ -121,7 +121,7 @@ class BudgetPageState extends State<BudgetPage> {
                                         ),
                                         focusedBorder: OutlineInputBorder(
                                           borderRadius: BorderRadius.circular(8),
-                                          borderSide: BorderSide(color: purple100),
+                                          borderSide: BorderSide(color: Colors.grey.shade400),
                                         ),
                                         contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                                       ),
@@ -137,6 +137,8 @@ class BudgetPageState extends State<BudgetPage> {
                           ),
                         ),
                       );
+
+
 
 
 
