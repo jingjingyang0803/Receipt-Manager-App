@@ -446,19 +446,60 @@ class ExtractPageState extends State<ExtractPage> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          SizedBox(height: 30), // Space between buttons
-                          CustomButton(
-                            text: 'Capture from Camera',
-                            backgroundColor: purple20,
-                            textColor: purple100,
-                            onPressed: _captureFromCamera,
+                          SizedBox(height: 40),
+                          GestureDetector(
+                            onTap: _captureFromCamera,
+                            child: Container(
+                              width: 120, // Set width of the card
+                              height: 120, // Set height of the card
+                              decoration: BoxDecoration(
+                                color: purple20,
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(Icons.camera_alt,
+                                      size: 40, color: purple100),
+                                  SizedBox(
+                                      height: 8), // Space between icon and text
+                                  Text(
+                                    'Camera',
+                                    style: TextStyle(
+                                      color: purple100,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                           ),
-                          SizedBox(height: 30), // Space between buttons
-                          CustomButton(
-                            text: 'Pick from Gallery',
-                            backgroundColor: purple100,
-                            textColor: light80,
-                            onPressed: _pickFromGallery,
+                          SizedBox(height: 40), // Space between the two buttons
+                          GestureDetector(
+                            onTap: _pickFromGallery,
+                            child: Container(
+                              width: 120, // Set width of the card
+                              height: 120, // Set height of the card
+                              decoration: BoxDecoration(
+                                color: purple20,
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(Icons.photo, size: 40, color: purple100),
+                                  SizedBox(
+                                      height: 8), // Space between icon and text
+                                  Text(
+                                    'Image',
+                                    style: TextStyle(
+                                      color: purple100,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                           ),
                         ],
                       ),
