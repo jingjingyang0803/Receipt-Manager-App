@@ -69,12 +69,7 @@ class SettingsPageState extends State<SettingsPage> {
     });
   }
 
-  @override
-  void dispose() {
-    _nameController.dispose(); // Dispose controller when the widget is disposed
-    debugPrint('Disposing SettingsPage widget...');
-    super.dispose();
-  }
+
 
   Future<void> _pickImage() async {
     final image = await _picker.pickImage(source: ImageSource.gallery);
