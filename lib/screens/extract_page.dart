@@ -430,81 +430,82 @@ class ExtractPageState extends State<ExtractPage> {
         children: [
           // Static Divider
           Divider(color: Colors.grey.shade300, thickness: 1, height: 1),
-
-          // Scrollable Content
-          Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  // Check if an image is selected
-                  if (_imageFile == null) ...[
-                    // Center the capture and pick buttons when no image is selected
-                    Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          SizedBox(height: 40),
-                          GestureDetector(
-                            onTap: _captureFromCamera,
-                            child: Container(
-                              width: 120, // Set width of the card
-                              height: 120, // Set height of the card
-                              decoration: BoxDecoration(
-                                color: purple20,
-                                borderRadius: BorderRadius.circular(16),
-                              ),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(Icons.camera_alt,
-                                      size: 40, color: purple100),
-                                  SizedBox(
-                                      height: 8), // Space between icon and text
-                                  Text(
-                                    'Camera',
-                                    style: TextStyle(
-                                      color: purple100,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ],
+          if (_imageFile == null) ...[
+            Column(
+              mainAxisAlignment:
+                  MainAxisAlignment.start, // Align the content at the top
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                SizedBox(height: 100), // Add space from the top of the screen
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    GestureDetector(
+                      onTap: _captureFromCamera,
+                      child: Container(
+                        width: 120, // Set width of the card
+                        height: 120, // Set height of the card
+                        decoration: BoxDecoration(
+                          color: purple20,
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.camera_alt, size: 40, color: purple100),
+                            SizedBox(height: 8), // Space between icon and text
+                            Text(
+                              'Camera',
+                              style: TextStyle(
+                                color: purple100,
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
-                          ),
-                          SizedBox(height: 40), // Space between the two buttons
-                          GestureDetector(
-                            onTap: _pickFromGallery,
-                            child: Container(
-                              width: 120, // Set width of the card
-                              height: 120, // Set height of the card
-                              decoration: BoxDecoration(
-                                color: purple20,
-                                borderRadius: BorderRadius.circular(16),
-                              ),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(Icons.photo, size: 40, color: purple100),
-                                  SizedBox(
-                                      height: 8), // Space between icon and text
-                                  Text(
-                                    'Image',
-                                    style: TextStyle(
-                                      color: purple100,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
-                  ] else ...[
+                    SizedBox(width: 40), // Space between the two buttons
+                    GestureDetector(
+                      onTap: _pickFromGallery,
+                      child: Container(
+                        width: 120, // Set width of the card
+                        height: 120, // Set height of the card
+                        decoration: BoxDecoration(
+                          color: purple20,
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.photo, size: 40, color: purple100),
+                            SizedBox(height: 8), // Space between icon and text
+                            Text(
+                              'Image',
+                              style: TextStyle(
+                                color: purple100,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ] else ...[
+            // Scrollable Content
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    // Check if an image is selected
+
                     // Display the image preview and extracted data when an image is selected
                     Container(
                       height: 200,
@@ -665,10 +666,10 @@ class ExtractPageState extends State<ExtractPage> {
                       ],
                     ),
                   ],
-                ],
+                ),
               ),
             ),
-          ),
+          ],
         ],
       ),
     );
