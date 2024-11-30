@@ -81,13 +81,13 @@ class BudgetPageState extends State<BudgetPage> {
                         padding: const EdgeInsets.symmetric(vertical: 6.0), // Spacing between cards
                         child: Container(
                           decoration: BoxDecoration(
-                            color: Colors.grey.shade100,// Slightly brighter box color for contrast
+                            color: Color(0xFFFAFAFA), // Slightly brighter box color for contrast
                             borderRadius: BorderRadius.circular(12), // Rounded corners
                             boxShadow: [
                               BoxShadow(
                                 color: Colors.grey.shade200, // Subtle shadow for depth
-                                blurRadius: 6, // Blurred shadow
-                                offset: Offset(0, 2), // Light shadow offset
+                                blurRadius: 1, // Blurred shadow
+                                offset: Offset(0, 0), // Light shadow offset
                               ),
                             ],
                           ),
@@ -137,6 +137,7 @@ class BudgetPageState extends State<BudgetPage> {
                           ),
                         ),
                       );
+
 
 
 
