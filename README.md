@@ -110,8 +110,13 @@ To get a copy of the project up and running on your local machine, follow these 
 
 ### Utilities and Debugging
 
-- **logger**: Provides structured logging for debugging and tracking app activities.
+- **logger**: Provides structured logging for debugging and tracking app activities.'
+  
+### State Management
 - **provider**: Added for managing state and dependencies within the app.
+
+### Custom Widgets
+- **flutter_custom_month_picker**: Provides a custom month picker for date selection.
 
 ## Receipt OCR (Optical Character Recognition) Feature
 
