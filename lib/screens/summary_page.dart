@@ -1,5 +1,5 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_custom_month_picker/flutter_custom_month_picker.dart';
 import 'package:provider/provider.dart';
 
 import '../constants/app_colors.dart';
@@ -37,7 +37,7 @@ class SummaryPageState extends State<SummaryPage> {
   ];
 
   final List<int> years =
-  List<int>.generate(20, (index) => 2000 + index); // From 2020 to 2039
+      List<int>.generate(20, (index) => 2000 + index); // From 2020 to 2039
 
   @override
   void initState() {
@@ -45,11 +45,11 @@ class SummaryPageState extends State<SummaryPage> {
     // Load data when the widget is initialized
     Future.microtask(() {
       final budgetProvider =
-      Provider.of<BudgetProvider>(context, listen: false);
+          Provider.of<BudgetProvider>(context, listen: false);
       budgetProvider.loadUserBudgets();
 
       final receiptProvider =
-      Provider.of<ReceiptProvider>(context, listen: false);
+          Provider.of<ReceiptProvider>(context, listen: false);
       receiptProvider.fetchAllReceipts();
       setState(() {
         _currencySymbolToDisplay = receiptProvider.currencySymbolToDisplay!;
@@ -63,7 +63,7 @@ class SummaryPageState extends State<SummaryPage> {
 
   void _loadDataForSelectedDate() {
     final receiptProvider =
-    Provider.of<ReceiptProvider>(context, listen: false);
+        Provider.of<ReceiptProvider>(context, listen: false);
 
     logger.i("Loading data for Month: $_month, Year: $_year");
 
@@ -72,85 +72,23 @@ class SummaryPageState extends State<SummaryPage> {
         receiptProvider.groupedReceiptsByCategoryOneMonth!);
   }
 
-  void _showMonthPicker() {
-    showModalBottomSheet(
-      context: context,
-      builder: (BuildContext context) {
-        int tempSelectedMonth = _month;
-
-        return Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            SizedBox(
-              height: 200,
-              child: CupertinoPicker(
-                scrollController:
-                FixedExtentScrollController(initialItem: _month - 1),
-                itemExtent: 36.0,
-                onSelectedItemChanged: (int index) {
-                  tempSelectedMonth = index + 1;
-                },
-                children: months
-                    .map((month) => Text(month, style: TextStyle(fontSize: 24)))
-                    .toList(),
-              ),
-            ),
-            Center(
-              child: TextButton(
-                onPressed: () {
-                  setState(() {
-                    _month = tempSelectedMonth;
-                  });
-                  _loadDataForSelectedDate();
-                  Navigator.pop(context);
-                },
-                child: Text('DONE'),
-              ),
-            ),
-          ],
-        );
+  void _showMonthYearPicker() {
+    showMonthPicker(
+      context,
+      onSelected: (month, year) {
+        setState(() {
+          _month = month;
+          _year = year;
+        });
+        _loadDataForSelectedDate();
       },
-    );
-  }
-
-  void _showYearPicker() {
-    showModalBottomSheet(
-      context: context,
-      builder: (BuildContext context) {
-        int tempSelectedYear = _year;
-        return Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            SizedBox(
-              height: 200,
-              child: CupertinoPicker(
-                scrollController: FixedExtentScrollController(
-                    initialItem: years.indexOf(_year)),
-                itemExtent: 36.0,
-                onSelectedItemChanged: (int index) {
-                  tempSelectedYear = years[index];
-                },
-                children: years
-                    .map((year) =>
-                    Text(year.toString(), style: TextStyle(fontSize: 24)))
-                    .toList(),
-              ),
-            ),
-            Center(
-              child: TextButton(
-                onPressed: () {
-                  setState(() {
-                    _year = tempSelectedYear;
-                  });
-                  _loadDataForSelectedDate();
-                  Navigator.pop(context);
-                },
-                child: Text('DONE'),
-              ),
-            ),
-          ],
-        );
-      },
+      initialSelectedMonth: _month,
+      initialSelectedYear: _year,
+      selectButtonText: 'OK',
+      cancelButtonText: 'CANCEL',
+      highlightColor: purple60,
+      // contentBackgroundColor: Colors.white,
+      // dialogBackgroundColor: Colors.grey[200]
     );
   }
 
@@ -184,41 +122,19 @@ class SummaryPageState extends State<SummaryPage> {
                 thickness: 1,
                 height: 1,
               ),
+              SizedBox(height: 10),
               // Month and Year Picker
-              Container(
-                color: light90,
-                padding: const EdgeInsets.all(10),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    TextButton(
-                      style: TextButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8.0),
-                          side: BorderSide(color: purple60),
-                        ),
-                      ),
-                      onPressed: _showMonthPicker,
-                      child: Text(
-                        months[_month - 1],
-                        style: TextStyle(fontSize: 16, color: purple60),
-                      ),
-                    ),
-                    SizedBox(width: 16),
-                    TextButton(
-                      style: TextButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8.0),
-                          side: BorderSide(color: purple60),
-                        ),
-                      ),
-                      onPressed: _showYearPicker,
-                      child: Text(
-                        _year.toString(),
-                        style: TextStyle(fontSize: 16, color: purple60),
-                      ),
-                    ),
-                  ],
+              TextButton(
+                style: TextButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                    side: BorderSide(color: purple60),
+                  ),
+                ),
+                onPressed: _showMonthYearPicker,
+                child: Text(
+                  '${months[_month - 1]} $_year \u25BE',
+                  style: TextStyle(fontSize: 18, color: purple60),
                 ),
               ),
               // Display total spending
@@ -260,7 +176,7 @@ class SummaryPageState extends State<SummaryPage> {
                     final budgetAmount = budget['amount'];
 
                     final spent =
-                    (expenses?[categoryId]?['total'] ?? 0.0) as double;
+                        (expenses?[categoryId]?['total'] ?? 0.0) as double;
 
                     double ratio = budgetAmount == 0
                         ? (spent > 0 ? 1.0 : 0.0)
@@ -280,7 +196,7 @@ class SummaryPageState extends State<SummaryPage> {
                       child: ListTile(
                         contentPadding: const EdgeInsets.symmetric(
                             vertical: 10, horizontal: 16),
-                        leading: Container(
+                        leading: SizedBox(
                           width: 16, // Bar width
                           height: 50, // Fixed total bar height
                           child: Stack(
@@ -302,7 +218,7 @@ class SummaryPageState extends State<SummaryPage> {
                                       ratio.clamp(0.0,
                                           1.0), // Height proportional to percentage
                                   color:
-                                  getColor(ratio), // Color based on ratio
+                                      getColor(ratio), // Color based on ratio
                                 ),
                               ),
                             ],
