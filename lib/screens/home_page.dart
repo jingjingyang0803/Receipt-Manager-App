@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:receipt_manager/providers/category_provider.dart';
-import 'package:receipt_manager/screens/report_page.dart';
 import 'package:receipt_manager/screens/summary_page.dart';
 
 import '../constants/app_colors.dart';
@@ -26,11 +25,11 @@ class HomePageState extends State<HomePage> {
     super.initState();
 
     final categoryProvider =
-    Provider.of<CategoryProvider>(context, listen: false);
+        Provider.of<CategoryProvider>(context, listen: false);
     categoryProvider.loadUserCategories();
 
     final receiptProvider =
-    Provider.of<ReceiptProvider>(context, listen: false);
+        Provider.of<ReceiptProvider>(context, listen: false);
     receiptProvider.fetchAllReceipts(); // Call once during initialization
     receiptProvider.loadReceiptCount();
     receiptProvider.loadOldestAndNewestDates();
@@ -83,29 +82,10 @@ class HomePageState extends State<HomePage> {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text(
-              'Your Total Receipts',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w400,
-                color: Colors.grey[600],
-                fontFamily: 'Roboto',
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              receiptCount.toString(),
-              style: const TextStyle(
-                fontSize: 42,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
-                fontFamily: 'Roboto',
-              ),
-            ),
             const SizedBox(height: 16),
             Container(
-              padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
-              margin: const EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 18),
+              margin: const EdgeInsets.symmetric(horizontal: 20),
               decoration: BoxDecoration(
                 color: purple20,
                 borderRadius: BorderRadius.circular(12),
@@ -125,11 +105,20 @@ class HomePageState extends State<HomePage> {
               child: Column(
                 children: [
                   Text(
-                    'Tracking Period',
+                    'Your Total Receipts',
                     style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.grey[700],
+                      fontSize: 24,
+                      fontWeight: FontWeight.w400,
+                      color: Colors.black,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    receiptCount.toString(),
+                    style: const TextStyle(
+                      fontSize: 42,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
                       fontFamily: 'Roboto',
                     ),
                   ),
@@ -145,7 +134,7 @@ class HomePageState extends State<HomePage> {
                               Icon(
                                 Icons.arrow_back_ios,
                                 size: 18,
-                                color: Colors.grey[500],
+                                color: Colors.black,
                               ),
                               const SizedBox(width: 6),
                               Text(
@@ -153,7 +142,7 @@ class HomePageState extends State<HomePage> {
                                 style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w600,
-                                  color: Colors.grey[500],
+                                  color: Colors.black,
                                 ),
                               ),
                             ],
@@ -185,14 +174,14 @@ class HomePageState extends State<HomePage> {
                                 style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w600,
-                                  color: Colors.grey[500],
+                                  color: Colors.black,
                                 ),
                               ),
                               const SizedBox(width: 6),
                               Icon(
                                 Icons.arrow_forward_ios,
                                 size: 18,
-                                color: Colors.grey[500],
+                                color: Colors.black,
                               ),
                             ],
                           ),
@@ -257,12 +246,12 @@ class HomePageState extends State<HomePage> {
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withOpacity(0.3),
-                    offset: const Offset(4, 4),
+                    offset: const Offset(1, 1),
                     blurRadius: 10,
                   ),
                   BoxShadow(
                     color: Colors.white.withOpacity(0.9),
-                    offset: const Offset(-4, -4),
+                    offset: const Offset(-1, -1),
                     blurRadius: 10,
                   ),
                 ],
