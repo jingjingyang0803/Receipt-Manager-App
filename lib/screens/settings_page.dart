@@ -480,6 +480,7 @@ class SettingsMenuItem extends StatelessWidget {
               ),
             ],
           ),
+
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16), // Inner padding
             child: Row(
