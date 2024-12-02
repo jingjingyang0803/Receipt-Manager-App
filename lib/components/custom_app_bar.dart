@@ -50,37 +50,42 @@ class CustomAppBarState extends State<CustomAppBar> {
 
         const SizedBox(width: 8),
 
-        // Filter and Sort Button
-        ElevatedButton.icon(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.transparent, // Match background
-            elevation: 0, // Flat style
-            side: BorderSide(color: purple80), // Border style
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8), // Match corners
-            ),
-            padding: EdgeInsets.symmetric(
-                horizontal: 16, vertical: 8), // Match padding
-            minimumSize: Size(
-                0, 48), // Explicitly set height to match DateRangeContainer
+        Container(
+          decoration: BoxDecoration(
+            border: Border.all(color: purple80), // Add border color
+            borderRadius: BorderRadius.circular(8), // Rounded borders
           ),
-          onPressed: () {
-            _openFilterPopup(context);
-          },
-          icon: Icon(
-            Icons.tune,
-            color: purple80, // Match icon color
-          ),
-          label: Text(
-            'Filter & Sort',
-            style: TextStyle(
-              color: purple80,
-              fontWeight: FontWeight.w500,
-              fontSize: 14,
-            ),
+          padding: EdgeInsets.all(0), // Add padding
+          child: Row(
+            mainAxisAlignment:
+                MainAxisAlignment.start, // Align items at the start
+            mainAxisSize: MainAxisSize
+                .min, // Ensure Row takes only as much space as its children
+            children: [
+              IconButton(
+                icon: Icon(Icons.filter_alt_outlined, color: purple80),
+                onPressed: () {
+                  _openFilterPopup(context);
+                },
+                padding: EdgeInsets
+                    .zero, // Remove internal padding from the IconButton
+                constraints:
+                    BoxConstraints(), // Ensure no additional constraints or space
+              ),
+              GestureDetector(
+                onTap: () {
+                  _openFilterPopup(context);
+                },
+                child: Icon(
+                  Icons.sort,
+                  color: purple80,
+                  size: 24, // Adjust icon size as needed
+                ),
+              ),
+              const SizedBox(width: 10),
+            ],
           ),
         ),
-
         const SizedBox(width: 8),
       ],
     );
