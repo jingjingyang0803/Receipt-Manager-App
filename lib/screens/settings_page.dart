@@ -490,10 +490,10 @@ class SettingsMenuItem extends StatelessWidget {
       onTap: onTap,
       child: Padding(
         padding: EdgeInsets.symmetric(
-            vertical: screenHeight * 0.008), // Dynamic vertical padding
+            vertical: screenHeight * 0.0075), // Dynamic vertical padding
         child: Container(
           padding: EdgeInsets.symmetric(
-              vertical: screenHeight * 0.01), // Dynamic vertical padding
+              vertical: screenHeight * 0.008), // Dynamic vertical padding
           decoration: BoxDecoration(
             color: Colors.white, // White background for cards
             borderRadius: BorderRadius.circular(
@@ -516,7 +516,7 @@ class SettingsMenuItem extends StatelessWidget {
               ),
               child: Icon(icon,
                   color: iconColor,
-                  size: screenWidth * 0.05), // Dynamic icon size
+                  size: screenWidth * 0.06), // Dynamic icon size
             ),
             title: Text(
               text,
