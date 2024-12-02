@@ -63,38 +63,6 @@ class FilterPopupState extends State<FilterPopup> {
         children: [
           const CustomDivider(),
           const SizedBox(height: 16),
-          const Text('Choose Payment Method',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
-          const SizedBox(height: 8),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: ['Credit Card', 'Debit Card', 'Cash', 'Others']
-                .map((filter) => CustomOptionWidget(
-                      label: filter,
-                      isSelected: selectedPaymentMethods.contains(filter),
-                      onSelected: (_) {
-                        debugPrint(
-                            "selectedPaymentMethods: $selectedPaymentMethods");
-                        setState(() {
-                          if (selectedPaymentMethods.contains(filter)) {
-                            // If already selected, remove it
-                            selectedPaymentMethods.remove(filter);
-                            debugPrint("Removed Payment Method: $filter");
-                          } else {
-                            // If not selected, add it
-                            selectedPaymentMethods.add(filter);
-                            debugPrint("Added Payment Method: $filter");
-                          }
-                        });
-                        // Log the updated state
-                        debugPrint(
-                            "Updated Payment Methods: $selectedPaymentMethods");
-                      },
-                    ))
-                .toList(),
-          ),
-          const SizedBox(height: 16),
           const Text('Sort By',
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
           const SizedBox(height: 8),
@@ -192,6 +160,38 @@ class FilterPopupState extends State<FilterPopup> {
                 ),
               ],
             ),
+          const SizedBox(height: 8),
+          const Text('Choose Payment Method',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+          const SizedBox(height: 16),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: ['Credit Card', 'Debit Card', 'Cash', 'Others']
+                .map((filter) => CustomOptionWidget(
+                      label: filter,
+                      isSelected: selectedPaymentMethods.contains(filter),
+                      onSelected: (_) {
+                        debugPrint(
+                            "selectedPaymentMethods: $selectedPaymentMethods");
+                        setState(() {
+                          if (selectedPaymentMethods.contains(filter)) {
+                            // If already selected, remove it
+                            selectedPaymentMethods.remove(filter);
+                            debugPrint("Removed Payment Method: $filter");
+                          } else {
+                            // If not selected, add it
+                            selectedPaymentMethods.add(filter);
+                            debugPrint("Added Payment Method: $filter");
+                          }
+                        });
+                        // Log the updated state
+                        debugPrint(
+                            "Updated Payment Methods: $selectedPaymentMethods");
+                      },
+                    ))
+                .toList(),
+          ),
           const SizedBox(height: 24),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,

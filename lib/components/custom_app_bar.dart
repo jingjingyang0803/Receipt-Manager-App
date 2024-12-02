@@ -62,16 +62,7 @@ class CustomAppBarState extends State<CustomAppBar> {
             mainAxisSize: MainAxisSize
                 .min, // Ensure Row takes only as much space as its children
             children: [
-              IconButton(
-                icon: Icon(Icons.filter_alt_outlined, color: purple80),
-                onPressed: () {
-                  _openFilterPopup(context);
-                },
-                padding: EdgeInsets
-                    .zero, // Remove internal padding from the IconButton
-                constraints:
-                    BoxConstraints(), // Ensure no additional constraints or space
-              ),
+              const SizedBox(width: 10),
               GestureDetector(
                 onTap: () {
                   _openFilterPopup(context);
@@ -82,7 +73,16 @@ class CustomAppBarState extends State<CustomAppBar> {
                   size: 24, // Adjust icon size as needed
                 ),
               ),
-              const SizedBox(width: 10),
+              IconButton(
+                icon: Icon(Icons.filter_alt_outlined, color: purple80),
+                onPressed: () {
+                  _openFilterPopup(context);
+                },
+                padding: EdgeInsets
+                    .zero, // Remove internal padding from the IconButton
+                constraints:
+                    BoxConstraints(), // Ensure no additional constraints or space
+              ),
             ],
           ),
         ),
