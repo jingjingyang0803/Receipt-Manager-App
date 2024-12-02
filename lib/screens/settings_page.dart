@@ -337,7 +337,7 @@ class SettingsPageState extends State<SettingsPage> {
                   child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-
+                        SizedBox(height: 10), // Adjusted spacing
                         SettingsMenuItem(
                           icon: Icons.category_outlined,
                           text: "Manage Categories",
@@ -357,7 +357,7 @@ class SettingsPageState extends State<SettingsPage> {
                             });
                           },
                         ),
-                        SizedBox(height: 15), // Adjusted spacing
+                        SizedBox(height: 10), // Adjusted spacing
                         SettingsMenuItem(
                           icon: Icons.savings_outlined,
                           text: "Manage Budgets",
@@ -377,7 +377,7 @@ class SettingsPageState extends State<SettingsPage> {
                             });
                           },
                         ),
-                        SizedBox(height: 15), // Adjusted spacing
+                        SizedBox(height: 10), // Adjusted spacing
                         SettingsMenuItem(
                           icon: Icons.attach_money,
                           text: "Choose Currency",
@@ -389,7 +389,7 @@ class SettingsPageState extends State<SettingsPage> {
                           trailingTextBuilder: () => "$currencyCode $currencySymbol", // Add the trailing text for currency
                         ),
 
-                        SizedBox(height: 15), // Adjusted spacing
+                        SizedBox(height: 10), // Adjusted spacing
                         SettingsMenuItem(
                           icon: Icons.feedback_outlined,
                           text: "Feedback",
@@ -399,7 +399,7 @@ class SettingsPageState extends State<SettingsPage> {
                             FeedbackDialog.showFeedbackDialog(context);
                           },
                         ),
-                        SizedBox(height: 15), // Adjusted spacing
+                        SizedBox(height: 10), // Adjusted spacing
                         SettingsMenuItem(
                           icon: Icons.logout,
                           text: "Logout",
