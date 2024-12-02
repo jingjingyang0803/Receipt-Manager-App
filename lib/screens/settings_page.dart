@@ -15,6 +15,7 @@ import '../providers/authentication_provider.dart';
 import '../providers/user_provider.dart';
 import 'category_page.dart';
 
+
 class SettingsPage extends StatefulWidget {
   static const String id = 'settings_page';
 
@@ -150,6 +151,7 @@ class SettingsPageState extends State<SettingsPage> {
     final authProvider = Provider.of<AuthenticationProvider>(context, listen: false);
     final userEmail = authProvider.user?.email;
 
+
     return Scaffold(
       backgroundColor: light90,
       appBar: AppBar(
@@ -160,9 +162,11 @@ class SettingsPageState extends State<SettingsPage> {
       ),
       body: Column(
         children: [
-          // Profile Section
+
+
+
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8), // Reduced padding
+            padding: const EdgeInsets.symmetric(horizontal: 26, vertical: 26), // Increased vertical padding
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
@@ -173,13 +177,13 @@ class SettingsPageState extends State<SettingsPage> {
                     GestureDetector(
                       onTap: _pickImage, // Opens the image picker for changing the profile picture
                       child: Container(
-                        width: 60, // Reduced size
-                        height: 60, // Reduced size
+                        width: 100, // Increased size
+                        height: 100, // Increased size
                         padding: const EdgeInsets.all(3),
                         decoration: BoxDecoration(
                           color: Colors.transparent,
                           shape: BoxShape.circle,
-                          border: Border.all(color: purple80, width: 2.0),
+                          border: Border.all(color: purple80, width: 3.0), // Thicker border
                         ),
                         child: CircleAvatar(
                           backgroundColor: Colors.transparent,
@@ -188,16 +192,16 @@ class SettingsPageState extends State<SettingsPage> {
                               : userProvider.profileImagePath != null
                               ? NetworkImage(userProvider.profileImagePath!) as ImageProvider
                               : null,
-                          radius: 30,
+                          radius: 45, // Increased radius
                           child: userProvider.profileImagePath == null
-                              ? Icon(Icons.person, size: 30, color: Colors.grey)
+                              ? Icon(Icons.person, size: 50, color: Colors.grey) // Larger icon
                               : null,
                         ),
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(width: 12), // Reduced spacing
+                const SizedBox(width: 16), // Increased spacing
                 // User Info
                 Expanded(
                   child: Column(
@@ -205,14 +209,14 @@ class SettingsPageState extends State<SettingsPage> {
                     children: [
                       Text(
                         userEmail ?? "Email not available",
-                        style: TextStyle(color: purple200, fontSize: 14), // Reduced font size
+                        style: TextStyle(color: purple200, fontSize: 18), // Larger font size
                       ),
                       _isEditingName
                           ? TextFormField(
                         controller: _nameController,
                         style: TextStyle(
                           color: dark75,
-                          fontSize: 20,
+                          fontSize: 24, // Increased font size
                           fontWeight: FontWeight.bold,
                         ),
                         decoration: InputDecoration(
@@ -226,7 +230,7 @@ class SettingsPageState extends State<SettingsPage> {
                         _nameController.text.isEmpty ? 'Your Name' : _nameController.text,
                         style: TextStyle(
                           color: dark75,
-                          fontSize: 20,
+                          fontSize: 24, // Increased font size
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -240,14 +244,14 @@ class SettingsPageState extends State<SettingsPage> {
                   children: [
                     // Check Button
                     SizedBox(
-                      height: 32, // Small height
-                      width: 32, // Small width
+                      height: 40,
+                      width: 40,
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           shape: CircleBorder(),
-                          padding: EdgeInsets.zero, // No extra padding
-                          backgroundColor: Colors.green, // Green background for "Save"
-                          elevation: 3, // Slight 3D effect
+                          padding: EdgeInsets.zero,
+                          backgroundColor: Colors.green,
+                          elevation: 3,
                         ),
                         onPressed: () async {
                           await _saveUserName();
@@ -258,21 +262,21 @@ class SettingsPageState extends State<SettingsPage> {
                         child: Icon(
                           Icons.check,
                           color: Colors.white,
-                          size: 18, // Small icon size
+                          size: 20,
                         ),
                       ),
                     ),
-                    SizedBox(width: 8), // Adjust gap between buttons
+                    SizedBox(width: 8),
                     // Cross Button
                     SizedBox(
-                      height: 32, // Small height
-                      width: 32, // Small width
+                      height: 40,
+                      width: 40,
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           shape: CircleBorder(),
-                          padding: EdgeInsets.zero, // No extra padding
-                          backgroundColor: Colors.red, // Red background for "Cancel"
-                          elevation: 3, // Slight 3D effect
+                          padding: EdgeInsets.zero,
+                          backgroundColor: Colors.red,
+                          elevation: 3,
                         ),
                         onPressed: () {
                           setState(() {
@@ -283,7 +287,7 @@ class SettingsPageState extends State<SettingsPage> {
                         child: Icon(
                           Icons.close,
                           color: Colors.white,
-                          size: 18, // Small icon size
+                          size: 20,
                         ),
                       ),
                     ),
@@ -291,20 +295,20 @@ class SettingsPageState extends State<SettingsPage> {
                 )
                     : Container(
                   decoration: BoxDecoration(
-                    color: purple100, // Purple background
+                    color: purple100,
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black26, // Shadow color
-                        offset: Offset(2, 2), // Shadow offset for 3D effect
-                        blurRadius: 4, // Blur for soft shadow edges
+                        color: Colors.black26,
+                        offset: Offset(2, 2),
+                        blurRadius: 4,
                       ),
                     ],
                   ),
-                  width: 40, // Smaller circle size
-                  height: 40, // Smaller circle size
+                  width: 50,
+                  height: 50,
                   child: IconButton(
-                    icon: Icon(Icons.edit, color: Colors.white, size: 18), // Smaller icon size
+                    icon: Icon(Icons.edit, color: Colors.white, size: 22), // Larger icon
                     onPressed: () {
                       setState(() {
                         _isEditingName = true;
@@ -316,7 +320,8 @@ class SettingsPageState extends State<SettingsPage> {
             ),
           ),
 
-          // Middle Section: Settings
+
+
           Expanded(
             child: Padding(
               padding: const EdgeInsets.only(top: 8), // Adjust padding to move the section up
@@ -332,90 +337,97 @@ class SettingsPageState extends State<SettingsPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      SettingsMenuItem(
-                        icon: Icons.category_outlined,
-                        text: "Manage Categories",
-                        iconBackgroundColor: purple20,
-                        iconColor: purple100,
-                        onTap: () {
-                          Navigator.push(
+
+                        SettingsMenuItem(
+                          icon: Icons.category_outlined,
+                          text: "Manage Categories",
+                          iconBackgroundColor: purple20,
+                          iconColor: purple100,
+                          onTap: () {
+                            Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => CategoryPage()),
-                          ).then((_){
-                           if(mounted){
-                             setState(() {
+                                  builder: (context) => CategoryPage()),
+                            ).then((_) {
+                              if (mounted) {
+                                setState(() {
                                   // Perform updates only if the widget is still active
-                             });
-                           }
-                          } );
-                        },
-                      ),
-                      SizedBox(height: 1), // Adjusted spacing
-                      SettingsMenuItem(
-                        icon: Icons.savings_outlined,
-                        text: "Manage Budgets",
-                        iconBackgroundColor: purple20,
-                        iconColor: purple100,
-                        onTap: () {
-                          Navigator.push(
+                                });
+                              }
+                            });
+                          },
+                        ),
+                        SizedBox(height: 15), // Adjusted spacing
+                        SettingsMenuItem(
+                          icon: Icons.savings_outlined,
+                          text: "Manage Budgets",
+                          iconBackgroundColor: purple20,
+                          iconColor: purple100,
+                          onTap: () {
+                            Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => BudgetPage()),
-                              ). then((_)  {
-                                if (mounted){
-                                  setState(() {
-                                    // Perform updates only if the widget is still active
-                                  });
-                                }
-                          }
-                          );
-                        },
-                      ),
-                      SizedBox(height: 1), // Adjusted spacing
+                                  builder: (context) => BudgetPage()),
+                            ).then((_) {
+                              if (mounted) {
+                                setState(() {
+                                  // Perform updates only if the widget is still active
+                                });
+                              }
+                            });
+                          },
+                        ),
+                      SizedBox(height: 15), // Adjusted spacing
                       SettingsMenuItem(
                         icon: Icons.attach_money,
                         text: "Choose Currency",
                         iconBackgroundColor: purple20,
                         iconColor: purple100,
-                        onTap: () => _showCurrencyPicker(context),
-                        trailingTextBuilder: () => "$currencyCode $currencySymbol",
-                      ),
-                      SizedBox(height: 1), // Adjusted spacing
-                      SettingsMenuItem(
-                        icon: Icons.feedback_outlined,
-                        text: "Feedback",
-                        iconBackgroundColor: purple20,
-                        iconColor: purple100,
                         onTap: () {
-                          FeedbackDialog.showFeedbackDialog(context);
+                          _showCurrencyPicker(context);
                         },
+                        trailingTextBuilder: () => "$currencyCode $currencySymbol", // Add the trailing text for currency
                       ),
-                      SizedBox(height: 1), // Adjusted spacing
-                      SettingsMenuItem(
-                        icon: Icons.logout,
-                        text: "Logout",
-                        iconBackgroundColor: red20,
-                        iconColor: red100,
-                        onTap: () {
-                          showModalBottomSheet(
-                            context: context,
-                            backgroundColor: Colors.transparent,
-                            isScrollControlled: true,
-                            builder: (BuildContext context) {
-                              return LogoutPopup(
-                                onConfirm: () {
-                                  Navigator.of(context).pop();
-                                },
-                                onCancel: () {
-                                  Navigator.of(context).pop();
-                                },
-                              );
-                            },
-                          );
-                        },
-                      ),
-                    ],
+
+                      SizedBox(height: 15), // Adjusted spacing
+                        SettingsMenuItem(
+                          icon: Icons.feedback_outlined,
+                          text: "Feedback",
+                          iconBackgroundColor: purple20,
+                          iconColor: purple100,
+                          onTap: () {
+                            FeedbackDialog.showFeedbackDialog(context);
+                          },
+                        ),
+                        SizedBox(height: 15), // Adjusted spacing
+                        SettingsMenuItem(
+                          icon: Icons.logout,
+                          text: "Logout",
+                          iconBackgroundColor: red20,
+                          iconColor: red100,
+                          onTap: () {
+                            showModalBottomSheet(
+                              context: context,
+                              backgroundColor: Colors.transparent,
+                              isScrollControlled: true,
+                              builder: (BuildContext context) {
+                                return LogoutPopup(
+                                  onConfirm: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  onCancel: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                );
+                              },
+                            );
+                          },
+                        ),
+                        SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.2, // Dynamic bottom spacing
+                        ),
+                      ]
+
                   ),
                 ),
               ),
@@ -429,14 +441,14 @@ class SettingsPageState extends State<SettingsPage> {
 
 }
 
-// Widget for Profile Menu Item
+
 class SettingsMenuItem extends StatelessWidget {
   final IconData icon;
   final String text;
   final Color iconBackgroundColor;
   final Color iconColor;
   final VoidCallback onTap;
-  final String Function()? trailingTextBuilder; // Callback for dynamic text
+  final String Function()? trailingTextBuilder;
 
   const SettingsMenuItem({
     super.key,
@@ -450,46 +462,66 @@ class SettingsMenuItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
     return GestureDetector(
       onTap: onTap,
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 6.0), // Compact padding
+        padding: const EdgeInsets.symmetric(vertical: 8.0), // Adjust spacing
         child: Container(
+          height: screenHeight * 0.08, // Dynamic height based on screen size
           decoration: BoxDecoration(
-            color: Colors.white, // White background for cards
-            borderRadius: BorderRadius.circular(12), // Rounded corners
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
             boxShadow: [
               BoxShadow(
-                color: Colors.grey.shade200, // Light shadow
-                blurRadius: 6, // Soften edges
-                offset: Offset(0, 4), // Vertical shadow
+                color: Colors.grey.shade200,
+                blurRadius: 6,
+                offset: Offset(0, 4),
               ),
             ],
           ),
-          child: ListTile(
-            leading: Container(
-              height: 40,
-              width: 40,
-              decoration: BoxDecoration(
-                color: iconBackgroundColor,
-                shape: BoxShape.circle,
-              ),
-              child: Icon(icon, color: iconColor, size: 20),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16), // Inner padding
+            child: Row(
+              children: [
+                // Icon Section
+                Container(
+                  height: 60,
+                  width: 60,
+                  decoration: BoxDecoration(
+                    color: iconBackgroundColor,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(icon, color: iconColor, size: 24),
+                ),
+                SizedBox(width: 12),
+                // Text Section
+                Expanded(
+                  child: Text(
+                    text,
+                    style: TextStyle(
+                      fontSize: screenHeight * 0.021, // Dynamic text size
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+                // Trailing Text or Icon
+                trailingTextBuilder != null
+                    ? Text(
+                  trailingTextBuilder!(),
+                  style: TextStyle(
+                    fontSize: screenHeight * 0.018, // Slightly smaller text for trailing
+                    color: Colors.grey.shade600,
+                  ),
+                )
+                    : Container(),
+              ],
             ),
-            title: Text(
-              text,
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-            ),
-            trailing: trailingTextBuilder != null
-                ? Text(
-              trailingTextBuilder!(),
-              style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
-            )
-                : null,
           ),
         ),
       ),
     );
   }
+
 }
 

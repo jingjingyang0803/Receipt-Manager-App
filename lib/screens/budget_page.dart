@@ -77,53 +77,83 @@ class BudgetPageState extends State<BudgetPage> {
                             updatedBudgets[index]['amount'].toStringAsFixed(2),
                       );
 
+
+
+
+
                       return Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 6.0), // Spacing between cards
+                        padding: EdgeInsets.symmetric(
+                          vertical: MediaQuery.of(context).size.height * 0.015, // Slightly increased vertical padding
+                        ),
                         child: Container(
                           decoration: BoxDecoration(
                             color: Color(0xFFFAFAFA), // Slightly brighter box color for contrast
-                            borderRadius: BorderRadius.circular(12), // Rounded corners
+                            borderRadius: BorderRadius.circular(
+                              MediaQuery.of(context).size.width * 0.04, // Dynamic border radius
+                            ),
                             boxShadow: [
                               BoxShadow(
                                 color: Colors.grey.shade200, // Subtle shadow for depth
-                                blurRadius: 1, // Blurred shadow
+                                blurRadius: MediaQuery.of(context).size.width * 0.006, // Dynamic shadow blur
                                 offset: Offset(0, 0), // Light shadow offset
                               ),
                             ],
                           ),
                           child: SizedBox(
-                            height: 55, // Adjusted height
+                            height: MediaQuery.of(context).size.height * 0.09, // Larger height for the box
                             child: Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 12), // Inner padding
+                              padding: EdgeInsets.symmetric(
+                                horizontal: MediaQuery.of(context).size.width * 0.04, // Inner horizontal padding
+                              ),
                               child: Row(
                                 children: [
                                   // Category Icon
-                                  Text(categoryIcon, style: TextStyle(fontSize: 24)),
-                                  const SizedBox(width: 12), // Space between icon and text
+                                  Text(
+                                    categoryIcon,
+                                    style: TextStyle(
+                                      fontSize: MediaQuery.of(context).size.width * 0.07, // Larger font size for icon
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: MediaQuery.of(context).size.width * 0.04, // Increased space between icon and text
+                                  ),
                                   // Category Name
                                   Expanded(
                                     child: Text(
                                       categoryName,
-                                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                                      style: TextStyle(
+                                        fontSize: MediaQuery.of(context).size.width * 0.045, // Slightly larger font size
+                                        fontWeight: FontWeight.w500,
+                                      ),
                                     ),
                                   ),
                                   // Amount Input
                                   SizedBox(
-                                    width: 70,
+                                    width: MediaQuery.of(context).size.width * 0.25, // Larger width for the input box
                                     child: TextFormField(
                                       controller: controller,
                                       keyboardType: TextInputType.numberWithOptions(decimal: true),
                                       decoration: InputDecoration(
                                         hintText: "0.00",
                                         border: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(8),
+                                          borderRadius: BorderRadius.circular(
+                                            MediaQuery.of(context).size.width * 0.03, // Larger border radius
+                                          ),
                                           borderSide: BorderSide(color: Colors.grey.shade300),
                                         ),
                                         focusedBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(8),
+                                          borderRadius: BorderRadius.circular(
+                                            MediaQuery.of(context).size.width * 0.03, // Larger border radius
+                                          ),
                                           borderSide: BorderSide(color: Colors.grey.shade400),
                                         ),
-                                        contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                        contentPadding: EdgeInsets.symmetric(
+                                          horizontal: MediaQuery.of(context).size.width * 0.03, // More horizontal padding
+                                          vertical: MediaQuery.of(context).size.height * 0.015, // More vertical padding
+                                        ),
+                                      ),
+                                      style: TextStyle(
+                                        fontSize: MediaQuery.of(context).size.width * 0.045, // Larger font size for input text
                                       ),
                                       onChanged: (value) {
                                         updatedBudgets[index]['amount'] =
@@ -137,7 +167,6 @@ class BudgetPageState extends State<BudgetPage> {
                           ),
                         ),
                       );
-
 
 
 
