@@ -74,7 +74,7 @@ class BudgetPageState extends State<BudgetPage> {
                           updatedBudgets[index]['categoryIcon'] ?? '';
                       TextEditingController controller = TextEditingController(
                         text:
-                            updatedBudgets[index]['amount'].toStringAsFixed(2),
+                        updatedBudgets[index]['amount'].toStringAsFixed(2),
                       );
 
 
@@ -192,7 +192,7 @@ class BudgetPageState extends State<BudgetPage> {
 
           // Create a list with only categoryId and amount for saving
           List<Map<String, dynamic>> budgetsToSave =
-              updatedBudgets.map((budget) {
+          updatedBudgets.map((budget) {
             return {
               'categoryId': budget['categoryId'],
               'amount': budget['amount'],

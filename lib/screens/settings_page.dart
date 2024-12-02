@@ -31,7 +31,7 @@ class SettingsPageState extends State<SettingsPage> {
   late TextEditingController _nameController;
   late UserProvider userProvider;
   bool _isEditingName =
-      false; // Track whether the "Your Name" field is in edit mode
+  false; // Track whether the "Your Name" field is in edit mode
 
   String? currencyCode;
   String? currencySymbol;
@@ -335,8 +335,8 @@ class SettingsPageState extends State<SettingsPage> {
                 child: SingleChildScrollView(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
 
                         SettingsMenuItem(
                           icon: Icons.category_outlined,
@@ -377,19 +377,19 @@ class SettingsPageState extends State<SettingsPage> {
                             });
                           },
                         ),
-                      SizedBox(height: 15), // Adjusted spacing
-                      SettingsMenuItem(
-                        icon: Icons.attach_money,
-                        text: "Choose Currency",
-                        iconBackgroundColor: purple20,
-                        iconColor: purple100,
-                        onTap: () {
-                          _showCurrencyPicker(context);
-                        },
-                        trailingTextBuilder: () => "$currencyCode $currencySymbol", // Add the trailing text for currency
-                      ),
+                        SizedBox(height: 15), // Adjusted spacing
+                        SettingsMenuItem(
+                          icon: Icons.attach_money,
+                          text: "Choose Currency",
+                          iconBackgroundColor: purple20,
+                          iconColor: purple100,
+                          onTap: () {
+                            _showCurrencyPicker(context);
+                          },
+                          trailingTextBuilder: () => "$currencyCode $currencySymbol", // Add the trailing text for currency
+                        ),
 
-                      SizedBox(height: 15), // Adjusted spacing
+                        SizedBox(height: 15), // Adjusted spacing
                         SettingsMenuItem(
                           icon: Icons.feedback_outlined,
                           text: "Feedback",
