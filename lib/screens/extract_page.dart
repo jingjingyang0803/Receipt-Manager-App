@@ -139,8 +139,7 @@ class ExtractPageState extends State<ExtractPage> {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body) as Map<String, dynamic>;
-        final text =
-            data['text'] ?? "No text found"; // Adjust to match response format
+        final text = data['text'] ?? ""; // Adjust to match response format
         setState(() {
           _extractedText = text;
           _extractMerchantName(text);
@@ -400,10 +399,13 @@ class ExtractPageState extends State<ExtractPage> {
 
   void _confirmDataAndNavigate() {
     final data = {
-      'merchant': _merchantName,
-      'date': _receiptDate,
-      'currency': _currency,
-      'amount': _totalPrice,
+      'merchant': _merchantName == 'Not Found' ? '' : _merchantName,
+      'date': _receiptDate == 'Not Found'
+          ? DateFormat('yyyy-MM-dd')
+              .format(DateTime.now()) // Only the date part
+          : _receiptDate,
+      'currency': _currency == 'Not Found' ? '' : _currency,
+      'amount': _totalPrice == 'Not Found' ? '' : _totalPrice,
       'imagePath': _imageFile?.path,
     };
     logger.i('Data to pass back: $data'); // Debug log
