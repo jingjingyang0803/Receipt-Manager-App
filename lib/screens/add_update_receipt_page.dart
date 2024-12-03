@@ -54,6 +54,8 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
   String? _uploadedImageUrl;
   XFile? _imageFile; // Store the selected image
 
+  bool _isSaving = false; // Add a flag to manage the saving state
+
   @override
   void initState() {
     super.initState();
@@ -105,10 +107,11 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
       _dateController.text = widget.extract!['date'] ??
           DateTime.now().toLocal().toString().split(' ')[0];
 
-      final extractCurrencyCode = widget.extract!['currency'] ?? '';
-      final extractAmount = widget.extract!['amount'] ?? '';
+      final userProvider = Provider.of<UserProvider>(context, listen: false);
+      _selectedCurrencyCode =
+          widget.extract!['currency'] ?? userProvider.currencyCode;
 
-      _selectedCurrencyCode = extractCurrencyCode;
+      final extractAmount = widget.extract!['amount'] ?? '';
       _totalController.text = extractAmount.toString();
 
       _imageFile = XFile(widget.extract!['imagePath']);
@@ -158,6 +161,12 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
   }
 
   Future<void> _saveReceipt() async {
+    if (_isSaving) return; // Prevent multiple submissions
+
+    setState(() {
+      _isSaving = true; // Disable the save button
+    });
+
     final messenger = ScaffoldMessenger.of(context);
     final receiptProvider =
         Provider.of<ReceiptProvider>(context, listen: false);
@@ -172,10 +181,12 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
         SnackBar(
             content: Text('Please fill in all required fields with * mark')),
       );
+      setState(() {
+        _isSaving = false; // Re-enable the save button
+      });
       return;
     }
 
-    // Pass the XFile (not the Image widget) to the upload method
     String? imageUrl = _imageFile != null
         ? await _storageService.uploadReceiptImage(_imageFile! as XFile?)
         : null;
@@ -210,6 +221,7 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
         );
         _clearForm();
       }
+
       // Navigator.pushReplacementNamed(context, BasePage.id);
       Navigator.push(
           context,
@@ -221,6 +233,10 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
         SnackBar(content: Text('Failed to save receipt. Try again.')),
       );
     }
+
+    setState(() {
+      _isSaving = false; // Re-enable the save button
+    });
   }
 
   void _clearForm() {

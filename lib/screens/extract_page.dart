@@ -399,12 +399,15 @@ class ExtractPageState extends State<ExtractPage> {
 
   void _confirmDataAndNavigate() {
     final data = {
-      'merchant': _merchantName == 'Not Found' ? '' : _merchantName,
+      'merchant':
+          _merchantName == 'Not Found' || _merchantName == 'No text found'
+              ? ''
+              : _merchantName,
       'date': _receiptDate == 'Not Found'
           ? DateFormat('yyyy-MM-dd')
               .format(DateTime.now()) // Only the date part
           : _receiptDate,
-      'currency': _currency == 'Not Found' ? '' : _currency,
+      'currency': _currency == 'Not Found' ? null : _currency,
       'amount': _totalPrice == 'Not Found' ? '' : _totalPrice,
       'imagePath': _imageFile?.path,
     };
