@@ -593,7 +593,10 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
                     child: ElevatedButton(
                       onPressed: pickImage,
                       child: Text(
-                          _imageFile == null ? 'Select Image' : 'Change Image'),
+                        _imageFile != null || _uploadedImageUrl != null
+                            ? 'Change Image' // If either local or network image exists, show "Change Image"
+                            : 'Select Image', // If no image is selected, show "Select Image"
+                      ),
                     ),
                   ),
                   if (_imageFile != null || _uploadedImageUrl != null) ...[
