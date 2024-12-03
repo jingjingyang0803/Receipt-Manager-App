@@ -8,10 +8,7 @@ import '../logger.dart';
 class StorageService {
   final FirebaseStorage _storage = FirebaseStorage.instance;
 
-  Future<String?> uploadReceiptImage() async {
-    final ImagePicker picker = ImagePicker();
-    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
-
+  Future<String?> uploadReceiptImage(XFile? image) async {
     if (image == null) {
       logger.i('No image selected.');
       return null; // Exit the function if no image is selected

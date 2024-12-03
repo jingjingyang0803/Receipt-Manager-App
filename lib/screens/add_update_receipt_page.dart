@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:receipt_manager/providers/category_provider.dart';
 import 'package:receipt_manager/providers/receipt_provider.dart';
@@ -51,6 +52,7 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
   String? _selectedCurrencyCode;
 
   String? _uploadedImageUrl;
+  XFile? _imageFile; // Store the selected image
 
   @override
   void initState() {
@@ -62,7 +64,7 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
   Future<void> _loadUserCategories() async {
     // Fetch categories from the provider
     final categoryProvider =
-    Provider.of<CategoryProvider>(context, listen: false);
+        Provider.of<CategoryProvider>(context, listen: false);
     await categoryProvider.loadUserCategories();
     setState(() {
       _userCategories = categoryProvider.categories;
@@ -76,10 +78,10 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
 
       _selectedPaymentMethod = widget.existingReceipt!['paymentMethod'] ?? '';
       _dateController.text = widget.existingReceipt!['date']
-          ?.toDate()
-          .toLocal()
-          .toString()
-          .split(' ')[0] ??
+              ?.toDate()
+              .toLocal()
+              .toString()
+              .split(' ')[0] ??
           '';
 
       _selectedCurrencyCode = widget.existingReceipt!['currencyCode'];
@@ -109,7 +111,7 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
       _selectedCurrencyCode = extractCurrencyCode;
       _totalController.text = extractAmount.toString();
 
-      _uploadedImageUrl = widget.extract!['imagePath'];
+      _imageFile = XFile(widget.extract!['imagePath']);
     } else {
       // New receipt mode
       _dateController.text = DateTime.now().toLocal().toString().split(' ')[0];
@@ -122,11 +124,14 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
     Provider.of<CategoryProvider>(context, listen: false).loadUserCategories();
   }
 
-  Future<void> uploadReceiptImage() async {
-    String? imageUrl = await _storageService.uploadReceiptImage();
-    if (imageUrl != null) {
+  Future<void> pickImage() async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+
+    if (image != null) {
       setState(() {
-        _uploadedImageUrl = imageUrl.trim();
+        // Convert XFile to Image widget using Image.file
+        _imageFile = image;
       });
     }
   }
@@ -155,10 +160,10 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
   Future<void> _saveReceipt() async {
     final messenger = ScaffoldMessenger.of(context);
     final receiptProvider =
-    Provider.of<ReceiptProvider>(context, listen: false);
+        Provider.of<ReceiptProvider>(context, listen: false);
 
     double? amount =
-    double.tryParse(_totalController.text.replaceAll(',', '.'));
+        double.tryParse(_totalController.text.replaceAll(',', '.'));
 
     if (_dateController.text.isEmpty ||
         amount == null ||
@@ -170,6 +175,11 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
       return;
     }
 
+    // Pass the XFile (not the Image widget) to the upload method
+    String? imageUrl = _imageFile != null
+        ? await _storageService.uploadReceiptImage(_imageFile! as XFile?)
+        : null;
+
     Map<String, dynamic> receiptData = {
       'merchant': _merchantController.text,
       'date': Timestamp.fromDate(DateTime.parse(_dateController.text)),
@@ -179,7 +189,7 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
       'paymentMethod': _selectedPaymentMethod,
       'itemName': _itemNameController.text,
       'description': _descriptionController.text,
-      'imageUrl': _uploadedImageUrl ?? '',
+      'imageUrl': imageUrl ?? '',
     };
 
     try {
@@ -310,7 +320,7 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
 
   Future<void> _deleteReceipt() async {
     final receiptProvider =
-    Provider.of<ReceiptProvider>(context, listen: false);
+        Provider.of<ReceiptProvider>(context, listen: false);
     if (widget.receiptId != null) {
       await receiptProvider.deleteReceipt(widget.receiptId!);
       Navigator.pushReplacementNamed(context, BasePage.id);
@@ -333,7 +343,7 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
     ).then((selectedCategoryId) {
       if (selectedCategoryId != null) {
         final selectedCategory = _userCategories.firstWhere(
-              (category) => category['id'] == selectedCategoryId,
+          (category) => category['id'] == selectedCategoryId,
           orElse: () => {},
         );
 
@@ -478,8 +488,8 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
                                   decoration: buildDynamicLabelDecoration(
                                     label: 'Select Payment',
                                     isSelected:
-                                    _selectedPaymentMethod != null &&
-                                        _selectedPaymentMethod!.isNotEmpty,
+                                        _selectedPaymentMethod != null &&
+                                            _selectedPaymentMethod!.isNotEmpty,
                                     selectedValue: _selectedPaymentMethod,
                                   ),
                                 ),
@@ -516,10 +526,10 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
                                 child: TextField(
                                   decoration: InputDecoration(
                                     labelText:
-                                    _selectedCurrencyCode?.isNotEmpty ==
-                                        true
-                                        ? _selectedCurrencyCode
-                                        : 'Select Currency',
+                                        _selectedCurrencyCode?.isNotEmpty ==
+                                                true
+                                            ? _selectedCurrencyCode
+                                            : 'Select Currency',
                                     border: OutlineInputBorder(),
                                   ),
                                 ),
@@ -552,10 +562,10 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
                                   decoration: buildDynamicLabelDecoration(
                                     label: 'Select Category',
                                     isSelected:
-                                    _selectedCategoryId?.isNotEmpty == true,
+                                        _selectedCategoryId?.isNotEmpty == true,
                                     selectedValue: _selectedCategoryId
-                                        ?.isNotEmpty ==
-                                        true
+                                                ?.isNotEmpty ==
+                                            true
                                         ? '$_selectedCategoryIcon $_selectedCategoryName'
                                         : null,
                                   ),
@@ -581,13 +591,13 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
                   SizedBox(height: 20),
                   Center(
                     child: ElevatedButton(
-                      onPressed: uploadReceiptImage,
-                      child: Text('Upload Receipt Image'),
+                      onPressed: pickImage,
+                      child: Text(
+                          _imageFile == null ? 'Select Image' : 'Change Image'),
                     ),
                   ),
-                  if (_uploadedImageUrl != null &&
-                      _uploadedImageUrl!.isNotEmpty) ...[
-                    SizedBox(height: 20),
+                  if (_imageFile != null || _uploadedImageUrl != null) ...[
+                    // Display local image file for new receipts
                     Stack(
                       alignment: Alignment.topRight,
                       children: [
@@ -597,7 +607,11 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
                               alignment: Alignment.topRight,
                               child: GestureDetector(
                                 onTap: () => setState(() {
-                                  _uploadedImageUrl = null;
+                                  _imageFile =
+                                      null; // Clear the image when tapped
+
+                                  _uploadedImageUrl =
+                                      null; // Clear the network image URL
                                 }),
                                 child: Icon(
                                   Icons.close,
@@ -609,9 +623,13 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
                             SizedBox(height: 8),
                             ClipRRect(
                               borderRadius: BorderRadius.circular(8.0),
-                              child: _uploadedImageUrl!.startsWith('http')
-                                  ? Image.network(_uploadedImageUrl!.trim())
-                                  : Image.file(File(_uploadedImageUrl!)),
+                              child: _imageFile != null
+                                  ? Image.file(File(_imageFile!
+                                      .path)) // Display local image file
+                                  : (_uploadedImageUrl != null
+                                      ? Image.network(
+                                          _uploadedImageUrl!) // Display network image
+                                      : Container()), // Default empty container if both are null
                             ),
                           ],
                         ),
@@ -624,59 +642,68 @@ class AddOrUpdateReceiptPageState extends State<AddOrUpdateReceiptPage> {
                     children: [
                       Expanded(
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 4.0), // Reduced spacing between buttons
+                          padding: const EdgeInsets.symmetric(
+                              horizontal:
+                                  4.0), // Reduced spacing between buttons
                           child: CustomButton(
                             text: "Cancel",
                             backgroundColor: Colors.blueGrey,
                             textStyle: const TextStyle(
                               fontSize: 14, // Reduced font size
                               fontWeight: FontWeight.w500,
-                              color: Colors.white, // Explicitly set text color to white
+                              color: Colors
+                                  .white, // Explicitly set text color to white
                             ),
                             onPressed: () => Navigator.pop(context),
-                            padding: const EdgeInsets.symmetric(vertical: 12), // Adjust button padding
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 12), // Adjust button padding
                           ),
                         ),
                       ),
                       Expanded(
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 4.0), // Reduced spacing between buttons
+                          padding: const EdgeInsets.symmetric(
+                              horizontal:
+                                  4.0), // Reduced spacing between buttons
                           child: CustomButton(
                             text: widget.receiptId != null ? 'Update' : 'Save',
                             backgroundColor: purple100,
                             textStyle: const TextStyle(
                               fontSize: 14, // Reduced font size
                               fontWeight: FontWeight.w500,
-                              color: Colors.white, // Explicitly set text color to white
+                              color: Colors
+                                  .white, // Explicitly set text color to white
                             ),
                             onPressed: _saveReceipt,
-                            padding: const EdgeInsets.symmetric(vertical: 12), // Adjust button padding
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 12), // Adjust button padding
                           ),
                         ),
                       ),
                       if (widget.receiptId != null) ...[
                         Expanded(
                           child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 4.0), // Reduced spacing between buttons
+                            padding: const EdgeInsets.symmetric(
+                                horizontal:
+                                    4.0), // Reduced spacing between buttons
                             child: CustomButton(
                               text: 'Delete',
                               backgroundColor: red100,
                               textStyle: const TextStyle(
                                 fontSize: 14, // Reduced font size
                                 fontWeight: FontWeight.w500,
-                                color: Colors.white, // Explicitly set text color to white
+                                color: Colors
+                                    .white, // Explicitly set text color to white
                               ),
                               onPressed: _confirmDelete,
-                              padding: const EdgeInsets.symmetric(vertical: 12), // Adjust button padding
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 12), // Adjust button padding
                             ),
                           ),
                         ),
                       ],
                     ],
                   ),
-
-
-
                 ],
               ),
             ),
