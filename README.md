@@ -170,7 +170,3 @@ Thank you to the Flutter community and the contributors to the libraries used in
 Check out the app in action in the following YouTube videos:
 - [Video 1](https://youtu.be/X_dJnOpCZHU)
 - [Video 2](https://youtu.be/F-EuRJqj0iY)
-
-Install on Android:
-You can download the APK file for this app from the codebase.
-Once downloaded, please enable "Install Unknown Apps" in your Android phone's settings if required, and then install the app.
