@@ -164,3 +164,11 @@ This app's user interface draws inspiration from a mix of Figma templates, incor
 ## Acknowledgments
 
 Thank you to the Flutter community and the contributors to the libraries used in this project.
+
+## Playaround
+
+Check out the app in action in the following YouTube videos:
+- [Video 1](https://youtu.be/X_dJnOpCZHU)
+- [Video 2](https://youtu.be/F-EuRJqj0iY)
+
+
